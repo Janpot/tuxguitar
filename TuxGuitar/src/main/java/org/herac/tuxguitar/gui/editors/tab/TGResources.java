@@ -1,7 +1,6 @@
 package org.herac.tuxguitar.gui.editors.tab;
 
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 
 import org.eclipse.swt.SWT;
@@ -31,7 +30,7 @@ public class TGResources {
 	private static final int SCORE_NOTE_FULL_PLAY_MODE = 3;
 	
 	private ViewLayout layout;
-	private List resources;
+	private List<Resource> resources;
 	private Font defaultFont;
 	private Font noteFont;
 	private Font timeSignatureFont;
@@ -72,7 +71,7 @@ public class TGResources {
 	
 	public TGResources(ViewLayout layout){
 		this.layout = layout;
-		this.resources = new ArrayList();
+		this.resources = new ArrayList<Resource>();
 	}
 	
 	public void load(){
@@ -476,11 +475,9 @@ public class TGResources {
 	}
 	
 	public void dispose(){
-		Iterator it = this.resources.iterator();
-		while( it.hasNext() ){
-			Resource resource = (Resource)it.next();
-			resource.dispose();
-		}
+        for (Resource resource : this.resources) {
+            resource.dispose();
+        }
 		this.resources.clear();
 	}
 }

@@ -1,7 +1,6 @@
 package org.herac.tuxguitar.gui.editors.tab.edit;
 
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 
 import org.eclipse.swt.events.MouseEvent;
@@ -232,24 +231,23 @@ public class MouseKit {
 	}
 	
 	private boolean removeNote(int value,TGVoice voice) {
-		Iterator it = voice.getNotes().iterator();
-		while (it.hasNext()) {
-			TGNoteImpl note = (TGNoteImpl) it.next();
-			
-			if (note.getRealValue() == value) {
-				//comienza el undoable
-				UndoableMeasureGeneric undoable = UndoableMeasureGeneric.startUndo();
-				
-				TGSongManager manager = this.kit.getTablature().getSongManager();
-				manager.getMeasureManager().removeNote(note);
-				
-				//termia el undoable
-				TuxGuitar.instance().getUndoableManager().addEdit(undoable.endUndo());
-				TuxGuitar.instance().getFileHistory().setUnsavedFile();
-				
-				return true;
-			}
-		}
+        for (TGNote tgNote : voice.getNotes()) {
+            TGNoteImpl note = (TGNoteImpl) tgNote;
+
+            if (note.getRealValue() == value) {
+                //comienza el undoable
+                UndoableMeasureGeneric undoable = UndoableMeasureGeneric.startUndo();
+
+                TGSongManager manager = this.kit.getTablature().getSongManager();
+                manager.getMeasureManager().removeNote(note);
+
+                //termia el undoable
+                TuxGuitar.instance().getUndoableManager().addEdit(undoable.endUndo());
+                TuxGuitar.instance().getFileHistory().setUnsavedFile();
+
+                return true;
+            }
+        }
 		return false;
 	}
 	
@@ -290,17 +288,15 @@ public class MouseKit {
 	}
 	
 	private int findBestString(TGTrack track,TGVoice voice,int value){
-		List strings = new ArrayList();
+		List<TGString> strings = new ArrayList<TGString>();
 		for(int number = 1;number <= track.stringCount();number++){
 			boolean used = false;
 			TGString string = track.getString(number);
-			Iterator it = voice.getNotes().iterator();
-			while (it.hasNext()) {
-				TGNote note = (TGNote) it.next();
-				if(note.getString() == string.getNumber()){
-					used = true;
-				}
-			}
+            for (TGNote note : voice.getNotes()) {
+                if (note.getString() == string.getNumber()) {
+                    used = true;
+                }
+            }
 			if(!used){
 				strings.add(string);
 			}
@@ -308,14 +304,13 @@ public class MouseKit {
 		
 		int minFret = -1;
 		int stringForValue = 0;
-		for(int i = 0;i < strings.size();i++){
-			TGString string = (TGString)strings.get(i);
-			int fret = value - string.getValue();
-			if((fret >= 0) && (minFret < 0 || fret < minFret)){
-				stringForValue = string.getNumber();
-				minFret = fret;
-			}
-		}
+        for (TGString string : strings) {
+            int fret = value - string.getValue();
+            if ((fret >= 0) && (minFret < 0 || fret < minFret)) {
+                stringForValue = string.getNumber();
+                minFret = fret;
+            }
+        }
 		return stringForValue;
 	}
 	
@@ -325,26 +320,25 @@ public class MouseKit {
 		int bestDiff = -1;
 		TGVoiceImpl bestVoice = null;
 		TGDuration duration = this.kit.getTablature().getCaret().getDuration();
-		Iterator it = measure.getBeats().iterator();
-		while(it.hasNext()){
-			TGBeatImpl beat = (TGBeatImpl)it.next();
-			TGVoiceImpl voice = beat.getVoiceImpl( voiceIndex );
-			if(!voice.isEmpty()){
-				int x1 = (beat.getPosX() + beat.getSpacing());
-				int x2 = (x1 + voice.getWidth());
-				long increment = voice.getWidth();
-				if(voice.isRestVoice()){
-					increment = (duration.getTime() * voice.getWidth() / voice.getDuration().getTime());
-				}
-				for( int beatX = x1 ; beatX < x2 ; beatX += increment ){
-					int diff = Math.abs(x - (posX + beatX));
-					if(bestDiff == -1 || diff < bestDiff){
-						bestVoice = voice;
-						bestDiff = diff;
-					}
-				}
-			}
-		}
+        for (TGBeat tgBeat : measure.getBeats()) {
+            TGBeatImpl beat = (TGBeatImpl) tgBeat;
+            TGVoiceImpl voice = beat.getVoiceImpl(voiceIndex);
+            if (!voice.isEmpty()) {
+                int x1 = (beat.getPosX() + beat.getSpacing());
+                int x2 = (x1 + voice.getWidth());
+                long increment = voice.getWidth();
+                if (voice.isRestVoice()) {
+                    increment = (duration.getTime() * voice.getWidth() / voice.getDuration().getTime());
+                }
+                for (int beatX = x1; beatX < x2; beatX += increment) {
+                    int diff = Math.abs(x - (posX + beatX));
+                    if (bestDiff == -1 || diff < bestDiff) {
+                        bestVoice = voice;
+                        bestDiff = diff;
+                    }
+                }
+            }
+        }
 		if( bestVoice == null ){
 			TGBeat beat = this.kit.getTablature().getViewLayout().getSongManager().getMeasureManager().getFirstBeat(measure.getBeats());
 			if( beat != null ){

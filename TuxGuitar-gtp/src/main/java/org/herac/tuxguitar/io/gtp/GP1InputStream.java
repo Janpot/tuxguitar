@@ -1,7 +1,6 @@
 package org.herac.tuxguitar.io.gtp;
 
 import java.io.IOException;
-import java.util.Iterator;
 
 import org.herac.tuxguitar.io.base.TGFileFormat;
 import org.herac.tuxguitar.song.managers.TGSongManager;
@@ -221,17 +220,15 @@ public class GP1InputStream extends GTPInputStream {
 				TGBeat previousBeat = getBeat(track, measure, lastReadedStart);
 				if(previousBeat != null){
 					TGVoice previousVoice = previousBeat.getVoice(0);
-					Iterator it = previousVoice.getNotes().iterator();
-					while(it.hasNext()){
-						TGNote previous = (TGNote)it.next();
-						TGNote note = getFactory().newNote();
-						note.setValue(previous.getValue());
-						note.setString(previous.getString());
-						note.setVelocity(previous.getVelocity());
-						note.setTiedNote(true);
-						
-						voice.addNote(note);
-					}
+                    for (TGNote previous : previousVoice.getNotes()) {
+                        TGNote note = getFactory().newNote();
+                        note.setValue(previous.getValue());
+                        note.setString(previous.getString());
+                        note.setVelocity(previous.getVelocity());
+                        note.setTiedNote(true);
+
+                        voice.addNote(note);
+                    }
 				}
 			}
 		}
@@ -355,17 +352,15 @@ public class GP1InputStream extends GTPInputStream {
 	private int parseRepeatAlternative(TGSong song,int measure,int value){
 		int repeatAlternative = 0;
 		int existentAlternatives = 0;
-		Iterator it = song.getMeasureHeaders();
-		while(it.hasNext()){
-			TGMeasureHeader header = (TGMeasureHeader)it.next();
-			if(header.getNumber() == measure){
-				break;
-			}
-			if(header.isRepeatOpen()){
-				existentAlternatives = 0;
-			}
-			existentAlternatives |= header.getRepeatAlternative();
-		}
+        for (TGMeasureHeader header : song.getMeasureHeaders()) {
+            if (header.getNumber() == measure) {
+                break;
+            }
+            if (header.isRepeatOpen()) {
+                existentAlternatives = 0;
+            }
+            existentAlternatives |= header.getRepeatAlternative();
+        }
 		
 		for(int i = 0; i < 8; i ++){
 			if(value > i && (existentAlternatives & (1 << i)) == 0){
@@ -377,13 +372,11 @@ public class GP1InputStream extends GTPInputStream {
 	
 	private int getClef( TGTrack track ){
 		if( !track.isPercussionTrack() ){
-			Iterator it = track.getStrings().iterator();
-			while( it.hasNext() ){
-				TGString string = (TGString) it.next();
-				if( string.getValue() <= 34 ){
-					return TGMeasure.CLEF_BASS;
-				}
-			}
+            for (TGString string : track.getStrings()) {
+                if (string.getValue() <= 34) {
+                    return TGMeasure.CLEF_BASS;
+                }
+            }
 		}
 		return TGMeasure.CLEF_TREBLE;
 	}
@@ -403,13 +396,11 @@ public class GP1InputStream extends GTPInputStream {
 	
 	private TGBeat getBeat(TGMeasure measure,long start){
 		if(start >= measure.getStart() && start < (measure.getStart() + measure.getLength())){
-			Iterator beats = measure.getBeats().iterator();
-			while(beats.hasNext()){
-				TGBeat beat = (TGBeat)beats.next();
-				if(beat.getStart() == start){
-					return beat;
-				}
-			}
+            for (TGBeat beat : measure.getBeats()) {
+                if (beat.getStart() == start) {
+                    return beat;
+                }
+            }
 		}
 		return null;
 	}

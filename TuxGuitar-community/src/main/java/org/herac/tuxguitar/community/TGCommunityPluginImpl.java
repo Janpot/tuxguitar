@@ -11,7 +11,7 @@ import org.herac.tuxguitar.gui.system.plugins.base.TGPluginList;
 
 public class TGCommunityPluginImpl extends TGPluginList {
 
-	protected List getPlugins() throws TGPluginException {
+	protected List loadPlugins() throws TGPluginException {
 		List plugins = new ArrayList();
 		
 		plugins.add(new TGShareSongPlugin());

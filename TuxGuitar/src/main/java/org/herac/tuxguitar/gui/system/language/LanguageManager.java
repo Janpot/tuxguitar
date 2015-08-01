@@ -8,7 +8,6 @@ package org.herac.tuxguitar.gui.system.language;
 
 import java.text.MessageFormat;
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
 
@@ -26,10 +25,10 @@ public class LanguageManager {
 	
 	private TGResourceBundle resources;
 	private String[] languages;
-	private List loaders;
+	private List<LanguageLoader> loaders;
 	
 	public LanguageManager() {
-		this.loaders = new ArrayList();
+		this.loaders = new ArrayList<LanguageLoader>();
 		this.loadLanguages();
 	}
 	
@@ -46,11 +45,9 @@ public class LanguageManager {
 	}
 	
 	private void fireChanges(){
-		Iterator it = this.loaders.iterator();
-		while(it.hasNext()){
-			LanguageLoader loader = (LanguageLoader)it.next();
-			loader.loadProperties();
-		}
+        for (LanguageLoader loader : this.loaders) {
+            loader.loadProperties();
+        }
 	}
 	
 	public void setLanguage(String lang) {
@@ -77,11 +74,11 @@ public class LanguageManager {
 	
 	private boolean isSupportedLanguage(String lang){
 		if(lang != null && lang.length() > 0 && this.languages != null){
-			for(int i = 0 ; i < this.languages.length; i ++){
-				if(this.languages[i].equals(lang)){
-					return true;
-				}
-			}
+            for (String language : this.languages) {
+                if (language.equals(lang)) {
+                    return true;
+                }
+            }
 		}
 		return false;
 	}
@@ -119,7 +116,7 @@ public class LanguageManager {
 			boolean country = (locale.getCountry() != null && locale.getCountry().length() > 0);
 			boolean variant = (locale.getVariant() != null && locale.getVariant().length() > 0);
 			
-			String localeId = new String();
+			String localeId = "";
 			if( language ){
 				localeId += locale.getLanguage();
 			}
@@ -139,23 +136,23 @@ public class LanguageManager {
 	 *
 	 */
 	private void loadLanguages(){
-		List availableList = new ArrayList();
+		List<String> availableList = new ArrayList<String>();
 		String[] fileNames = TGFileUtils.getFileNames("lang");
 		if( fileNames != null ){
 			// now iterate over them
-			for(int i = 0;i < fileNames.length;i++){
-				if (fileNames[i].indexOf("messages_") == 0){
-					int prefixIndex = fileNames[i].indexOf(PREFIX + "_");
-					int extensionIndex = fileNames[i].indexOf(EXTENSION);
-					if(prefixIndex == 0 && extensionIndex > (PREFIX + "_").length()){
-						availableList.add( fileNames[i].substring( (PREFIX + "_").length() , extensionIndex ) );
-					}
-				}
-			}
+            for (String fileName : fileNames) {
+                if (fileName.indexOf("messages_") == 0) {
+                    int prefixIndex = fileName.indexOf(PREFIX + "_");
+                    int extensionIndex = fileName.indexOf(EXTENSION);
+                    if (prefixIndex == 0 && extensionIndex > (PREFIX + "_").length()) {
+                        availableList.add(fileName.substring((PREFIX + "_").length(), extensionIndex));
+                    }
+                }
+            }
 		}
 		this.languages = new String[availableList.size()];
 		for(int i = 0; i < this.languages.length; i++){
-			this.languages[i] = (String) availableList.get( i );
+			this.languages[i] = availableList.get( i );
 		}
 	}
 }

@@ -6,8 +6,6 @@
  */
 package org.herac.tuxguitar.gui.clipboard;
 
-import java.util.Iterator;
-
 import org.herac.tuxguitar.gui.TuxGuitar;
 import org.herac.tuxguitar.gui.editors.TablatureEditor;
 import org.herac.tuxguitar.gui.undo.undoables.measure.UndoableInsertMeasure;
@@ -121,10 +119,8 @@ public class MeasureTransferable implements Transferable {
 	}
 	
 	private void skipMarkers(TGSongSegment segment){
-		Iterator it = segment.getHeaders().iterator();
-		while(it.hasNext()){
-			TGMeasureHeader header = (TGMeasureHeader)it.next();
-			header.setMarker(null);
-		}
+        for (TGMeasureHeader header : segment.getHeaders()) {
+            header.setMarker(null);
+        }
 	}
 }

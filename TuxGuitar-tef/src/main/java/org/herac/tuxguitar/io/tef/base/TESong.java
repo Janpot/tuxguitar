@@ -1,7 +1,6 @@
 package org.herac.tuxguitar.io.tef.base;
 
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 
 public class TESong {
@@ -17,12 +16,12 @@ public class TESong {
 	private TEPercussion[] percussions;
 	private TERhythm[] rhythms;
 	private TETrack[] tracks;
-	private List components;
-	private List tsChanges;
+	private List<TEComponent> components;
+	private List<TETimeSignatureChange> tsChanges;
 	
 	public TESong(){
-		this.components = new ArrayList();
-		this.tsChanges = new ArrayList();
+		this.components = new ArrayList<TEComponent>();
+		this.tsChanges = new ArrayList<TETimeSignatureChange>();
 	}
 	
 	public TERhythm[] getRhythms() {
@@ -137,7 +136,7 @@ public class TESong {
 		this.measures = measures;
 	}
 	
-	public List getComponents() {
+	public List<TEComponent> getComponents() {
 		return this.components;
 	}
 	
@@ -146,41 +145,39 @@ public class TESong {
 	}
 	
 	public TETimeSignature getTimeSignature(int measure){
-		Iterator it = this.tsChanges.iterator();
-		while(it.hasNext()){
-			TETimeSignatureChange change = (TETimeSignatureChange)it.next();
-			if(change.getMeasure() == measure){
-				return change.getTimeSignature();
-			}
-		}
+        for (TETimeSignatureChange change : this.tsChanges) {
+            if (change.getMeasure() == measure) {
+                return change.getTimeSignature();
+            }
+        }
 		return getTimeSignature();
 	}
 	
 	public String toString(){
-		String string = new String("[SONG] *** Tabledit file format ***\n");
+		String string = "[SONG] *** Tabledit file format ***\n";
 		string +=  (this.getInfo().toString() + "\n");
 		string +=  (this.getTempo().toString() + "\n");
-		for(int i = 0; i < this.repeats.length; i ++){
-			string +=  (this.repeats[i].toString() + "\n");
-		}
-		for(int i = 0; i < this.texts.length; i ++){
-			string +=  (this.texts[i].toString() + "\n");
-		}
-		for(int i = 0; i < this.chords.length; i ++){
-			string +=  (this.chords[i].toString() + "\n");
-		}
-		for(int i = 0; i < this.percussions.length; i ++){
-			string +=  (this.percussions[i].toString() + "\n");
-		}
-		for(int i = 0; i < this.rhythms.length; i ++){
-			string +=  (this.rhythms[i].toString() + "\n");
-		}
-		for(int i = 0; i < this.tracks.length; i ++){
-			string +=  (this.tracks[i].toString() + "\n");
-		}
-		for(int i = 0; i < this.components.size(); i ++){
-			string +=  (this.components.get(i).toString() + "\n");
-		}
+        for (TERepeat repeat : this.repeats) {
+            string += (repeat.toString() + "\n");
+        }
+        for (TEText text : this.texts) {
+            string += (text.toString() + "\n");
+        }
+        for (TEChord chord : this.chords) {
+            string += (chord.toString() + "\n");
+        }
+        for (TEPercussion percussion : this.percussions) {
+            string += (percussion.toString() + "\n");
+        }
+        for (TERhythm rhythm : this.rhythms) {
+            string += (rhythm.toString() + "\n");
+        }
+        for (TETrack track : this.tracks) {
+            string += (track.toString() + "\n");
+        }
+        for (TEComponent component : this.components) {
+            string += (component.toString() + "\n");
+        }
 		return string;
 	}
 }

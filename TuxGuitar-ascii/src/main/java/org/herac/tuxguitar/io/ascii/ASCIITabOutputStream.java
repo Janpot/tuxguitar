@@ -4,7 +4,6 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.OutputStream;
 import java.io.PrintStream;
-import java.util.Iterator;
 
 import org.herac.tuxguitar.song.managers.TGSongManager;
 import org.herac.tuxguitar.song.models.TGBeat;
@@ -54,14 +53,12 @@ public class ASCIITabOutputStream {
 		this.out.drawStringLine("Artist: " + song.getArtist());
 		this.out.drawStringLine("Album: " + song.getAlbum());
 		this.out.drawStringLine("Author: " + song.getAuthor());
-		
-		Iterator it = song.getTracks();
-		while(it.hasNext()){
-			TGTrack track = (TGTrack)it.next();
-			this.out.nextLine();
-			drawTrack(track);
-			this.out.nextLine();
-		}
+
+        for (TGTrack track : song.getTracks()) {
+            this.out.nextLine();
+            drawTrack(track);
+            this.out.nextLine();
+        }
 	}
 	
 	private void drawTrack(TGTrack track){
@@ -73,7 +70,7 @@ public class ASCIITabOutputStream {
 		String[] tuning = new String[track.getStrings().size()];
 		int maxTuningLength = 1;
 		for(int i = 0; i < track.getStrings().size();i++){
-			TGString string = (TGString)track.getStrings().get(i);
+			TGString string = track.getStrings().get(i);
 			tuning[i] = TONIC_NAMES[(string.getValue() % TONIC_NAMES.length)];
 			maxTuningLength = Math.max(maxTuningLength,tuning[i].length());
 		}
@@ -84,7 +81,7 @@ public class ASCIITabOutputStream {
 			this.out.nextLine();
 			int index = nextMeasure;
 			for(int i = 0; i < track.getStrings().size();i++){
-				TGString string = (TGString)track.getStrings().get(i);
+				TGString string = track.getStrings().get(i);
 				
 				//Dibujo la afinacion de la cuerda
 				this.out.drawTuneSegment(tuning[i],maxTuningLength);

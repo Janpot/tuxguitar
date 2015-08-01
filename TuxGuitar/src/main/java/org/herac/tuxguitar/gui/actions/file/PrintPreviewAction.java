@@ -7,7 +7,6 @@
 package org.herac.tuxguitar.gui.actions.file;
 
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 
 import org.eclipse.swt.SWT;
@@ -112,13 +111,13 @@ public class PrintPreviewAction extends Action{
 		private PrinterViewLayout layout;
 		private TGPainter painter;
 		private Rectangle bounds;
-		private List pages;
+		private List<Image> pages;
 		
 		public PrintDocumentImpl(PrinterViewLayout layout, Rectangle bounds){
 			this.layout = layout;
 			this.bounds = bounds;
 			this.painter = new TGPainter();
-			this.pages = new ArrayList();
+			this.pages = new ArrayList<Image>();
 		}
 		
 		public TGPainter getPainter() {
@@ -146,18 +145,16 @@ public class PrintPreviewAction extends Action{
 		public void finish() {
 			final Tablature tablature = this.layout.getTablature();
 			final Rectangle bounds = this.bounds;
-			final List pages = this.pages;
+			final List<Image> pages = this.pages;
 			try {
 				TGSynchronizer.instance().addRunnable(new TGSynchronizer.TGRunnable(){
 					public void run() {
 						tablature.dispose();
 						PrintPreview preview = new PrintPreview(pages,bounds);
 						preview.showPreview(getEditor().getTablature().getShell());
-						Iterator it = pages.iterator();
-						while(it.hasNext()){
-							Image image = (Image)it.next();
-							image.dispose();
-						}
+                        for (Image image : pages) {
+                            image.dispose();
+                        }
 					}
 				});
 			} catch (Throwable e) {

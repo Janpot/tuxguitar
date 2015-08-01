@@ -20,7 +20,7 @@ public class TGBeatGroup {
 	
 	private int voice;
 	private int direction;
-	private List voices;
+	private List<TGVoice> voices;
 	private TGNoteImpl firstMinNote;
 	private TGNoteImpl firstMaxNote;
 	private TGNoteImpl lastMinNote;
@@ -30,7 +30,7 @@ public class TGBeatGroup {
 	
 	public TGBeatGroup(int voice){
 		this.voice = voice;
-		this.voices = new ArrayList();
+		this.voices = new ArrayList<TGVoice>();
 		this.direction = DIRECTION_NOT_SETTED;
 		this.firstMinNote = null;
 		this.firstMaxNote = null;
@@ -117,7 +117,7 @@ public class TGBeatGroup {
 		}
 	}
 	
-	public List getVoices(){
+	public List<TGVoice> getVoices(){
 		return this.voices;
 	}
 	

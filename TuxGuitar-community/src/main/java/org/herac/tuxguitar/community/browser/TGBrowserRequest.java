@@ -4,7 +4,6 @@ import java.io.OutputStreamWriter;
 import java.net.URL;
 import java.net.URLConnection;
 import java.net.URLEncoder;
-import java.util.Iterator;
 import java.util.Map;
 
 import org.herac.tuxguitar.community.auth.TGCommunityAuth;
@@ -25,20 +24,18 @@ public class TGBrowserRequest {
 	}
 	
 	private void initialize( TGCommunityAuth auth, TGBrowserElementImpl element ) throws Throwable {
-		this.request = new String();
+		this.request = "";
 		this.request += URLEncoder.encode( "auth" , "UTF-8" );
 		this.request += ("=");
 		this.request += URLEncoder.encode( auth.getAuthCode() , "UTF-8" );
 		
 		if( element != null ){
-			Iterator it = element.getProperties();
-			while( it.hasNext() ){
-				Map.Entry property = (Map.Entry) it.next();
-				this.request += ("&");
-				this.request += URLEncoder.encode( (String)property.getKey() , "UTF-8" );
-				this.request += ("=");
-				this.request += URLEncoder.encode( (String)property.getValue() , "UTF-8" );
-			}
+            for (Map.Entry<String, String> property : element.getProperties()) {
+                this.request += "&";
+                this.request += URLEncoder.encode(property.getKey(), "UTF-8");
+                this.request += "=";
+                this.request += URLEncoder.encode(property.getValue(), "UTF-8");
+            }
 		}
 	}
 	

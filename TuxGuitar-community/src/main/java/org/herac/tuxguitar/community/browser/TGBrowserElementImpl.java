@@ -3,8 +3,8 @@ package org.herac.tuxguitar.community.browser;
 import java.io.InputStream;
 import java.net.URL;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.Map;
+import java.util.Set;
 
 import org.herac.tuxguitar.gui.tools.browser.TGBrowserException;
 import org.herac.tuxguitar.gui.tools.browser.base.TGBrowserElement;
@@ -12,13 +12,13 @@ import org.herac.tuxguitar.gui.tools.browser.base.TGBrowserElement;
 public class TGBrowserElementImpl extends TGBrowserElement {
 	
 	private TGBrowserElementImpl parent;
-	private Map properties;
+	private Map<String, String> properties;
 	private String url;
 	
 	public TGBrowserElementImpl(String name) {
 		super(name);
 		this.url = null;
-		this.properties = new HashMap();
+		this.properties = new HashMap<String, String>();
 	}
 	
 	public TGBrowserElementImpl getParent() {
@@ -42,14 +42,14 @@ public class TGBrowserElementImpl extends TGBrowserElement {
 	}
 	
 	public String getProperty( String key ){
-		return (String)this.properties.get( key );
+		return this.properties.get( key );
 	}
-	
-	public Iterator getProperties(){
-		return this.properties.entrySet().iterator();
-	}
-	
-	public boolean isFolder() {
+
+    public Set<Map.Entry<String, String>> getProperties() {
+        return this.properties.entrySet();
+    }
+
+    public boolean isFolder() {
 		return (this.url == null || this.url.length() == 0 );
 	}
 	

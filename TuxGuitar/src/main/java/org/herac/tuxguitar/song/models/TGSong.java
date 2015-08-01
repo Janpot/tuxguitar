@@ -7,7 +7,6 @@
 package org.herac.tuxguitar.song.models;
 
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 
 import org.herac.tuxguitar.song.factory.TGFactory;
@@ -29,21 +28,21 @@ public abstract class TGSong {
 	private String writer;
 	private String transcriber;
 	private String comments;
-	private List tracks;
-	private List measureHeaders;
+	private List<TGTrack> tracks;
+	private List<TGMeasureHeader> measureHeaders;
 	
 	public TGSong() {
-		this.name = new String();
-		this.artist = new String();
-		this.album = new String();
-		this.author = new String();
-		this.date = new String();
-		this.copyright = new String();
-		this.writer = new String();
-		this.transcriber = new String();
-		this.comments = new String();
-		this.tracks = new ArrayList();
-		this.measureHeaders = new ArrayList();
+		this.name = "";
+		this.artist = "";
+		this.album = "";
+		this.author = "";
+		this.date = "";
+		this.copyright = "";
+		this.writer = "";
+		this.transcriber = "";
+		this.comments = "";
+		this.tracks = new ArrayList<TGTrack>();
+		this.measureHeaders = new ArrayList<TGMeasureHeader>();
 	}
 	
 	public String getName() {
@@ -140,11 +139,11 @@ public abstract class TGSong {
 	}
 	
 	public TGMeasureHeader getMeasureHeader(int index){
-		return (TGMeasureHeader)this.measureHeaders.get(index);
+		return this.measureHeaders.get(index);
 	}
 	
-	public Iterator getMeasureHeaders() {
-		return this.measureHeaders.iterator();
+	public Iterable<TGMeasureHeader> getMeasureHeaders() {
+		return this.measureHeaders;
 	}
 	
 	public int countTracks(){
@@ -171,23 +170,21 @@ public abstract class TGSong {
 	}
 	
 	public TGTrack getTrack(int index){
-		return (TGTrack)this.tracks.get(index);
+		return this.tracks.get(index);
 	}
 	
-	public Iterator getTracks() {
-		return this.tracks.iterator();
+	public List<TGTrack> getTracks() {
+		return this.tracks;
 	}
-	
+
 	public boolean isEmpty(){
 		return (countMeasureHeaders() == 0 || countTracks() == 0);
 	}
 	
 	public void clear(){
-		Iterator tracks = getTracks();
-		while(tracks.hasNext()){
-			TGTrack track = (TGTrack)tracks.next();
-			track.clear();
-		}
+        for (TGTrack track : getTracks()) {
+            track.clear();
+        }
 		this.tracks.clear();
 		this.measureHeaders.clear();
 	}
@@ -209,15 +206,11 @@ public abstract class TGSong {
 		song.setWriter(getWriter());
 		song.setTranscriber(getTranscriber());
 		song.setComments(getComments());
-		Iterator headers = getMeasureHeaders();
-		while(headers.hasNext()){
-			TGMeasureHeader header = (TGMeasureHeader)headers.next();
-			song.addMeasureHeader(header.clone(factory));
-		}
-		Iterator tracks = getTracks();
-		while(tracks.hasNext()){
-			TGTrack track = (TGTrack)tracks.next();
-			song.addTrack(track.clone(factory, song));
-		}
+        for (TGMeasureHeader header : getMeasureHeaders()) {
+            song.addMeasureHeader(header.clone(factory));
+        }
+        for (TGTrack track : getTracks()) {
+            song.addTrack(track.clone(factory, song));
+        }
 	}
 }

@@ -3,7 +3,6 @@ package org.herac.tuxguitar.gui.tools.browser.ftp;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 
 import org.eclipse.swt.SWT;
@@ -174,14 +173,13 @@ class TGBrowserDataDialog{
 				String proxyUser = proxyUserText.getText();
 				String proxyPwd = proxyPwdText.getText();
 				
-				List errors = validate(name, host, proxyHost, proxyPortStr, hasProxy.getSelection());
+				List<String> errors = validate(name, host, proxyHost, proxyPortStr, hasProxy.getSelection());
 				if( !errors.isEmpty() ){
 					StringWriter buffer = new StringWriter();
 					PrintWriter writer = new PrintWriter( buffer );
-					Iterator it = errors.iterator();
-					while( it.hasNext() ){
-						writer.println( "*" + (String)it.next() );
-					}
+                    for (String error : errors) {
+                        writer.println("*" + error);
+                    }
 					MessageDialog.errorMessage(parent, buffer.getBuffer().toString() );
 				}else{
 					int proxyPort = Integer.parseInt( proxyPortStr );
@@ -208,20 +206,18 @@ class TGBrowserDataDialog{
 		return this.data;
 	}
 	
-	protected List validate(String name, String host, String pHost, String pPort, boolean pEnabled){
-		List errors = new ArrayList();
+	protected List<String> validate(String name, String host, String pHost, String pPort, boolean pEnabled){
+		List<String> errors = new ArrayList<String>();
 		// Check the Name
 		if (name == null || name.trim().length() == 0) {
 			errors.add("Please enter the Name");
 		}else{
-			Iterator it = TGBrowserManager.instance().getCollections();
-			while(it.hasNext()){
-				TGBrowserCollection collection = (TGBrowserCollection)it.next();
-				if(name.equals(collection.getData().getTitle())){
-					errors.add("A collection named \"" + name + "\" already exists");
-					break;
-				}
-			}
+            for (TGBrowserCollection collection : TGBrowserManager.instance().getCollections()) {
+                if (name.equals(collection.getData().getTitle())) {
+                    errors.add("A collection named \"" + name + "\" already exists");
+                    break;
+                }
+            }
 		}
 		if (host == null || host.trim().length() == 0) {
 			errors.add("Please enter the Host");

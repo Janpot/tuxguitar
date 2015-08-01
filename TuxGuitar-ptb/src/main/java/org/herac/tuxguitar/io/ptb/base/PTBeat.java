@@ -1,7 +1,6 @@
 package org.herac.tuxguitar.io.ptb.base;
 
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 
 public class PTBeat implements PTComponent{
@@ -18,12 +17,12 @@ public class PTBeat implements PTComponent{
 	private boolean grace;
 	private boolean arpeggioUp;
 	private boolean arpeggioDown;
-	private List notes;
+	private List<PTNote> notes;
 	
 	public PTBeat(int staff,int voice){
 		this.staff = staff;
 		this.voice = voice;
-		this.notes = new ArrayList();
+		this.notes = new ArrayList<PTNote>();
 		this.multiBarRest = 1;
 	}
 	
@@ -39,7 +38,7 @@ public class PTBeat implements PTComponent{
 		this.notes.add(note);
 	}
 	
-	public List getNotes(){
+	public List<PTNote> getNotes(){
 		return this.notes;
 	}
 	
@@ -135,10 +134,9 @@ public class PTBeat implements PTComponent{
 		beat.setVibrato( isVibrato() );
 		beat.setArpeggioUp( isArpeggioUp() );
 		beat.setArpeggioDown( isArpeggioDown() );
-		Iterator it = getNotes().iterator();
-		while( it.hasNext() ){
-			beat.addNote( ((PTNote)it.next()).getClone() );
-		}
+        for (PTNote ptNote : getNotes()) {
+            beat.addNote((ptNote).getClone());
+        }
 		return beat;
 	}
 }

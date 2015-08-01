@@ -1,6 +1,5 @@
 package org.herac.tuxguitar.gui.marker;
 
-import java.util.Iterator;
 import java.util.List;
 
 import org.eclipse.swt.SWT;
@@ -35,7 +34,7 @@ public class MarkerList implements TGUpdateListener, IconLoader,LanguageLoader{
 	
 	protected Shell dialog;
 	private Table table;
-	private List markers;
+	private List<TGMarker> markers;
 	
 	private Composite compositeTable;
 	private TableColumn measureColumn;
@@ -234,14 +233,11 @@ public class MarkerList implements TGUpdateListener, IconLoader,LanguageLoader{
 		
 		this.table.removeAll();
 		this.markers = TuxGuitar.instance().getSongManager().getMarkers();
-		
-		Iterator it = this.markers.iterator();
-		while (it.hasNext()) {
-			TGMarker marker = (TGMarker) it.next();
-			
-			TableItem item = new TableItem(this.table, SWT.NONE);
-			item.setText(new String[] { Integer.toString(marker.getMeasure()),marker.getTitle() });
-		}
+
+        for (TGMarker marker : this.markers) {
+            TableItem item = new TableItem(this.table, SWT.NONE);
+            item.setText(new String[]{Integer.toString(marker.getMeasure()), marker.getTitle()});
+        }
 		
 		if(itemSelected >= 0 && itemSelected < this.markers.size()){
 			this.table.select(itemSelected);

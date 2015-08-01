@@ -12,7 +12,6 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.Iterator;
 import java.util.Map;
 import java.util.Properties;
 
@@ -100,7 +99,7 @@ public abstract class TGConfigManager {
 	public boolean getBooleanConfigValue(String key,boolean defaultValue) {
 		try{
 			String value = getProperty(key);
-			return (value == null)?defaultValue:Boolean.valueOf(value.trim()).booleanValue();
+			return (value == null)?defaultValue: Boolean.valueOf(value.trim());
 		}catch(Throwable throwable){
 			throwable.printStackTrace();
 		}
@@ -116,12 +115,12 @@ public abstract class TGConfigManager {
 			String value = getProperty(key);
 			if(value != null){
 				String[] values = value.trim().split(",");
-				if(values != null && values.length == 3){
+				if(values.length == 3){
 					try{
 						String name = values[0].trim();
 						int size = Integer.parseInt(values[1].trim());
 						int style = Integer.parseInt(values[2].trim());
-						return new FontData( (name == null ? "" : name),size,style);
+						return new FontData(name,size,style);
 					}catch(NumberFormatException e){
 						e.printStackTrace();
 					}
@@ -138,7 +137,7 @@ public abstract class TGConfigManager {
 			String value = getProperty(key);
 			if(value != null){
 				String[] values = value.trim().split(",");
-				if(values != null && values.length == 3){
+				if(values.length == 3){
 					try{
 						int red = Integer.parseInt(values[0].trim());
 						int green = Integer.parseInt(values[1].trim());
@@ -157,7 +156,7 @@ public abstract class TGConfigManager {
 	}
 	
 	public void setProperty(String key,String value){
-		this.properties.setProperty(key, (value != null ? value : new String()) );
+		this.properties.setProperty(key, (value != null ? value : "") );
 	}
 	
 	public void setProperty(String key,int value){
@@ -186,11 +185,9 @@ public abstract class TGConfigManager {
 	
 	public void setDefaults(){
 		Properties defaults = new TGConfigDefaults().getProperties();
-		Iterator it = defaults.entrySet().iterator();
-		while(it.hasNext()){
-			Map.Entry property = (Map.Entry)it.next();
-			setProperty((String)property.getKey(),(String)property.getValue());
-		}
+        for (Map.Entry<Object, Object> property : defaults.entrySet()) {
+            setProperty((String) property.getKey(), (String) property.getValue());
+        }
 		this.save();
 	}
 	

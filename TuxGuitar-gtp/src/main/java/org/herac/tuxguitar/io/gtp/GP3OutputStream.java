@@ -8,7 +8,6 @@ package org.herac.tuxguitar.io.gtp;
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 
 import org.herac.tuxguitar.io.base.TGFileFormat;
@@ -83,7 +82,7 @@ public class GP3OutputStream extends GTPOutputStream{
 	}
 	
 	private void writeInfo(TGSong song) throws IOException{
-		List comments = toCommentLines(song.getComments());
+		List<String> comments = toCommentLines(song.getComments());
 		writeStringByteSizeOfInteger(song.getName());
 		writeStringByteSizeOfInteger("");
 		writeStringByteSizeOfInteger(song.getArtist());
@@ -93,23 +92,23 @@ public class GP3OutputStream extends GTPOutputStream{
 		writeStringByteSizeOfInteger(song.getWriter());
 		writeStringByteSizeOfInteger("");
 		writeInt( comments.size() );
-		for (int i = 0; i < comments.size(); i++) {
-			writeStringByteSizeOfInteger( (String)comments.get(i) );
-		}
+        for (String comment : comments) {
+            writeStringByteSizeOfInteger(comment);
+        }
 	}
 	
 	private void writeChannels(TGSong song) throws IOException{
 		TGChannel[] channels = makeChannels(song);
-		for (int i = 0; i < channels.length; i++) {
-			writeInt(channels[i].getInstrument());
-			writeByte(toChannelByte(channels[i].getVolume()));
-			writeByte(toChannelByte(channels[i].getBalance()));
-			writeByte(toChannelByte(channels[i].getChorus()));
-			writeByte(toChannelByte(channels[i].getReverb()));
-			writeByte(toChannelByte(channels[i].getPhaser()));
-			writeByte(toChannelByte(channels[i].getTremolo()));
-			writeBytes(new byte[]{0,0});
-		}
+        for (TGChannel channel : channels) {
+            writeInt(channel.getInstrument());
+            writeByte(toChannelByte(channel.getVolume()));
+            writeByte(toChannelByte(channel.getBalance()));
+            writeByte(toChannelByte(channel.getChorus()));
+            writeByte(toChannelByte(channel.getReverb()));
+            writeByte(toChannelByte(channel.getPhaser()));
+            writeByte(toChannelByte(channel.getTremolo()));
+            writeBytes(new byte[]{0, 0});
+        }
 	}
 	
 	private void writeMeasureHeaders(TGSong song) throws IOException {
@@ -188,7 +187,7 @@ public class GP3OutputStream extends GTPOutputStream{
 		for (int i = 0; i < 7; i++) {
 			int value = 0;
 			if (track.getStrings().size() > i) {
-				TGString string = (TGString) track.getStrings().get(i);
+				TGString string = track.getStrings().get(i);
 				value = string.getValue();
 			}
 			writeInt(value);
@@ -485,17 +484,15 @@ public class GP3OutputStream extends GTPOutputStream{
 			channels[i].setPhaser((short)0);
 			channels[i].setTremolo((short)0);
 		}
-		
-		Iterator it = song.getTracks();
-		while (it.hasNext()) {
-			TGTrack track = (TGTrack) it.next();
-			channels[track.getChannel().getChannel()].setInstrument(track.getChannel().getInstrument());
-			channels[track.getChannel().getChannel()].setVolume(track.getChannel().getVolume());
-			channels[track.getChannel().getChannel()].setBalance(track.getChannel().getBalance());
-			channels[track.getChannel().getEffectChannel()].setInstrument(track.getChannel().getInstrument());
-			channels[track.getChannel().getEffectChannel()].setVolume(track.getChannel().getVolume());
-			channels[track.getChannel().getEffectChannel()].setBalance(track.getChannel().getBalance());
-		}
+
+        for (TGTrack track : song.getTracks()) {
+            channels[track.getChannel().getChannel()].setInstrument(track.getChannel().getInstrument());
+            channels[track.getChannel().getChannel()].setVolume(track.getChannel().getVolume());
+            channels[track.getChannel().getChannel()].setBalance(track.getChannel().getBalance());
+            channels[track.getChannel().getEffectChannel()].setInstrument(track.getChannel().getInstrument());
+            channels[track.getChannel().getEffectChannel()].setVolume(track.getChannel().getVolume());
+            channels[track.getChannel().getEffectChannel()].setBalance(track.getChannel().getBalance());
+        }
 		
 		return channels;
 	}
@@ -523,8 +520,8 @@ public class GP3OutputStream extends GTPOutputStream{
 		return  (byte) ((s + 1) / 8);
 	}
 	
-	private List toCommentLines( String comments ){
-		List lines = new ArrayList();
+	private List<String> toCommentLines( String comments ){
+		List<String> lines = new ArrayList<String>();
 		
 		String line = comments;
 		while( line.length() > Byte.MAX_VALUE ) {

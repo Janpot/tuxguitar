@@ -6,8 +6,6 @@
  */
 package org.herac.tuxguitar.gui.actions.note;
 
-import java.util.Iterator;
-
 import org.eclipse.swt.events.TypedEvent;
 import org.herac.tuxguitar.gui.TuxGuitar;
 import org.herac.tuxguitar.gui.actions.Action;
@@ -40,12 +38,10 @@ public class SetVoiceUpAction extends Action{
 			if(!voice.isEmpty() && !voice.isRestVoice() && group != null ){
 				//comienza el undoable
 				UndoableMeasureGeneric undoable = UndoableMeasureGeneric.startUndo();
-				
-				Iterator it = group.getVoices().iterator();
-				while( it.hasNext() ){
-					TGVoice current = (TGVoice)it.next();
-					getSongManager().getMeasureManager().changeVoiceDirection(current, TGVoice.DIRECTION_UP);
-				}
+
+                for (TGVoice current : group.getVoices()) {
+                    getSongManager().getMeasureManager().changeVoiceDirection(current, TGVoice.DIRECTION_UP);
+                }
 				
 				//termia el undoable
 				addUndoableEdit(undoable.endUndo());

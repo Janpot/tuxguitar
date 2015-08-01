@@ -2,7 +2,6 @@ package org.herac.tuxguitar.gui.tools.browser;
 
 import java.io.File;
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 
 import org.herac.tuxguitar.gui.tools.browser.base.TGBrowserData;
@@ -16,17 +15,17 @@ public class TGBrowserManager {
 	
 	private static TGBrowserManager instance;
 	
-	private List factories;
-	private List collections;
-	private List collectionInfos;
+	private List<TGBrowserFactory> factories;
+	private List<TGBrowserCollection> collections;
+	private List<TGBrowserCollectionInfo> collectionInfos;
 	private boolean changes;
 	
 	private TGBrowserFactoryHandler handler;
 	
 	private TGBrowserManager(){
-		this.factories = new ArrayList();
-		this.collections = new ArrayList();
-		this.collectionInfos = new ArrayList();
+		this.factories = new ArrayList<TGBrowserFactory>();
+		this.collections = new ArrayList<TGBrowserCollection>();
+		this.collectionInfos = new ArrayList<TGBrowserCollectionInfo>();
 		this.readCollections();
 		this.addDefaultFactory();
 	}
@@ -41,35 +40,31 @@ public class TGBrowserManager {
 	public void setFactoryHandler(TGBrowserFactoryHandler handler){
 		this.handler = handler;
 	}
-	
-	public Iterator getFactories(){
-		return this.factories.iterator();
-	}
-	
-	public TGBrowserFactory getFactory(String type){
-		Iterator factories = getFactories();
-		while(factories.hasNext()){
-			TGBrowserFactory factory = (TGBrowserFactory)factories.next();
-			if(factory.getType().equals(type)){
-				return factory;
-			}
-		}
+
+    public List<TGBrowserFactory> getFactories() {
+        return this.factories;
+    }
+
+    public TGBrowserFactory getFactory(String type){
+        for (TGBrowserFactory factory : getFactories()) {
+            if (factory.getType().equals(type)) {
+                return factory;
+            }
+        }
 		return null;
 	}
 	
 	public void addFactory(TGBrowserFactory factory){
 		this.factories.add(factory);
-		
-		Iterator it = this.collectionInfos.iterator();
-		while(it.hasNext()){
-			TGBrowserCollectionInfo info = (TGBrowserCollectionInfo)it.next();
-			if(info.getType().equals(factory.getType())){
-				TGBrowserCollection collection = new TGBrowserCollection();
-				collection.setType(factory.getType());
-				collection.setData(factory.parseData(info.getData()));
-				addCollection(collection);
-			}
-		}
+
+        for (TGBrowserCollectionInfo info : this.collectionInfos) {
+            if (info.getType().equals(factory.getType())) {
+                TGBrowserCollection collection = new TGBrowserCollection();
+                collection.setType(factory.getType());
+                collection.setData(factory.parseData(info.getData()));
+                addCollection(collection);
+            }
+        }
 		
 		if(this.handler != null){
 			this.handler.notifyAdded();
@@ -80,8 +75,8 @@ public class TGBrowserManager {
 		this.factories.remove(factory);
 		
 		int index = 0;
-		while(index < this.collections.size()){
-			TGBrowserCollection collection = (TGBrowserCollection)this.collections.get(index);
+		while(index < getCollections().size()){
+			TGBrowserCollection collection = this.collections.get(index);
 			if(collection.getType().equals(factory.getType())){
 				removeCollection(collection);
 				continue;
@@ -96,12 +91,12 @@ public class TGBrowserManager {
 	public void addInfo(TGBrowserCollectionInfo info){
 		this.collectionInfos.add(info);
 	}
-	
-	public Iterator getCollections(){
-		return this.collections.iterator();
-	}
-	
-	public int countCollections(){
+
+    public List<TGBrowserCollection> getCollections() {
+        return this.collections;
+    }
+
+    public int countCollections(){
 		return this.collections.size();
 	}
 	
@@ -123,19 +118,17 @@ public class TGBrowserManager {
 	}
 	
 	public TGBrowserCollection getCollection(String type, TGBrowserData data ){
-		Iterator it = this.getCollections();
-		while( it.hasNext() ){
-			TGBrowserCollection collection = ( TGBrowserCollection ) it.next();
-			if( collection.getType().equals(type) && collection.getData().equals(data) ){
-				return collection;
-			}
-		}
+        for (TGBrowserCollection collection : getCollections()) {
+            if (collection.getType().equals(type) && collection.getData().equals(data)) {
+                return collection;
+            }
+        }
 		return null;
 	}
 	
 	public TGBrowserCollection getCollection(int index){
 		if(index >= 0 && index < countCollections()){
-			return (TGBrowserCollection)this.collections.get(index);
+			return this.collections.get(index);
 		}
 		return null;
 	}

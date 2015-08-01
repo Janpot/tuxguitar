@@ -7,7 +7,6 @@
 package org.herac.tuxguitar.gui.mixer;
 
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 
 import org.eclipse.swt.SWT;
@@ -52,7 +51,7 @@ public class TGMixer implements TGUpdateListener,IconLoader,LanguageLoader{
 	public static final int CHANGE_ALL = (MUTE | SOLO | VOLUME | BALANCE | CHORUS | REVERB | PHASER | TREMOLO | CHANNEL);
 	
 	protected Shell dialog;
-	private List tracks;
+	private List<TGMixerTrack> tracks;
 	private Scale volumeScale;
 	private Label volumeValueLabel;
 	private Label volumeValueTitleLabel;
@@ -60,7 +59,7 @@ public class TGMixer implements TGUpdateListener,IconLoader,LanguageLoader{
 	private int volumeValue;
 	
 	public TGMixer() {
-		this.tracks = new ArrayList();
+		this.tracks = new ArrayList<TGMixerTrack>();
 	}
 	
 	public void show() {
@@ -91,13 +90,11 @@ public class TGMixer implements TGUpdateListener,IconLoader,LanguageLoader{
 	
 	protected void loadData(){
 		this.tracks.clear();
-		Iterator it = TuxGuitar.instance().getSongManager().getSong().getTracks();
-		while (it.hasNext()) {
-			TGTrack track = (TGTrack) it.next();
-			TGMixerTrack trackMixer = new TGMixerTrack(this,track);
-			trackMixer.init(this.dialog);
-			this.tracks.add(trackMixer);
-		}
+        for (TGTrack track : TuxGuitar.instance().getSongManager().getSong().getTracks()) {
+            TGMixerTrack trackMixer = new TGMixerTrack(this, track);
+            trackMixer.init(this.dialog);
+            this.tracks.add(trackMixer);
+        }
 		Composite composite = new Composite(this.dialog, SWT.BORDER);
 		composite.setLayout(new GridLayout());
 		composite.setLayoutData(new GridData(SWT.CENTER,SWT.FILL,true,true));
@@ -170,9 +167,9 @@ public class TGMixer implements TGUpdateListener,IconLoader,LanguageLoader{
 	
 	protected void clear(){
 		Control[] controls = this.dialog.getChildren();
-		for(int i = 0;i < controls.length;i++){
-			controls[i].dispose();
-		}
+        for (Control control : controls) {
+            control.dispose();
+        }
 	}
 	
 	public boolean isDisposed() {
@@ -180,14 +177,12 @@ public class TGMixer implements TGUpdateListener,IconLoader,LanguageLoader{
 	}
 	
 	public synchronized void fireChanges(TGChannel channel,int type){
-		Iterator it = this.tracks.iterator();
-		while(it.hasNext()){
-			TGMixerTrack mixer = (TGMixerTrack)it.next();
-			if(mixer.getTrack().getChannel().getChannel() == channel.getChannel()){
-				channel.copy(mixer.getTrack().getChannel());
-			}
-			mixer.fireChanges(type);
-		}
+        for (TGMixerTrack mixer : this.tracks) {
+            if (mixer.getTrack().getChannel().getChannel() == channel.getChannel()) {
+                channel.copy(mixer.getTrack().getChannel());
+            }
+            mixer.fireChanges(type);
+        }
 		if (TuxGuitar.instance().getPlayer().isRunning()) {
 			TuxGuitar.instance().getPlayer().updateControllers();
 		}
@@ -199,11 +194,9 @@ public class TGMixer implements TGUpdateListener,IconLoader,LanguageLoader{
 	
 	public synchronized void loadProperties(boolean pack){
 		if(!isDisposed()){
-			Iterator it = this.tracks.iterator();
-			while(it.hasNext()){
-				TGMixerTrack mixer = (TGMixerTrack)it.next();
-				mixer.loadProperties();
-			}
+            for (TGMixerTrack mixer : this.tracks) {
+                mixer.loadProperties();
+            }
 			this.volumeValueTitleLabel.setText(TuxGuitar.getProperty("mixer.volume") + ":");
 			this.volumeTip = TuxGuitar.getProperty("mixer.volume");
 			this.volumeScale.setToolTipText(this.volumeTip + ": " + TuxGuitar.instance().getPlayer().getVolume());
@@ -224,23 +217,19 @@ public class TGMixer implements TGUpdateListener,IconLoader,LanguageLoader{
 	
 	public synchronized void updateItems(){
 		if(!isDisposed()){
-			Iterator it = this.tracks.iterator();
-			while(it.hasNext()){
-				TGMixerTrack mixer = (TGMixerTrack)it.next();
-				mixer.updateItems();
-			}
+            for (TGMixerTrack mixer : this.tracks) {
+                mixer.updateItems();
+            }
 		}
 	}
 	
 	public synchronized void updateValues(){
 		if(!isDisposed()){
 			this.loadVolume();
-			
-			Iterator it = this.tracks.iterator();
-			while(it.hasNext()){
-				TGMixerTrack mixer = (TGMixerTrack)it.next();
-				mixer.fireChanges(CHANGE_ALL);
-			}
+
+            for (TGMixerTrack mixer : this.tracks) {
+                mixer.fireChanges(CHANGE_ALL);
+            }
 		}
 	}
 	

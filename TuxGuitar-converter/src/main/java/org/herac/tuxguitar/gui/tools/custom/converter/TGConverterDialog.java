@@ -1,7 +1,6 @@
 package org.herac.tuxguitar.gui.tools.custom.converter;
 
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 
 import org.eclipse.swt.SWT;
@@ -44,10 +43,10 @@ public class TGConverterDialog implements LanguageLoader,IconLoader{
 	protected Button buttonOK;
 	protected Button buttonCancel;
 	
-	protected List outputFormats;
+	protected List<TGConverterFormat> outputFormats;
 	
 	public TGConverterDialog() {
-		this.outputFormats = new ArrayList();
+		this.outputFormats = new ArrayList<TGConverterFormat>();
 	}
 	
 	public void show() {
@@ -173,20 +172,16 @@ public class TGConverterDialog implements LanguageLoader,IconLoader{
 	
 	private void addFileFormats(Combo combo){
 		this.outputFormats.clear();
-		
-		Iterator outputStreams = TGFileFormatManager.instance().getOutputStreams();
-		while(outputStreams.hasNext()){
-			TGOutputStreamBase stream = (TGOutputStreamBase)outputStreams.next();
-			addFileFormats(combo, stream.getFileFormat() , stream );
-		}
-		
-		Iterator exporters = TGFileFormatManager.instance().getExporters();
-		while (exporters.hasNext()) {
-			TGRawExporter exporter = (TGRawExporter)exporters.next();
-			if( exporter instanceof TGLocalFileExporter ){
-				addFileFormats(combo, ((TGLocalFileExporter)exporter).getFileFormat() , exporter );
-			}
-		}
+
+        for (TGOutputStreamBase stream : TGFileFormatManager.instance().getOutputStreams()) {
+            addFileFormats(combo, stream.getFileFormat(), stream);
+        }
+
+        for (TGRawExporter exporter : TGFileFormatManager.instance().getExporters()) {
+            if (exporter instanceof TGLocalFileExporter) {
+                addFileFormats(combo, ((TGLocalFileExporter) exporter).getFileFormat(), exporter);
+            }
+        }
 		if(this.outputFormats.size() > 0 ){
 			combo.select( 0 );
 		}
@@ -195,25 +190,25 @@ public class TGConverterDialog implements LanguageLoader,IconLoader{
 	private void addFileFormats(Combo combo, TGFileFormat format, Object exporter ){
 		if(format.getSupportedFormats() != null){
 			String[] extensions = format.getSupportedFormats().split(TGFileFormat.EXTENSION_SEPARATOR);
-			if(extensions != null && extensions.length > 0){
-				for(int i = 0; i < extensions.length; i ++){
-					int dotIndex = extensions[i].indexOf(".");
-					if(dotIndex >= 0){
-						String exportName = format.getName();
-						if( exporter instanceof TGLocalFileExporter ){
-							exportName = ( (TGLocalFileExporter) exporter ).getExportName();
-						}
-						combo.add( exportName + " (" + extensions[i] + ")");
-						this.outputFormats.add(new TGConverterFormat( (extensions[i].substring( dotIndex )).trim() , exporter ));
-					}
-				}
+			if(extensions.length > 0){
+                for (String extension : extensions) {
+                    int dotIndex = extension.indexOf(".");
+                    if (dotIndex >= 0) {
+                        String exportName = format.getName();
+                        if (exporter instanceof TGLocalFileExporter) {
+                            exportName = ((TGLocalFileExporter) exporter).getExportName();
+                        }
+                        combo.add(exportName + " (" + extension + ")");
+                        this.outputFormats.add(new TGConverterFormat((extension.substring(dotIndex)).trim(), exporter));
+                    }
+                }
 			}
 		}
 	}
 	
 	protected TGConverterFormat getFileFormat(int index){
 		if(index >= 0 && index < this.outputFormats.size()){
-			return (TGConverterFormat)this.outputFormats.get(index);
+			return this.outputFormats.get(index);
 		}
 		return null;
 	}

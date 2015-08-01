@@ -8,7 +8,6 @@ package org.herac.tuxguitar.gui.items;
 
 import java.io.File;
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 
 import org.eclipse.swt.SWT;
@@ -68,9 +67,9 @@ public class ItemManager implements TGUpdateListener,IconLoader,LanguageLoader{
 	private Menu menu;
 	private Menu popupMenu;
 	private CoolBar coolBar;
-	private List loadedToolItems;
-	private List loadedMenuItems;
-	private List loadedPopupMenuItems;
+	private List<ToolItems> loadedToolItems;
+	private List<MenuItems> loadedMenuItems;
+	private List<MenuItems> loadedPopupMenuItems;
 	private ToolItems[] toolItems;
 	
 	private boolean layout_locked;
@@ -79,9 +78,9 @@ public class ItemManager implements TGUpdateListener,IconLoader,LanguageLoader{
 	private boolean updateCoolBarWrapIndicesEnabled;
 	
 	public ItemManager(){
-		this.loadedToolItems = new ArrayList();
-		this.loadedMenuItems = new ArrayList();
-		this.loadedPopupMenuItems = new ArrayList();
+		this.loadedToolItems = new ArrayList<ToolItems>();
+		this.loadedMenuItems = new ArrayList<MenuItems>();
+		this.loadedPopupMenuItems = new ArrayList<MenuItems>();
 		this.layout_locked = false;
 		this.setDefaultToolBars();
 		this.loadItems();
@@ -151,13 +150,13 @@ public class ItemManager implements TGUpdateListener,IconLoader,LanguageLoader{
 		if(this.coolBar != null && !this.coolBar.isDisposed()){
 			this.loadedToolItems.clear();
 			CoolItem[] items = this.coolBar.getItems();
-			for(int i = 0;i < items.length; i ++){
-				items[i].dispose();
-			}
+            for (CoolItem item : items) {
+                item.dispose();
+            }
 			Control[] controls = this.coolBar.getChildren();
-			for(int i = 0;i < controls.length; i ++){
-				controls[i].dispose();
-			}
+            for (Control control : controls) {
+                control.dispose();
+            }
 		}
 		this.coolbarVisible = false;
 	}
@@ -166,7 +165,7 @@ public class ItemManager implements TGUpdateListener,IconLoader,LanguageLoader{
 		int coolBarWidth = this.coolBar.getClientArea().width;
 		int coolItemsWidth = 0;
 		
-		List coolItemIndices = new ArrayList();
+		List<Integer> coolItemIndices = new ArrayList<Integer>();
 		
 		CoolItem[] items = this.coolBar.getItems();
 		for(int i = 0;i < items.length; i ++){
@@ -175,7 +174,7 @@ public class ItemManager implements TGUpdateListener,IconLoader,LanguageLoader{
 			
 			int nextCoolItemsWidth = ( coolItemsWidth + itemSize.x );
 			if( nextCoolItemsWidth > coolBarWidth ){
-				coolItemIndices.add( new Integer( i ) );
+				coolItemIndices.add(i);
 				nextCoolItemsWidth = itemSize.x;
 			}
 			coolItemsWidth = nextCoolItemsWidth;
@@ -183,7 +182,7 @@ public class ItemManager implements TGUpdateListener,IconLoader,LanguageLoader{
 		
 		int[] coolItemIndicesArray = new int[ coolItemIndices.size() ];
 		for(int i = 0;i < coolItemIndicesArray.length; i ++){
-			coolItemIndicesArray[i] = ((Integer)coolItemIndices.get(i)).intValue();
+			coolItemIndicesArray[i] = coolItemIndices.get(i);
 		}
 		
 		this.coolBar.setWrapIndices( coolItemIndicesArray );
@@ -223,11 +222,11 @@ public class ItemManager implements TGUpdateListener,IconLoader,LanguageLoader{
 	public void makeCoolItems(){
 		this.clearCoolBar();
 		this.readToolBars();
-		for(int i = 0; i < this.toolItems.length; i ++){
-			if(this.toolItems[i].isEnabled()){
-				this.makeToolBar(this.toolItems[i]);
-			}
-		}
+        for (ToolItems toolItem : this.toolItems) {
+            if (toolItem.isEnabled()) {
+                this.makeToolBar(toolItem);
+            }
+        }
 		this.coolbarVisible = true;
 	}
 	
@@ -252,9 +251,9 @@ public class ItemManager implements TGUpdateListener,IconLoader,LanguageLoader{
 			this.menu = new Menu(shell, SWT.BAR);
 		}
 		MenuItem[] items = this.menu.getItems();
-		for(int i = 0; i < items.length;i ++){
-			items[i].dispose();
-		}
+        for (MenuItem item : items) {
+            item.dispose();
+        }
 		
 		this.loadedMenuItems.clear();
 		this.loadedMenuItems.add(new FileMenuItem(shell,this.menu, SWT.CASCADE));
@@ -278,9 +277,9 @@ public class ItemManager implements TGUpdateListener,IconLoader,LanguageLoader{
 			this.popupMenu = new Menu(shell, SWT.POP_UP);
 		}
 		MenuItem[] items = this.popupMenu.getItems();
-		for(int i = 0; i < items.length;i ++){
-			items[i].dispose();
-		}
+        for (MenuItem item : items) {
+            item.dispose();
+        }
 		this.loadedPopupMenuItems.clear();
 		this.loadedPopupMenuItems.add(new EditMenuItem(shell,this.popupMenu, SWT.CASCADE));
 		this.loadedPopupMenuItems.add(new CompositionMenuItem(shell,this.popupMenu, SWT.CASCADE));
@@ -292,12 +291,10 @@ public class ItemManager implements TGUpdateListener,IconLoader,LanguageLoader{
 		this.showMenuItems(this.loadedPopupMenuItems);
 	}
 	
-	private void showMenuItems(List items){
-		Iterator it = items.iterator();
-		while(it.hasNext()){
-			MenuItems item = (MenuItems)it.next();
-			item.showItems();
-		}
+	private void showMenuItems(List<MenuItems> items){
+        for (MenuItems item : items) {
+            item.showItems();
+        }
 	}
 	
 	public void updateItems(){
@@ -308,12 +305,10 @@ public class ItemManager implements TGUpdateListener,IconLoader,LanguageLoader{
 		}
 	}
 	
-	public void updateItems(List items){
-		Iterator it = items.iterator();
-		while(it.hasNext()){
-			ItemBase item = (ItemBase)it.next();
-			item.update();
-		}
+	public void updateItems(List<? extends ItemBase> items){
+        for (ItemBase item : items) {
+            item.update();
+        }
 	}
 	
 	public void loadProperties(){
@@ -324,12 +319,10 @@ public class ItemManager implements TGUpdateListener,IconLoader,LanguageLoader{
 		}
 	}
 	
-	public void loadProperties(List items){
-		Iterator it = items.iterator();
-		while(it.hasNext()){
-			ItemBase item = (ItemBase)it.next();
-			item.loadProperties();
-		}
+	public void loadProperties(List<? extends ItemBase> items){
+        for (ItemBase item : items) {
+            item.loadProperties();
+        }
 	}
 	
 	public void loadIcons(){

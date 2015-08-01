@@ -9,7 +9,6 @@ package org.herac.tuxguitar.io.base;
 import java.io.BufferedOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
-import java.util.Iterator;
 
 import org.herac.tuxguitar.song.factory.TGFactory;
 import org.herac.tuxguitar.song.models.TGSong;
@@ -28,15 +27,13 @@ public class TGSongWriter {
 	
 	public void write(TGFactory factory,TGSong song,String path) throws TGFileFormatException{
 		try {
-			Iterator it = TGFileFormatManager.instance().getOutputStreams();
-			while(it.hasNext()){
-				TGOutputStreamBase writer = (TGOutputStreamBase)it.next();
-				if(isSupportedExtension(writer,path)){
-					writer.init(factory,new BufferedOutputStream(new FileOutputStream(new File(path))));
-					writer.writeSong(song);
-					return;
-				}
-			}
+            for (TGOutputStreamBase writer : TGFileFormatManager.instance().getOutputStreams()) {
+                if (isSupportedExtension(writer, path)) {
+                    writer.init(factory, new BufferedOutputStream(new FileOutputStream(new File(path))));
+                    writer.writeSong(song);
+                    return;
+                }
+            }
 		} catch (Throwable t) {
 			throw new TGFileFormatException(t);
 		}
@@ -45,10 +42,7 @@ public class TGSongWriter {
 	
 	private boolean isSupportedExtension(TGOutputStreamBase writer,String path){
 		int index = path.lastIndexOf(".");
-		if(index > 0){
-			return writer.isSupportedExtension(path.substring(index));
-		}
-		return false;
-	}
+        return index > 0 && writer.isSupportedExtension(path.substring(index));
+    }
 	
 }

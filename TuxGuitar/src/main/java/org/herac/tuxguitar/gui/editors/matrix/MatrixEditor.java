@@ -1,6 +1,5 @@
 package org.herac.tuxguitar.gui.editors.matrix;
 
-import java.util.Iterator;
 import java.util.List;
 
 import org.eclipse.swt.SWT;
@@ -406,11 +405,9 @@ public class MatrixEditor implements TGRedrawListener,IconLoader,LanguageLoader{
 		if( this.clientArea != null ){
 			TGMeasure measure = getMeasure();
 			if(measure != null){
-				Iterator it = measure.getBeats().iterator();
-				while(it.hasNext()){
-					TGBeat beat = (TGBeat)it.next();
-					paintBeat(painter, measure, beat, fromX, fromY);
-				}
+                for (TGBeat beat : measure.getBeats()) {
+                    paintBeat(painter, measure, beat, fromX, fromY);
+                }
 			}
 		}
 	}
@@ -579,27 +576,26 @@ public class MatrixEditor implements TGRedrawListener,IconLoader,LanguageLoader{
 		
 		for(int v = 0; v < beat.countVoices(); v ++){
 			TGVoice voice = beat.getVoice( v );
-			Iterator it = voice.getNotes().iterator();
-			while (it.hasNext()) {
-				TGNoteImpl note = (TGNoteImpl) it.next();
-				if (note.getRealValue() == value) {
-					caret.update(measure.getTrack().getNumber(),beat.getStart(),note.getString());
-					
-					//comienza el undoable
-					UndoableMeasureGeneric undoable = UndoableMeasureGeneric.startUndo();
-					
-					TGSongManager manager = TuxGuitar.instance().getSongManager();
-					manager.getMeasureManager().removeNote(note);
-					
-					//termia el undoable
-					TuxGuitar.instance().getUndoableManager().addEdit(undoable.endUndo());
-					TuxGuitar.instance().getFileHistory().setUnsavedFile();
-					
-					this.afterAction();
-					
-					return true;
-				}
-			}
+            for (TGNote tgNote : voice.getNotes()) {
+                TGNoteImpl note = (TGNoteImpl) tgNote;
+                if (note.getRealValue() == value) {
+                    caret.update(measure.getTrack().getNumber(), beat.getStart(), note.getString());
+
+                    //comienza el undoable
+                    UndoableMeasureGeneric undoable = UndoableMeasureGeneric.startUndo();
+
+                    TGSongManager manager = TuxGuitar.instance().getSongManager();
+                    manager.getMeasureManager().removeNote(note);
+
+                    //termia el undoable
+                    TuxGuitar.instance().getUndoableManager().addEdit(undoable.endUndo());
+                    TuxGuitar.instance().getFileHistory().setUnsavedFile();
+
+                    this.afterAction();
+
+                    return true;
+                }
+            }
 		}
 		return false;
 	}
@@ -609,54 +605,52 @@ public class MatrixEditor implements TGRedrawListener,IconLoader,LanguageLoader{
 			TGMeasure measure = getMeasure();
 			Caret caret = TuxGuitar.instance().getTablatureEditor().getTablature().getCaret();
 			
-			List strings = measure.getTrack().getStrings();
-			for(int i = 0;i < strings.size();i ++){
-				TGString string = (TGString)strings.get(i);
-				if(value >= string.getValue()){
-					boolean emptyString = true;
-					
-					for(int v = 0; v < beat.countVoices(); v ++){
-						TGVoice voice = beat.getVoice( v );
-						Iterator it = voice.getNotes().iterator();
-						while (it.hasNext()) {
-							TGNoteImpl note = (TGNoteImpl) it.next();
-							if (note.getString() == string.getNumber()) {
-								emptyString = false;
-								break;
-							}
-						}
-					}
-					if(emptyString){
-						TGSongManager manager = TuxGuitar.instance().getSongManager();
-						
-						//comienza el undoable
-						UndoableMeasureGeneric undoable = UndoableMeasureGeneric.startUndo();
-						
-						TGNote note = manager.getFactory().newNote();
-						note.setValue((value - string.getValue()));
-						note.setVelocity(caret.getVelocity());
-						note.setString(string.getNumber());
-						
-						TGDuration duration = manager.getFactory().newDuration();
-						caret.getDuration().copy(duration);
-						
-						manager.getMeasureManager().addNote(beat,note,duration,start,caret.getVoice());
-						
-						caret.moveTo(caret.getTrack(),caret.getMeasure(),note.getVoice().getBeat(),note.getString());
-						
-						//termia el undoable
-						TuxGuitar.instance().getUndoableManager().addEdit(undoable.endUndo());
-						TuxGuitar.instance().getFileHistory().setUnsavedFile();
-						
-						//reprodusco las notas en el pulso
-						caret.getSelectedBeat().play();
-						
-						this.afterAction();
-						
-						return true;
-					}
-				}
-			}
+			List<TGString> strings = measure.getTrack().getStrings();
+            for (TGString string : strings) {
+                if (value >= string.getValue()) {
+                    boolean emptyString = true;
+
+                    for (int v = 0; v < beat.countVoices(); v++) {
+                        TGVoice voice = beat.getVoice(v);
+                        for (TGNote tgNote : voice.getNotes()) {
+                            TGNoteImpl note = (TGNoteImpl) tgNote;
+                            if (note.getString() == string.getNumber()) {
+                                emptyString = false;
+                                break;
+                            }
+                        }
+                    }
+                    if (emptyString) {
+                        TGSongManager manager = TuxGuitar.instance().getSongManager();
+
+                        //comienza el undoable
+                        UndoableMeasureGeneric undoable = UndoableMeasureGeneric.startUndo();
+
+                        TGNote note = manager.getFactory().newNote();
+                        note.setValue((value - string.getValue()));
+                        note.setVelocity(caret.getVelocity());
+                        note.setString(string.getNumber());
+
+                        TGDuration duration = manager.getFactory().newDuration();
+                        caret.getDuration().copy(duration);
+
+                        manager.getMeasureManager().addNote(beat, note, duration, start, caret.getVoice());
+
+                        caret.moveTo(caret.getTrack(), caret.getMeasure(), note.getVoice().getBeat(), note.getString());
+
+                        //termia el undoable
+                        TuxGuitar.instance().getUndoableManager().addEdit(undoable.endUndo());
+                        TuxGuitar.instance().getFileHistory().setUnsavedFile();
+
+                        //reprodusco las notas en el pulso
+                        caret.getSelectedBeat().play();
+
+                        this.afterAction();
+
+                        return true;
+                    }
+                }
+            }
 		}
 		return false;
 	}
@@ -688,11 +682,11 @@ public class MatrixEditor implements TGRedrawListener,IconLoader,LanguageLoader{
 	protected int loadGrids(){
 		int grids = TuxGuitar.instance().getConfig().getIntConfigValue(TGConfigKeys.MATRIX_GRIDS);
 		// check if is valid value
-		for(int i = 0 ; i < DIVISIONS.length ; i ++ ){
-			if(grids == DIVISIONS[i]){
-				return grids;
-			}
-		}
+        for (int division : DIVISIONS) {
+            if (grids == division) {
+                return grids;
+            }
+        }
 		return DIVISIONS[1];
 	}
 	
@@ -831,9 +825,9 @@ public class MatrixEditor implements TGRedrawListener,IconLoader,LanguageLoader{
 	
 	protected void dispose(Resource[] resources){
 		if(resources != null){
-			for(int i = 0; i < resources.length; i ++){
-				dispose(resources[i]);
-			}
+            for (Resource resource : resources) {
+                dispose(resource);
+            }
 		}
 	}
 	

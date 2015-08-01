@@ -8,7 +8,6 @@ package org.herac.tuxguitar.gui.actions;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
@@ -158,10 +157,10 @@ import org.herac.tuxguitar.gui.actions.view.ShowTransportAction;
  */
 public class ActionManager {
 	
-	private Map actions;
+	private Map<String, Action> actions;
 	
 	public ActionManager(){
-		this.actions = new HashMap();
+		this.actions = new HashMap<String, Action>();
 		this.init();
 	}
 	
@@ -349,18 +348,16 @@ public class ActionManager {
 	}
 	
 	public Action getAction(String name){
-		return (Action)this.actions.get(name);
+		return this.actions.get(name);
 	}
 	
-	public List getAvailableKeyBindingActions(){
-		List availableKeyBindingActions = new ArrayList();
-		Iterator it = this.actions.keySet().iterator();
-		while(it.hasNext()){
-			String actionName = (String)it.next();
-			if(getAction(actionName).isKeyBindingAvailable()){
-				availableKeyBindingActions.add(actionName);
-			}
-		}
+	public List<String> getAvailableKeyBindingActions(){
+		List<String> availableKeyBindingActions = new ArrayList<String>();
+        for (String actionName : this.actions.keySet()) {
+            if (actions.get(actionName).isKeyBindingAvailable()) {
+                availableKeyBindingActions.add(actionName);
+            }
+        }
 		return availableKeyBindingActions;
 	}
 }

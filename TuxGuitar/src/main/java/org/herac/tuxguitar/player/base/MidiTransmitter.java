@@ -5,59 +5,52 @@ import java.util.List;
 
 public class MidiTransmitter {
 	
-	private List receivers;
+	private List<MidiReceiverItem> receivers;
 	
 	public MidiTransmitter(){
-		this.receivers = new ArrayList();
+		this.receivers = new ArrayList<MidiReceiverItem>();
 	}
 	
 	public void sendSystemReset() throws MidiPlayerException {
-		for( int i = 0 ; i < this.receivers.size() ; i ++ ){
-			MidiReceiverItem receiver = (MidiReceiverItem) this.receivers.get( i );
-			receiver.getReceiver().sendSystemReset();
-		}
+        for (MidiReceiverItem receiver : this.receivers) {
+            receiver.getReceiver().sendSystemReset();
+        }
 	}
 	
 	public void sendAllNotesOff() throws MidiPlayerException {
-		for( int i = 0 ; i < this.receivers.size() ; i ++ ){
-			MidiReceiverItem receiver = (MidiReceiverItem) this.receivers.get( i );
-			receiver.getReceiver().sendAllNotesOff();
-		}
+        for (MidiReceiverItem receiver : this.receivers) {
+            receiver.getReceiver().sendAllNotesOff();
+        }
 	}
 	
 	public void sendNoteOn(int channel, int key, int velocity) throws MidiPlayerException {
-		for( int i = 0 ; i < this.receivers.size() ; i ++ ){
-			MidiReceiverItem receiver = (MidiReceiverItem) this.receivers.get( i );
-			receiver.getReceiver().sendNoteOn(channel, key, velocity);
-		}
+        for (MidiReceiverItem receiver : this.receivers) {
+            receiver.getReceiver().sendNoteOn(channel, key, velocity);
+        }
 	}
 	
 	public void sendNoteOff(int channel, int key, int velocity) throws MidiPlayerException {
-		for( int i = 0 ; i < this.receivers.size() ; i ++ ){
-			MidiReceiverItem receiver = (MidiReceiverItem) this.receivers.get( i );
-			receiver.getReceiver().sendNoteOff(channel, key, velocity);
-		}
+        for (MidiReceiverItem receiver : this.receivers) {
+            receiver.getReceiver().sendNoteOff(channel, key, velocity);
+        }
 	}
 	
 	public void sendProgramChange(int channel, int value) throws MidiPlayerException {
-		for( int i = 0 ; i < this.receivers.size() ; i ++ ){
-			MidiReceiverItem receiver = (MidiReceiverItem) this.receivers.get( i );
-			receiver.getReceiver().sendProgramChange(channel, value);
-		}
+        for (MidiReceiverItem receiver : this.receivers) {
+            receiver.getReceiver().sendProgramChange(channel, value);
+        }
 	}
 	
 	public void sendControlChange(int channel, int controller, int value) throws MidiPlayerException {
-		for( int i = 0 ; i < this.receivers.size() ; i ++ ){
-			MidiReceiverItem receiver = (MidiReceiverItem) this.receivers.get( i );
-			receiver.getReceiver().sendControlChange(channel, controller, value);
-		}
+        for (MidiReceiverItem receiver : this.receivers) {
+            receiver.getReceiver().sendControlChange(channel, controller, value);
+        }
 	}
 	
 	public void sendPitchBend(int channel, int value) throws MidiPlayerException {
-		for( int i = 0 ; i < this.receivers.size() ; i ++ ){
-			MidiReceiverItem receiver = (MidiReceiverItem) this.receivers.get( i );
-			receiver.getReceiver().sendPitchBend(channel, value);
-		}
+        for (MidiReceiverItem receiver : this.receivers) {
+            receiver.getReceiver().sendPitchBend(channel, value);
+        }
 	}
 	
 	public void addReceiver(String id, MidiReceiver receiver){
@@ -76,12 +69,11 @@ public class MidiTransmitter {
 	
 	private MidiReceiverItem getReceiver(String id){
 		if( id != null ){
-			for( int i = 0 ; i < this.receivers.size() ; i ++ ){
-				MidiReceiverItem receiver = (MidiReceiverItem) this.receivers.get( i );
-				if( receiver.getId() != null && receiver.getId().equals( id ) ){
-					return receiver;
-				}
-			}
+            for (MidiReceiverItem receiver : this.receivers) {
+                if (receiver.getId() != null && receiver.getId().equals(id)) {
+                    return receiver;
+                }
+            }
 		}
 		return null;
 	}

@@ -2,7 +2,6 @@ package org.herac.tuxguitar.gui.system.keybindings;
 
 import java.io.File;
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 
 import org.eclipse.swt.events.KeyEvent;
@@ -16,16 +15,16 @@ import org.herac.tuxguitar.gui.util.TGFileUtils;
 
 public class KeyBindingActionManager {
 	
-	private List keyBindingsActions;
+	private List<KeyBindingAction> keyBindingsActions;
 	private KeyBindingListener listener;
 	
 	public KeyBindingActionManager(){
-		this.keyBindingsActions = new ArrayList();
+		this.keyBindingsActions = new ArrayList<KeyBindingAction>();
 		this.init();
 	}
 	
 	public void init(){
-		List enabled = KeyBindingReader.getKeyBindings(getUserFileName());
+		List<KeyBindingAction> enabled = KeyBindingReader.getKeyBindings(getUserFileName());
 		this.keyBindingsActions.addAll( (enabled != null ? enabled : KeyBindingActionDefaults.getDefaultKeyBindings()) );
 		this.listener = new KeyBindingListener();
 	}
@@ -39,13 +38,11 @@ public class KeyBindingActionManager {
 		if(action != null){
 			return action;
 		}
-		Iterator it = this.keyBindingsActions.iterator();
-		while(it.hasNext()){
-			KeyBindingAction keyBindingAction = (KeyBindingAction)it.next();
-			if(keyBindingAction.getKeyBinding() != null && kb.isSameAs( keyBindingAction.getKeyBinding() )){
-				return TuxGuitar.instance().getAction(keyBindingAction.getAction());
-			}
-		}
+        for (KeyBindingAction keyBindingAction : this.keyBindingsActions) {
+            if (keyBindingAction.getKeyBinding() != null && kb.isSameAs(keyBindingAction.getKeyBinding())) {
+                return TuxGuitar.instance().getAction(keyBindingAction.getAction());
+            }
+        }
 		return null;
 	}
 	
@@ -54,22 +51,20 @@ public class KeyBindingActionManager {
 		if(kb != null){
 			return kb;
 		}
-		Iterator it = this.keyBindingsActions.iterator();
-		while(it.hasNext()){
-			KeyBindingAction keyBindingAction = (KeyBindingAction)it.next();
-			if(action.equals( keyBindingAction.getAction() )){
-				return keyBindingAction.getKeyBinding();
-			}
-		}
+        for (KeyBindingAction keyBindingAction : this.keyBindingsActions) {
+            if (action.equals(keyBindingAction.getAction())) {
+                return keyBindingAction.getKeyBinding();
+            }
+        }
 		return null;
 	}
 	
-	public void reset(List keyBindings){
+	public void reset(List<KeyBindingAction> keyBindings){
 		this.keyBindingsActions.clear();
 		this.keyBindingsActions.addAll(keyBindings);
 	}
 	
-	public List getKeyBindingActions(){
+	public List<KeyBindingAction> getKeyBindingActions(){
 		return this.keyBindingsActions;
 	}
 	

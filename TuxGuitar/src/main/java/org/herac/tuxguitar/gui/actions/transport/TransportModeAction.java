@@ -7,7 +7,6 @@
 package org.herac.tuxguitar.gui.actions.transport;
 
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 
 import org.eclipse.swt.SWT;
@@ -246,10 +245,10 @@ public class TransportModeAction extends Action {
 	
 	private class RadioSelectionAdapter extends SelectionAdapter{
 		private Button control;
-		private List controls;
+		private List<Control> controls;
 		
 		public RadioSelectionAdapter(Button control) {
-			this.controls = new ArrayList();
+			this.controls = new ArrayList<Control>();
 			this.control = control;
 			this.control.addSelectionListener(this);
 		}
@@ -260,11 +259,9 @@ public class TransportModeAction extends Action {
 		
 		public void update(){
 			boolean enabled = this.control.getSelection();
-			Iterator it = this.controls.iterator();
-			while(it.hasNext()){
-				Control control = (Control)it.next();
-				control.setEnabled(enabled);
-			}
+            for (Control control : this.controls) {
+                control.setEnabled(enabled);
+            }
 		}
 		
 		public void widgetSelected(SelectionEvent e) {
@@ -306,7 +303,7 @@ public class TransportModeAction extends Action {
 	
 	private class MHeaderRangeStatus extends SelectionAdapter{
 		
-		private List controls;
+		private List<Control> controls;
 		private boolean enabled;
 		
 		private Button simpleMode;
@@ -314,7 +311,7 @@ public class TransportModeAction extends Action {
 		private Button customLoop;
 		
 		public MHeaderRangeStatus(Button simpleMode, Button simpleLoop, Button customLoop) {
-			this.controls = new ArrayList();
+			this.controls = new ArrayList<Control>();
 			this.enabled = false;
 			this.simpleMode = simpleMode;
 			this.simpleLoop = simpleLoop;
@@ -338,11 +335,9 @@ public class TransportModeAction extends Action {
 			}
 			
 			// Update controls
-			Iterator it = this.controls.iterator();
-			while(it.hasNext()){
-				Control control = (Control)it.next();
-				control.setEnabled( this.enabled );
-			}
+            for (Control control : this.controls) {
+                control.setEnabled(this.enabled);
+            }
 		}
 		
 		public void widgetSelected(SelectionEvent e) {
@@ -351,11 +346,11 @@ public class TransportModeAction extends Action {
 	}
 	
 	private class MHeaderCombo {
-		private List values;
+		private List<Integer> values;
 		private Combo combo;
 		
 		public MHeaderCombo( Composite parent ){
-			this.values = new ArrayList();
+			this.values = new ArrayList<Integer>();
 			this.combo = new Combo( parent, SWT.DROP_DOWN | SWT.READ_ONLY );
 			this.combo.setLayoutData(new GridData(SWT.FILL,SWT.FILL,true,true));
 		}
@@ -370,7 +365,7 @@ public class TransportModeAction extends Action {
 		}
 		
 		public void addItem( String text , int value ){
-			this.values.add( new Integer( value ) );
+			this.values.add(value);
 			this.combo.add( text );
 		}
 		
@@ -380,8 +375,8 @@ public class TransportModeAction extends Action {
 		
 		public void setValue( int value ){
 			for( int index = 0 ; index < this.values.size() ; index++ ){
-				Integer currentValue = (Integer) this.values.get( index );
-				if( currentValue != null && currentValue.intValue() == value ){
+				Integer currentValue = this.values.get( index );
+				if( currentValue != null && currentValue == value ){
 					int currentIndex = this.combo.getSelectionIndex();
 					if( currentIndex != index ){
 						this.combo.select( index );
@@ -393,9 +388,9 @@ public class TransportModeAction extends Action {
 		public int getValue(){
 			int index = this.combo.getSelectionIndex();
 			if( index >= 0 && index < this.values.size() ){
-				Integer value = (Integer) this.values.get( index );
+				Integer value = this.values.get( index );
 				if( value != null ){
-					return value.intValue();
+					return value;
 				}
 			}
 			return -1;

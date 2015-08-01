@@ -10,7 +10,6 @@ import java.io.UnsupportedEncodingException;
 import java.net.URL;
 import java.net.URLDecoder;
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 
 import org.eclipse.swt.SWT;
@@ -59,14 +58,14 @@ public class FileMenuItem extends MenuItems {
 	private MenuItem[] historyFiles;
 	private MenuItem exit;
 	
-	private List importItems;
-	private List exportItems;
+	private List<MenuItem> importItems;
+	private List<MenuItem> exportItems;
 	
 	public FileMenuItem(Shell shell,Menu parent, int style) {
 		this.fileMenuItem = new MenuItem(parent, style);
 		this.menu = new Menu(shell, SWT.DROP_DOWN);
-		this.importItems = new ArrayList();
-		this.exportItems = new ArrayList();
+		this.importItems = new ArrayList<MenuItem>();
+		this.exportItems = new ArrayList<MenuItem>();
 	}
 	
 	public void showItems(){
@@ -150,88 +149,80 @@ public class FileMenuItem extends MenuItems {
 	}
 	
 	private void addImporters(){
-		List importersRaw = new ArrayList();
-		List importersFile = new ArrayList();
-		
-		Iterator importers = TGFileFormatManager.instance().getImporters();
-		while(importers.hasNext()){
-			TGRawImporter importer = (TGRawImporter)importers.next();
-			if( importer instanceof TGLocalFileImporter ){
-				importersFile.add( importer );
-			}else{
-				importersRaw.add( importer );
-			}
-		}
-		
-		for( int i = 0 ; i < importersFile.size() ; i ++ ){
-			TGRawImporter importer = (TGRawImporter)importersFile.get( i );
-			MenuItem item = new MenuItem(this.importMenu, SWT.PUSH);
-			item.setData(importer);
-			item.addSelectionListener(TuxGuitar.instance().getAction(ImportSongAction.NAME));
-			this.importItems.add( item );
-		}
+		List<TGRawImporter> importersRaw = new ArrayList<TGRawImporter>();
+		List<TGRawImporter> importersFile = new ArrayList<TGRawImporter>();
+
+        for (TGRawImporter importer : TGFileFormatManager.instance().getImporters()) {
+            if (importer instanceof TGLocalFileImporter) {
+                importersFile.add(importer);
+            } else {
+                importersRaw.add(importer);
+            }
+        }
+
+        for (TGRawImporter importer : importersFile) {
+            MenuItem item = new MenuItem(this.importMenu, SWT.PUSH);
+            item.setData(importer);
+            item.addSelectionListener(TuxGuitar.instance().getAction(ImportSongAction.NAME));
+            this.importItems.add(item);
+        }
 		
 		//--SEPARATOR--
 		if( !importersFile.isEmpty() && !importersRaw.isEmpty() ){
 			new MenuItem(this.importMenu, SWT.SEPARATOR);
 		}
-		
-		for( int i = 0 ; i < importersRaw.size() ; i ++ ){
-			TGRawImporter importer = (TGRawImporter)importersRaw.get( i );
-			MenuItem item = new MenuItem(this.importMenu, SWT.PUSH);
-			item.setData(importer);
-			item.addSelectionListener(TuxGuitar.instance().getAction(ImportSongAction.NAME));
-			this.importItems.add( item );
-		}
+
+        for (TGRawImporter importer : importersRaw) {
+            MenuItem item = new MenuItem(this.importMenu, SWT.PUSH);
+            item.setData(importer);
+            item.addSelectionListener(TuxGuitar.instance().getAction(ImportSongAction.NAME));
+            this.importItems.add(item);
+        }
 	}
 	
 	private void addExporters(){
-		List exportersRaw = new ArrayList();
-		List exportersFile = new ArrayList();
-		
-		Iterator exporters = TGFileFormatManager.instance().getExporters();
-		while(exporters.hasNext()){
-			TGRawExporter exporter = (TGRawExporter)exporters.next();
-			if( exporter instanceof TGLocalFileExporter ){
-				exportersFile.add( exporter );
-			}else{
-				exportersRaw.add( exporter );
-			}
-		}
-		
-		for( int i = 0 ; i < exportersFile.size() ; i ++ ){
-			TGRawExporter exporter = (TGRawExporter)exportersFile.get( i );
-			MenuItem item = new MenuItem(this.exportMenu, SWT.PUSH);
-			item.setData(exporter);
-			item.addSelectionListener(TuxGuitar.instance().getAction(ExportSongAction.NAME));
-			this.exportItems.add( item );
-		}
+		List<TGRawExporter> exportersRaw = new ArrayList<TGRawExporter>();
+		List<TGRawExporter> exportersFile = new ArrayList<TGRawExporter>();
+
+        for (TGRawExporter exporter : TGFileFormatManager.instance().getExporters()) {
+            if (exporter instanceof TGLocalFileExporter) {
+                exportersFile.add(exporter);
+            } else {
+                exportersRaw.add(exporter);
+            }
+        }
+
+        for (TGRawExporter exporter : exportersFile) {
+            MenuItem item = new MenuItem(this.exportMenu, SWT.PUSH);
+            item.setData(exporter);
+            item.addSelectionListener(TuxGuitar.instance().getAction(ExportSongAction.NAME));
+            this.exportItems.add(item);
+        }
 		
 		//--SEPARATOR--
 		if( !exportersFile.isEmpty() && !exportersRaw.isEmpty() ){
 			new MenuItem(this.exportMenu, SWT.SEPARATOR);
 		}
-		
-		for( int i = 0 ; i < exportersRaw.size() ; i ++ ){
-			TGRawExporter exporter = (TGRawExporter)exportersRaw.get( i );
-			MenuItem item = new MenuItem(this.exportMenu, SWT.PUSH);
-			item.setData(exporter);
-			item.addSelectionListener(TuxGuitar.instance().getAction(ExportSongAction.NAME));
-			this.exportItems.add( item );
-		}
+
+        for (TGRawExporter exporter : exportersRaw) {
+            MenuItem item = new MenuItem(this.exportMenu, SWT.PUSH);
+            item.setData(exporter);
+            item.addSelectionListener(TuxGuitar.instance().getAction(ExportSongAction.NAME));
+            this.exportItems.add(item);
+        }
 	}
 	
 	private void disposeHistoryFiles(){
-		for(int i = 0;i < this.historyFiles.length; i++){
-			this.historyFiles[i].dispose();
-		}
+        for (MenuItem historyFile : this.historyFiles) {
+            historyFile.dispose();
+        }
 	}
 	
 	private void updateHistoryFiles(){
-		List urls = TuxGuitar.instance().getFileHistory().getURLs();
+		List<URL> urls = TuxGuitar.instance().getFileHistory().getURLs();
 		this.historyFiles = new MenuItem[urls.size()];
 		for(int i = 0;i < this.historyFiles.length; i++){
-			URL url = (URL)urls.get(i);
+			URL url = urls.get(i);
 			this.historyFiles[i] = new MenuItem(this.historyMenu, SWT.PUSH);
 			this.historyFiles[i].setText(decode(url.toString()));
 			this.historyFiles[i].setData(url);
@@ -271,29 +262,25 @@ public class FileMenuItem extends MenuItems {
 		
 		if( this.importItem != null ){
 			setMenuItemTextAndAccelerator(this.importItem, "file.import", ImportSongAction.NAME);
-			
-			Iterator importItems = this.importItems.iterator();
-			while(importItems.hasNext()){
-				MenuItem item = (MenuItem)importItems.next();
-				if( item.getData() instanceof TGLocalFileImporter ){
-					item.setText(TuxGuitar.getProperty("file.import") + " " + ((TGRawImporter)item.getData()).getImportName());
-				}else if( item.getData() instanceof TGRawImporter ){
-					item.setText(((TGRawImporter)item.getData()).getImportName());
-				}
-			}
+
+            for (MenuItem item : this.importItems) {
+                if (item.getData() instanceof TGLocalFileImporter) {
+                    item.setText(TuxGuitar.getProperty("file.import") + " " + ((TGRawImporter) item.getData()).getImportName());
+                } else if (item.getData() instanceof TGRawImporter) {
+                    item.setText(((TGRawImporter) item.getData()).getImportName());
+                }
+            }
 		}
 		if( this.exportItem != null ){
 			setMenuItemTextAndAccelerator(this.exportItem, "file.export", ExportSongAction.NAME);
-			
-			Iterator exportItems = this.exportItems.iterator();
-			while(exportItems.hasNext()){
-				MenuItem item = (MenuItem)exportItems.next();
-				if( item.getData() instanceof TGLocalFileExporter ){
-					item.setText(TuxGuitar.getProperty("file.export") + " " + ((TGRawExporter)item.getData()).getExportName());
-				}else if( item.getData() instanceof TGRawExporter ){
-					item.setText(((TGRawExporter)item.getData()).getExportName());
-				}
-			}
+
+            for (MenuItem item : this.exportItems) {
+                if (item.getData() instanceof TGLocalFileExporter) {
+                    item.setText(TuxGuitar.getProperty("file.export") + " " + ((TGRawExporter) item.getData()).getExportName());
+                } else if (item.getData() instanceof TGRawExporter) {
+                    item.setText(((TGRawExporter) item.getData()).getExportName());
+                }
+            }
 		}
 	}
 	

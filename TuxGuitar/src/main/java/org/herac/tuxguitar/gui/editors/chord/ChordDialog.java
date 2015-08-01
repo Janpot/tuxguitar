@@ -6,7 +6,6 @@
  */
 package org.herac.tuxguitar.gui.editors.chord;
 
-import java.util.Iterator;
 import java.util.List;
 
 import org.eclipse.swt.SWT;
@@ -205,11 +204,9 @@ public class ChordDialog {
 	
 	private int[] findCurrentTuning(TGTrack track){
 		int[] tuning = new int[track.stringCount()];
-		Iterator it = track.getStrings().iterator();
-		while(it.hasNext()){
-			TGString string = (TGString)it.next();
-			tuning[(tuning.length - string.getNumber())] = string.getValue();
-		}
+        for (TGString string : track.getStrings()) {
+            tuning[(tuning.length - string.getNumber())] = string.getValue();
+        }
 		return tuning;
 	}
 	
@@ -219,32 +216,28 @@ public class ChordDialog {
 		if(chord == null){
 			chord = manager.getFactory().newChord(measure.getTrack().stringCount());
 			chord.setFirstFret(1);
-			List notes = manager.getMeasureManager().getNotes(measure, start);
+			List<TGNote> notes = manager.getMeasureManager().getNotes(measure, start);
 			if(!notes.isEmpty()){
 				int maxValue = -1;
 				int minValue = -1;
 				
 				//verifico el first fret
-				Iterator it = notes.iterator();
-				while(it.hasNext()){
-					TGNote note = (TGNote)it.next(); 
-					if(maxValue < 0 || maxValue < note.getValue()){
-						maxValue = note.getValue();
-					}
-					if(note.getValue() > 0 && (minValue < 0 || minValue > note.getValue())){
-						minValue = note.getValue();
-					}
-				}
+                for (TGNote note : notes) {
+                    if (maxValue < 0 || maxValue < note.getValue()) {
+                        maxValue = note.getValue();
+                    }
+                    if (note.getValue() > 0 && (minValue < 0 || minValue > note.getValue())) {
+                        minValue = note.getValue();
+                    }
+                }
 				if(maxValue > TGChordImpl.MAX_FRETS  && minValue > 0){
 					chord.setFirstFret((short)(minValue));
 				}
 				
 				//agrego los valores
-				it = notes.iterator();
-				while(it.hasNext()){
-					TGNote note = (TGNote)it.next();
-					chord.addFretValue( ( note.getString() - 1) , note.getValue());
-				}
+                for (TGNote note : notes) {
+                    chord.addFretValue((note.getString() - 1), note.getValue());
+                }
 			}
 		}
 		return chord;

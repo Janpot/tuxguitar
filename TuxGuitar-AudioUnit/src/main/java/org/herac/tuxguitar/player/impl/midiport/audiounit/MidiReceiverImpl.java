@@ -5,15 +5,16 @@ import java.util.Collections;
 import java.util.List;
 
 import org.herac.tuxguitar.player.base.MidiControllers;
+import org.herac.tuxguitar.player.base.MidiOutputPort;
 import org.herac.tuxguitar.player.base.MidiReceiver;
 
 public class MidiReceiverImpl extends MidiReceiverJNI implements MidiReceiver{
 	private boolean open; // unncessary
     private boolean connected;	
-	private List ports;
+	private List<MidiOutputPort> ports;
 	
 	public MidiReceiverImpl(){
-		this.ports = new ArrayList();	
+		this.ports = new ArrayList<MidiOutputPort>();
         this.connected = false;
 	}
 
@@ -54,13 +55,13 @@ public class MidiReceiverImpl extends MidiReceiverJNI implements MidiReceiver{
 		}
 	}		
 		
-	public List listPorts(){
+	public List<MidiOutputPort> listPorts(){
 		if(isOpen()){
 			this.ports.clear();
 			this.ports.add(new MidiPortImpl(this, "AudioUnit graph midi playback" , "audiounit" ));
 			return this.ports;
 		}
-		return Collections.EMPTY_LIST;
+		return Collections.emptyList();
 	}		
 
 	public void sendSystemReset() {

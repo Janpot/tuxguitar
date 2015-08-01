@@ -17,8 +17,8 @@ public class UndoableTrackChannel implements UndoableEdit{
 	private int doAction;
 	private UndoableCaretHelper undoCaret;
 	private UndoableCaretHelper redoCaret;
-	private List undoChannels;
-	private List redoChannels;
+	private List<TGChannel> undoChannels;
+	private List<TGChannel> redoChannels;
 	
 	private UndoableTrackChannel(){
 		super();
@@ -30,7 +30,7 @@ public class UndoableTrackChannel implements UndoableEdit{
 		}
 		TGSong song = TuxGuitar.instance().getSongManager().getSong();
 		for( int i = 0; i < this.redoChannels.size(); i ++){
-			TGChannel channel = (TGChannel)this.redoChannels.get(i);
+			TGChannel channel = this.redoChannels.get(i);
 			TGTrack track = song.getTrack(i);
 			channel.copy( track.getChannel() );
 		}
@@ -51,7 +51,7 @@ public class UndoableTrackChannel implements UndoableEdit{
 		}
 		TGSong song = TuxGuitar.instance().getSongManager().getSong();
 		for( int i = 0; i < this.undoChannels.size(); i ++){
-			TGChannel channel = (TGChannel)this.undoChannels.get(i);
+			TGChannel channel = this.undoChannels.get(i);
 			TGTrack track = song.getTrack(i);
 			channel.copy( track.getChannel() );
 		}
@@ -83,7 +83,7 @@ public class UndoableTrackChannel implements UndoableEdit{
 		UndoableTrackChannel undoable = new UndoableTrackChannel();
 		undoable.doAction = UNDO_ACTION;
 		undoable.undoCaret = new UndoableCaretHelper();
-		undoable.undoChannels = new ArrayList();
+		undoable.undoChannels = new ArrayList<TGChannel>();
 		
 		for( int i = 0; i < tracks; i ++){
 			TGTrack track = song.getTrack(i);
@@ -98,7 +98,7 @@ public class UndoableTrackChannel implements UndoableEdit{
 		int tracks = song.countTracks();
 		
 		this.redoCaret = new UndoableCaretHelper();
-		this.redoChannels = new ArrayList();
+		this.redoChannels = new ArrayList<TGChannel>();
 		
 		for( int i = 0; i < tracks; i ++){
 			TGTrack track = song.getTrack(i);

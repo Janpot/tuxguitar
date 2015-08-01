@@ -20,7 +20,7 @@ public class ScaleReader {
 	private static final String NAME_ATTRIBUTE = "name";
 	private static final String KEYS_ATTRIBUTE = "keys";
 	
-	public void loadScales(List scales,InputStream stream){
+	public void loadScales(List<ScaleInfo> scales,InputStream stream){
 		try{
 			if ( stream != null ){
 				Document doc = getDocument(stream);
@@ -32,16 +32,14 @@ public class ScaleReader {
 	}
 	
 	private static Document getDocument(InputStream stream) throws ParserConfigurationException, SAXException, IOException {
-		Document document = null;
 		DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
 		
 		DocumentBuilder builder = factory.newDocumentBuilder();
-		document = builder.parse(stream);
-		
-		return document;
+
+        return builder.parse(stream);
 	}
 	
-	private static void loadScales(List scales,Node node){
+	private static void loadScales(List<ScaleInfo> scales,Node node){
 		NodeList nodeList = node.getChildNodes();
 		for (int i = 0; i < nodeList.getLength(); i++) {
 			Node child = nodeList.item(i);

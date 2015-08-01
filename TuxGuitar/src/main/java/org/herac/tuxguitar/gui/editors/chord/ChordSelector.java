@@ -19,6 +19,7 @@ import org.eclipse.swt.widgets.List;
 import org.herac.tuxguitar.gui.TuxGuitar;
 import org.herac.tuxguitar.gui.helper.SyncThread;
 import org.herac.tuxguitar.gui.util.TGMusicKeyUtils;
+import org.herac.tuxguitar.song.models.TGChord;
 import org.herac.tuxguitar.util.TGSynchronizer;
 
 /**
@@ -116,40 +117,39 @@ public class ChordSelector extends Composite{
 			this.chordList.add( ChordDatabase.get(i).getName() );
 		}
 		/*
-		Iterator chordInfo = ChordCreatorUtil.getChordData().getChords().iterator();
-		while(chordInfo.hasNext()) {
-			this.chordList.add( ((ChordDatabase.ChordInfo)chordInfo.next()).getName() );
+		for (ChordDatabase.ChordInfo info: ChordCreatorUtil.getChordData().getChords()) {
+			this.chordList.add(info.getName());
 		}
 		*/
 		
 		this.chordList.setSelection(0);
 		
 		String[] alterationNames = getAlterationNames();
-		for(int i = 0;i < alterationNames.length;i++){
-			this.alterationList.add(alterationNames[i]);
-		}
+        for (String alterationName : alterationNames) {
+            this.alterationList.add(alterationName);
+        }
 		this.alterationList.setSelection(0);
 		
 		String[] plusMinus = this.getPlusMinus("");
-		for(int i = 0;i < plusMinus.length;i++){
-			this.plusMinusList.add(plusMinus[i]);
-		}
+        for (String plusMinu : plusMinus) {
+            this.plusMinusList.add(plusMinu);
+        }
 		this.plusMinusList.setSelection(0);
 		
 		String[] plus5Minus = this.getPlusMinus("/5");
-		for(int i = 0;i < plus5Minus.length;i++){
-			this._5List.add(plus5Minus[i]);
-		}
+        for (String plus5Minu : plus5Minus) {
+            this._5List.add(plus5Minu);
+        }
 		this._5List.setSelection(0);
 		String[] plus9Minus = this.getPlusMinus("/9");
-		for(int i = 0;i < plus9Minus.length;i++){
-			this._9List.add(plus9Minus[i]);
-		}
+        for (String plus9Minu : plus9Minus) {
+            this._9List.add(plus9Minu);
+        }
 		this._9List.setSelection(0);
 		String[] plus11Minus = this.getPlusMinus("/11");
-		for(int i = 0;i < plus11Minus.length;i++){
-			this._11List.add(plus11Minus[i]);
-		}
+        for (String plus11Minu : plus11Minus) {
+            this._11List.add(plus11Minu);
+        }
 		this._11List.setSelection(0);
 		
 		// LISTENERS
@@ -334,10 +334,10 @@ public class ChordSelector extends Composite{
 		// update the list
 		this.tonicList.removeAll();
 		this.bassCombo.removeAll();
-		for(int i = 0;i < names.length;i++){
-			this.tonicList.add(names[i]);
-			this.bassCombo.add(names[i]);
-		}
+        for (String name : names) {
+            this.tonicList.add(name);
+            this.bassCombo.add(name);
+        }
 		this.tonicList.setSelection(indexL);
 		this.bassCombo.select(indexC);
 	}
@@ -366,7 +366,7 @@ public class ChordSelector extends Composite{
 	protected void showChord(){
 		TuxGuitar.instance().loadCursor(getShell(),SWT.CURSOR_WAIT);
 		ChordCreatorListener listener = new ChordCreatorListener() {
-			public void notifyChords(final ChordCreatorUtil instance,final java.util.List chords) {
+			public void notifyChords(final ChordCreatorUtil instance,final java.util.List<TGChord> chords) {
 				try {
 					TGSynchronizer.instance().addRunnable(new TGSynchronizer.TGRunnable() {
 						public void run() {

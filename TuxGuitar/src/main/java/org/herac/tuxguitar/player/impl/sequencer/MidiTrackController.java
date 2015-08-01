@@ -8,13 +8,13 @@ import org.herac.tuxguitar.player.base.MidiPlayerException;
 public class MidiTrackController {
 	
 	
-	private List tracks;
+	private List<MidiTrack> tracks;
 	private MidiSequencerImpl sequencer;
 	private boolean anySolo;
 	
 	public MidiTrackController(MidiSequencerImpl sequencer){
 		this.sequencer = sequencer;
-		this.tracks = new ArrayList();
+		this.tracks = new ArrayList<MidiTrack>();
 		this.anySolo = false;
 	}
 	
@@ -31,18 +31,17 @@ public class MidiTrackController {
 	
 	public void checkAnySolo(){
 		this.anySolo = false;
-		for(int i = 0; i < this.tracks.size(); i ++){
-			MidiTrack track = (MidiTrack)this.tracks.get(i);
-			if(track.isSolo()){
-				this.anySolo = true;
-				break;
-			}
-		}
+        for (MidiTrack track : this.tracks) {
+            if (track.isSolo()) {
+                this.anySolo = true;
+                break;
+            }
+        }
 	}
 	
 	public void setSolo(int index,boolean solo) throws MidiPlayerException{
 		if(index >= 0 && index < this.tracks.size()){
-			MidiTrack track = (MidiTrack)this.tracks.get(index);
+			MidiTrack track = this.tracks.get(index);
 			track.setSolo(solo);
 			checkAnySolo();
 			if(track.isSolo()){
@@ -54,7 +53,7 @@ public class MidiTrackController {
 	
 	public void setMute(int index,boolean mute) throws MidiPlayerException{
 		if(index >= 0 && index < this.tracks.size()){
-			MidiTrack track = (MidiTrack)this.tracks.get(index);
+			MidiTrack track = this.tracks.get(index);
 			track.setMute(mute);
 			if(track.isMute()){
 				setSolo(index,false);
@@ -65,7 +64,7 @@ public class MidiTrackController {
 	
 	public boolean isSolo(int index){
 		if(index >= 0 && index < this.tracks.size()){
-			MidiTrack track = (MidiTrack)this.tracks.get(index);
+			MidiTrack track = this.tracks.get(index);
 			return track.isSolo();
 		}
 		return false;
@@ -73,7 +72,7 @@ public class MidiTrackController {
 	
 	public boolean isMute(int index){
 		if(index >= 0 && index < this.tracks.size()){
-			MidiTrack track = (MidiTrack)this.tracks.get(index);
+			MidiTrack track = this.tracks.get(index);
 			return track.isMute();
 		}
 		return false;

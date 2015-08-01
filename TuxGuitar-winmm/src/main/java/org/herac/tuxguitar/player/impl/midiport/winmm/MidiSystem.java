@@ -1,23 +1,25 @@
 package org.herac.tuxguitar.player.impl.midiport.winmm;
 
+import org.herac.tuxguitar.player.base.MidiOutputPort;
+
 import java.util.ArrayList;
 import java.util.List;
 
 public class MidiSystem{
 	
-	private static final String JNI_LIBRARY_NAME = new String("tuxguitar-winmm-jni");
+	private static final String JNI_LIBRARY_NAME = "tuxguitar-winmm-jni";
 	
 	static{
 		System.loadLibrary(JNI_LIBRARY_NAME);
 	}
 	
 	private long instance;
-	private List ports;
+	private List<MidiOutputPort> ports;
 	private MidiOutputPortImpl connection;
 	
 	public MidiSystem() {
 		this.instance = malloc();
-		this.ports = new ArrayList();
+		this.ports = new ArrayList<MidiOutputPort>();
 		this.connection = null;
 	}
 	
@@ -28,7 +30,7 @@ public class MidiSystem{
 		}
 	}
 	
-	public List findPorts(){
+	public List<MidiOutputPort> findPorts(){
 		this.ports.clear();
 		if(this.instance != 0){
 			this.findPorts(this.instance);

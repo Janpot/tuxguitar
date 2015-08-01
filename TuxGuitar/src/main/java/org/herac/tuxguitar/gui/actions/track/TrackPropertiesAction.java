@@ -66,7 +66,7 @@ public class TrackPropertiesAction extends Action {
 	protected Shell dialog;
 	protected Text nameText;
 	protected TGColor trackColor;
-	protected List tempStrings;
+	protected List<TGString> tempStrings;
 	protected Button stringTransposition;
 	protected Button stringTranspositionTryKeepString;
 	protected Button stringTranspositionApplyToChords;
@@ -382,7 +382,7 @@ public class TrackPropertiesAction extends Action {
 		
 		final String trackName = this.nameText.getText();
 		
-		final List strings = new ArrayList();
+		final List<TGString> strings = new ArrayList<TGString>();
 		for (int i = 0; i < this.stringCount; i++) {
 			strings.add(TGSongManager.newString(getSongManager().getFactory(),(i + 1), this.stringCombos[i].getSelectionIndex()));
 		}
@@ -486,30 +486,28 @@ public class TrackPropertiesAction extends Action {
 		return ((track.getChannel().getInstrument() != instrument) || (track.isPercussionTrack() != percussion));
 	}
 	
-	protected boolean hasTuningChanges(TGTrackImpl track,List newStrings){
-		List oldStrings = track.getStrings();
+	protected boolean hasTuningChanges(TGTrackImpl track,List<TGString> newStrings){
+		List<TGString> oldStrings = track.getStrings();
 		//check the number of strings
 		if(oldStrings.size() != newStrings.size()){
 			return true;
 		}
 		//check the tuning of strings
-		for(int i = 0;i < oldStrings.size();i++){
-			TGString oldString = (TGString)oldStrings.get(i);
-			boolean stringExists = false;
-			for(int j = 0;j < newStrings.size();j++){
-				TGString newString = (TGString)newStrings.get(j);
-				if(newString.isEqual(oldString)){
-					stringExists = true;
-				}
-			}
-			if(!stringExists){
-				return true;
-			}
-		}
+        for (TGString oldString : oldStrings) {
+            boolean stringExists = false;
+            for (TGString newString : newStrings) {
+                if (newString.isEqual(oldString)) {
+                    stringExists = true;
+                }
+            }
+            if (!stringExists) {
+                return true;
+            }
+        }
 		return false;
 	}
 	
-	protected void updateTrackTunings(TGTrackImpl track, List strings, boolean transposeStrings , boolean transposeTryKeepString , boolean transposeApplyToChords ){
+	protected void updateTrackTunings(TGTrackImpl track, List<TGString> strings, boolean transposeStrings , boolean transposeTryKeepString , boolean transposeApplyToChords ){
 		int[] transpositions = getStringTranspositions(track, strings);
 		getSongManager().getTrackManager().changeInstrumentStrings(track,strings);
 		if( transposeStrings ){
@@ -517,7 +515,7 @@ public class TrackPropertiesAction extends Action {
 		}
 	}
 	
-	protected int[] getStringTranspositions(TGTrackImpl track, List newStrings ){
+	protected int[] getStringTranspositions(TGTrackImpl track, List<TGString> newStrings ){
 		int[] transpositions = new int[ newStrings.size() ];
 		
 		TGString newString = null;
@@ -530,13 +528,12 @@ public class TrackPropertiesAction extends Action {
 					break;
 				}
 			}
-			for( int i = 0; i < newStrings.size() ; i ++ ){
-				TGString string = (TGString)newStrings.get( i );
-				if( string.getNumber() == (index + 1) ){
-					newString = string;
-					break;
-				}
-			}
+            for (TGString string : newStrings) {
+                if (string.getNumber() == (index + 1)) {
+                    newString = string;
+                    break;
+                }
+            }
 			if( oldString != null && newString != null ){
 				transpositions[ index ] = (oldString.getValue() - newString.getValue());
 			}else{
@@ -566,7 +563,7 @@ public class TrackPropertiesAction extends Action {
 	
 	protected void updateTuningGroup(boolean enabled) {
 		for (int i = 0; i < this.tempStrings.size(); i++) {
-			TGString string = (TGString)this.tempStrings.get(i);
+			TGString string = this.tempStrings.get(i);
 			this.stringCombos[i].select(string.getValue());
 			this.stringCombos[i].setVisible(true);
 			this.stringCombos[i].setEnabled(enabled);
@@ -582,12 +579,11 @@ public class TrackPropertiesAction extends Action {
 		this.stringTranspositionTryKeepString.setEnabled(enabled && this.stringTransposition.getSelection());
 	}
 	
-	protected void initTempStrings(List realStrings) {
-		this.tempStrings = new ArrayList();
-		for (int i = 0; i < realStrings.size(); i++) {
-			TGString realString = (TGString) realStrings.get(i);
-			this.tempStrings.add(realString.clone(getSongManager().getFactory()));
-		}
+	protected void initTempStrings(List<TGString> realStrings) {
+		this.tempStrings = new ArrayList<TGString>();
+        for (TGString realString : realStrings) {
+            this.tempStrings.add(realString.clone(getSongManager().getFactory()));
+        }
 	}
 	
 	protected void setDefaultTuning() {

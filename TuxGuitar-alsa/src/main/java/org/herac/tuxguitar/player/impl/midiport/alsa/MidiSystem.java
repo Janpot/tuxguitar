@@ -1,11 +1,13 @@
 package org.herac.tuxguitar.player.impl.midiport.alsa;
 
+import org.herac.tuxguitar.player.base.MidiOutputPort;
+
 import java.util.ArrayList;
 import java.util.List;
 
 public class MidiSystem{
 	
-	private static final String JNI_LIBRARY_NAME = new String("tuxguitar-alsa-jni");
+	private static final String JNI_LIBRARY_NAME = "tuxguitar-alsa-jni";
 	
 	static{
 		System.loadLibrary(JNI_LIBRARY_NAME);
@@ -13,12 +15,12 @@ public class MidiSystem{
 	
 	private long instance;
 	private boolean open;
-	private List ports;
+	private List<MidiOutputPort> ports;
 	
 	public MidiSystem() {
 		this.instance = malloc();
 		this.open = false;
-		this.ports = new ArrayList();
+		this.ports = new ArrayList<MidiOutputPort>();
 	}
 	
 	public boolean isOpen(){
@@ -46,7 +48,7 @@ public class MidiSystem{
 		}
 	}
 	
-	public List findPorts(){
+	public List<MidiOutputPort> findPorts(){
 		this.ports.clear();
 		if(this.instance != 0 && this.open){
 			this.findPorts(this.instance);

@@ -16,7 +16,7 @@ import org.herac.tuxguitar.player.impl.jsa.utils.MidiConfigUtils;
 
 public class MidiPluginList extends TGPluginList implements TGPluginSetup{
 	
-	protected List getPlugins() {
+	protected List loadPlugins() {
 		List plugins = new ArrayList();
 		plugins.add(new TGMidiOutputPortProviderPlugin() {
 			protected MidiOutputPortProvider getProvider() {

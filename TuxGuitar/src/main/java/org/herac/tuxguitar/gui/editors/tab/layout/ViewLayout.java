@@ -7,7 +7,6 @@
 package org.herac.tuxguitar.gui.editors.tab.layout;
 
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 
 import org.eclipse.swt.graphics.Color;
@@ -81,7 +80,7 @@ public abstract class ViewLayout {
 	private boolean bufferEnabled;
 	private boolean playModeEnabled;
 	
-	private List trackPositions;
+	private List<TrackPosition> trackPositions;
 	
 	private TGResources resources;
 	
@@ -91,7 +90,7 @@ public abstract class ViewLayout {
 	
 	public ViewLayout(Tablature tablature,int style, float scale){
 		this.tablature = tablature;
-		this.trackPositions = new ArrayList();
+		this.trackPositions = new ArrayList<TrackPosition>();
 		this.playModeEnabled = false;
 		this.resources = new TGResources(this);
 		this.style = style;
@@ -178,13 +177,12 @@ public abstract class ViewLayout {
 		header.update(this, measureIndex);
 		for (int trackIdx = 0; trackIdx < trackCount; trackIdx++) {
 			TGTrackImpl track = (TGTrackImpl)getSongManager().getSong().getTrack(trackIdx);
-			TGMeasureImpl measure = null;
-			measure =  (TGMeasureImpl) track.getMeasure(measureIndex);
+			TGMeasureImpl measure = (TGMeasureImpl) track.getMeasure(measureIndex);
 			measure.create(this);
 		}
 		for (int trackIdx = 0; trackIdx < trackCount; trackIdx++) {
 			TGTrackImpl track = (TGTrackImpl)getSongManager().getSong().getTrack(trackIdx);
-			TGMeasureImpl measure =  (TGMeasureImpl) track.getMeasure(measureIndex);
+			TGMeasureImpl measure = (TGMeasureImpl) track.getMeasure(measureIndex);
 			measure.update(this);
 		}
 		updateCaret();
@@ -266,8 +264,7 @@ public abstract class ViewLayout {
 	protected float checkScale(){
 		float v1 = ((this.style & DISPLAY_SCORE) != 0 ? (getScoreLineSpacing() * 1.25f ) : 0 );
 		float v2 = ((this.style & DISPLAY_TABLATURE) != 0 ? getStringSpacing() : 0 );
-		float scale = (Math.max(v1,v2) / 10.0f);
-		return scale;
+        return Math.max(v1,v2) / 10.0f;
 	}
 	
 	protected void checkDefaultSpacing(TGTrackSpacing ts){
@@ -829,16 +826,14 @@ public abstract class ViewLayout {
 	public TrackPosition getTrackPositionAt(int y){
 		TrackPosition trackPos = null;
 		int minorDistance = 0;
-		
-		Iterator it = this.trackPositions.iterator();
-		while(it.hasNext()){
-			TrackPosition pos = (TrackPosition)it.next();
-			int distanceY = Math.min(Math.abs(y - (pos.getPosY())), Math.abs(y - (pos.getPosY() + pos.getHeight() - 10)));
-			if(trackPos == null || distanceY < minorDistance){
-				trackPos = pos;
-				minorDistance = distanceY;
-			}
-		}
+
+        for (TrackPosition pos : this.trackPositions) {
+            int distanceY = Math.min(Math.abs(y - (pos.getPosY())), Math.abs(y - (pos.getPosY() + pos.getHeight() - 10)));
+            if (trackPos == null || distanceY < minorDistance) {
+                trackPos = pos;
+                minorDistance = distanceY;
+            }
+        }
 		return trackPos;
 	}
 	

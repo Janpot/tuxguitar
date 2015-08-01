@@ -10,7 +10,7 @@ import org.herac.tuxguitar.player.impl.midiport.fluidsynth.type.StringRef;
 
 public class MidiSynth {
 	
-	private static final String JNI_LIBRARY_NAME = new String("tuxguitar-fluidsynth-jni");
+	private static final String JNI_LIBRARY_NAME = "tuxguitar-fluidsynth-jni";
 	
 	static{
 		System.loadLibrary(JNI_LIBRARY_NAME);

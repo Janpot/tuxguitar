@@ -7,10 +7,7 @@ import org.herac.tuxguitar.gui.TuxGuitar;
 import org.herac.tuxguitar.gui.editors.TGPainter;
 import org.herac.tuxguitar.gui.editors.tab.layout.ViewLayout;
 import org.herac.tuxguitar.song.factory.TGFactory;
-import org.herac.tuxguitar.song.models.TGBeat;
-import org.herac.tuxguitar.song.models.TGNoteEffect;
-import org.herac.tuxguitar.song.models.TGStroke;
-import org.herac.tuxguitar.song.models.TGVoice;
+import org.herac.tuxguitar.song.models.*;
 
 public class TGBeatImpl extends TGBeat{
 	/**
@@ -270,7 +267,7 @@ public class TGBeatImpl extends TGBeat{
 		if(!TuxGuitar.instance().getPlayer().isRunning()){
 			new Thread(new Runnable() {
 				public void run() {
-					List notes = new ArrayList();
+					List<TGNote> notes = new ArrayList<TGNote>();
 					for( int v = 0; v < countVoices(); v ++){
 						notes.addAll( getVoice(v).getNotes() );
 					}

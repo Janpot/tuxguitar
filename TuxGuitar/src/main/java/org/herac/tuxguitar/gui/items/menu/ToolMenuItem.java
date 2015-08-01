@@ -6,8 +6,6 @@
  */
 package org.herac.tuxguitar.gui.items.menu;
 
-import java.util.Iterator;
-
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Menu;
 import org.eclipse.swt.widgets.MenuItem;
@@ -52,14 +50,12 @@ public class ToolMenuItem extends MenuItems {
 		
 		this.browser = new MenuItem(this.menu, SWT.PUSH);
 		this.browser.addSelectionListener(TuxGuitar.instance().getAction(TGBrowserAction.NAME));
-		
-		Iterator it = TGCustomToolManager.instance().getCustomTools();
-		while(it.hasNext()){
-			TGCustomTool tool = (TGCustomTool)it.next();
-			MenuItem menuItem = new MenuItem(this.menu, SWT.PUSH);
-			menuItem.setText(tool.getName());
-			menuItem.addSelectionListener(TuxGuitar.instance().getAction(tool.getAction()));
-		}
+
+        for (TGCustomTool tool : TGCustomToolManager.instance().getCustomTools()) {
+            MenuItem menuItem = new MenuItem(this.menu, SWT.PUSH);
+            menuItem.setText(tool.getName());
+            menuItem.addSelectionListener(TuxGuitar.instance().getAction(tool.getAction()));
+        }
 		
 		//--SEPARATOR--
 		new MenuItem(this.menu, SWT.SEPARATOR);

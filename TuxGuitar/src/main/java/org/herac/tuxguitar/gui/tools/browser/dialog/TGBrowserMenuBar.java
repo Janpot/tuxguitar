@@ -1,7 +1,5 @@
 package org.herac.tuxguitar.gui.tools.browser.dialog;
 
-import java.util.Iterator;
-
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
@@ -152,58 +150,54 @@ public class TGBrowserMenuBar extends TGBrowserBar{
 	
 	public void updateCollections(TGBrowserCollection selection){
 		MenuItem[] openItems = this.openCollection.getItems();
-		for(int i = 0;i < openItems.length; i ++){
-			openItems[i].dispose();
-		}
+        for (MenuItem item : openItems) {
+            item.dispose();
+        }
 		MenuItem[] removeItems = this.removeCollection.getItems();
-		for(int i = 0;i < removeItems.length; i ++){
-			removeItems[i].dispose();
-		}
-		Iterator it = TGBrowserManager.instance().getCollections();
-		while(it.hasNext()){
-			final TGBrowserCollection collection = (TGBrowserCollection)it.next();
-			if(collection.getData() != null){
-				MenuItem openItem = new MenuItem(this.openCollection,SWT.PUSH);
-				openItem.setText(collection.getData().getTitle());
-				openItem.addSelectionListener(new SelectionAdapter() {
-					public void widgetSelected(SelectionEvent e) {
-						openCollection(collection);
-					}
-				});
-				if(selection != null && selection.equals(collection)){
-					openItem.setSelection(true);
-				}
-				
-				MenuItem removeItem = new MenuItem(this.removeCollection,SWT.PUSH);
-				removeItem.setText(collection.getData().getTitle());
-				removeItem.addSelectionListener(new SelectionAdapter() {
-					public void widgetSelected(SelectionEvent e) {
-						removeCollection(collection);
-					}
-				});
-				if(selection != null && selection.equals(collection)){
-					removeItem.setSelection(true);
-				}
-			}
-		}
+        for (MenuItem item : removeItems) {
+            item.dispose();
+        }
+        for (final TGBrowserCollection collection : TGBrowserManager.instance().getCollections()) {
+            if (collection.getData() != null) {
+                MenuItem openItem = new MenuItem(this.openCollection, SWT.PUSH);
+                openItem.setText(collection.getData().getTitle());
+                openItem.addSelectionListener(new SelectionAdapter() {
+                    public void widgetSelected(SelectionEvent e) {
+                        openCollection(collection);
+                    }
+                });
+                if (selection != null && selection.equals(collection)) {
+                    openItem.setSelection(true);
+                }
+
+                MenuItem removeItem = new MenuItem(this.removeCollection, SWT.PUSH);
+                removeItem.setText(collection.getData().getTitle());
+                removeItem.addSelectionListener(new SelectionAdapter() {
+                    public void widgetSelected(SelectionEvent e) {
+                        removeCollection(collection);
+                    }
+                });
+                if (selection != null && selection.equals(collection)) {
+                    removeItem.setSelection(true);
+                }
+            }
+        }
 	}
 	
 	public void updateTypes(){
 		MenuItem[] items = this.newCollection.getItems();
-		for(int i = 0;i < items.length; i ++){
-			items[i].dispose();
-		}
-		Iterator bookTypes = TGBrowserManager.instance().getFactories();
-		while(bookTypes.hasNext()){
-			final TGBrowserFactory bookType = (TGBrowserFactory)bookTypes.next();
-			MenuItem item = new MenuItem(this.newCollection,SWT.PUSH);
-			item.setText(bookType.getName());
-			item.addSelectionListener(new SelectionAdapter() {
-				public void widgetSelected(SelectionEvent e) {
-					newCollection( bookType.getType());
-				}
-			});
-		}
+        for (MenuItem item1 : items) {
+            item1.dispose();
+        }
+        for (final TGBrowserFactory bookType : TGBrowserManager.instance().getFactories()) {
+            MenuItem item = new MenuItem(this.newCollection, SWT.PUSH);
+            item.setText(bookType.getName());
+            item.addSelectionListener(new SelectionAdapter() {
+                public void widgetSelected(SelectionEvent e) {
+                    newCollection(bookType.getType());
+                }
+            });
+        }
 	}
 	
 	public void reload(Shell shell){

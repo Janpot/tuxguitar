@@ -1,7 +1,6 @@
 package org.herac.tuxguitar.io.musicxml;
 
 import java.io.OutputStream;
-import java.util.Iterator;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -106,47 +105,40 @@ public class MusicXMLWriter {
 	
 	private void writePartList(Node parent){
 		Node partList = this.addNode(parent,"part-list");
-		
-		Iterator tracks = this.manager.getSong().getTracks();
-		while(tracks.hasNext()){
-			TGTrack track = (TGTrack)tracks.next();
-			
-			Node scoreParts = this.addNode(partList,"score-part");
-			this.addAttribute(scoreParts, "id", "P" + track.getNumber());
-			
-			this.addNode(scoreParts, "part-name", track.getName());
-			
-			Node scoreInstrument = this.addAttribute(this.addNode(scoreParts, "score-instrument"), "id", "P" + track.getNumber() + "-I1");
-			this.addNode(scoreInstrument, "instrument-name",MidiInstrument.INSTRUMENT_LIST[track.getChannel().getInstrument()].getName());
-			
-			Node midiInstrument = this.addAttribute(this.addNode(scoreParts, "midi-instrument"), "id", "P" + track.getNumber() + "-I1");
-			this.addNode(midiInstrument, "midi-channel",Integer.toString(track.getChannel().getChannel() + 1));
-			this.addNode(midiInstrument, "midi-program",Integer.toString(track.getChannel().getInstrument() + 1));
-		}
+
+        for (TGTrack track : this.manager.getSong().getTracks()) {
+            Node scoreParts = this.addNode(partList, "score-part");
+            this.addAttribute(scoreParts, "id", "P" + track.getNumber());
+
+            this.addNode(scoreParts, "part-name", track.getName());
+
+            Node scoreInstrument = this.addAttribute(this.addNode(scoreParts, "score-instrument"), "id", "P" + track.getNumber() + "-I1");
+            this.addNode(scoreInstrument, "instrument-name", MidiInstrument.INSTRUMENT_LIST[track.getChannel().getInstrument()].getName());
+
+            Node midiInstrument = this.addAttribute(this.addNode(scoreParts, "midi-instrument"), "id", "P" + track.getNumber() + "-I1");
+            this.addNode(midiInstrument, "midi-channel", Integer.toString(track.getChannel().getChannel() + 1));
+            this.addNode(midiInstrument, "midi-program", Integer.toString(track.getChannel().getInstrument() + 1));
+        }
 	}
 	
 	private void writeParts(Node parent){
-		Iterator tracks = this.manager.getSong().getTracks();
-		while(tracks.hasNext()){
-			TGTrack track = (TGTrack)tracks.next();
-			Node part = this.addAttribute(this.addNode(parent,"part"), "id", "P" + track.getNumber());
-			
-			TGMeasure previous = null;
-			
-			Iterator measures = track.getMeasures();
-			while(measures.hasNext()){
-				// TODO: Add multivoice support.
-				TGMeasure srcMeasure = (TGMeasure)measures.next();
-				TGMeasure measure = new TGVoiceJoiner(this.manager.getFactory(),srcMeasure).process();
-				Node measureNode = this.addAttribute(this.addNode(part,"measure"), "number",Integer.toString(measure.getNumber()));
-				
-				this.writeMeasureAttributes(measureNode, measure, previous);
-				this.writeDirection(measureNode, measure, previous);
-				this.writeBeats(measureNode, measure);
-				
-				previous = measure;
-			}
-		}
+        for (TGTrack track : this.manager.getSong().getTracks()) {
+            Node part = this.addAttribute(this.addNode(parent, "part"), "id", "P" + track.getNumber());
+
+            TGMeasure previous = null;
+
+            for (TGMeasure srcMeasure : track.getMeasures()) {
+                // TODO: Add multivoice support.
+                TGMeasure measure = new TGVoiceJoiner(this.manager.getFactory(), srcMeasure).process();
+                Node measureNode = this.addAttribute(this.addNode(part, "measure"), "number", Integer.toString(measure.getNumber()));
+
+                this.writeMeasureAttributes(measureNode, measure, previous);
+                this.writeDirection(measureNode, measure, previous);
+                this.writeBeats(measureNode, measure);
+
+                previous = measure;
+            }
+        }
 	}
 	
 	private void writeMeasureAttributes(Node parent,TGMeasure measure, TGMeasure previous){

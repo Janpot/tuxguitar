@@ -7,7 +7,6 @@
 package org.herac.tuxguitar.song.models;
 
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 
 import org.herac.tuxguitar.song.factory.TGFactory;
@@ -26,8 +25,8 @@ public abstract class TGTrack {
 	private boolean solo;
 	private boolean mute;
 	private String name;
-	private List measures;
-	private List strings;
+	private List<TGMeasure> measures;
+	private List<TGString> strings;
 	private TGChannel channel;
 	private TGColor color;
 	private TGLyric lyrics;
@@ -38,9 +37,9 @@ public abstract class TGTrack {
 		this.offset = 0;
 		this.solo = false;
 		this.mute = false;
-		this.name = new String();
-		this.measures = new ArrayList();
-		this.strings = new ArrayList();
+		this.name = "";
+		this.measures = new ArrayList<TGMeasure>();
+		this.strings = new ArrayList<TGString>();
 		this.channel = factory.newChannel();
 		this.color = factory.newColor();
 		this.lyrics = factory.newLyric();
@@ -53,12 +52,12 @@ public abstract class TGTrack {
 	public void setNumber(int number) {
 		this.number = number;
 	}
-	
-	public Iterator getMeasures() {
-		return this.measures.iterator();
-	}
-	
-	public void addMeasure(TGMeasure measure){
+
+    public List<TGMeasure> getMeasures() {
+        return this.measures;
+    }
+
+    public void addMeasure(TGMeasure measure){
 		measure.setTrack(this);
 		this.measures.add(measure);
 	}
@@ -70,7 +69,7 @@ public abstract class TGTrack {
 	
 	public TGMeasure getMeasure(int index){
 		if(index >= 0 && index < countMeasures()){
-			return (TGMeasure)this.measures.get(index);
+			return this.measures.get(index);
 		}
 		return null;
 	}
@@ -91,11 +90,11 @@ public abstract class TGTrack {
 		this.channel = channel;
 	}
 	
-	public List getStrings() {
+	public List<TGString> getStrings() {
 		return this.strings;
 	}
 	
-	public void setStrings(List strings) {
+	public void setStrings(List<TGString> strings) {
 		this.strings = strings;
 	}
 	
@@ -148,7 +147,7 @@ public abstract class TGTrack {
 	}
 	
 	public TGString getString(int number){
-		return (TGString)this.strings.get(number - 1);
+		return this.strings.get(number - 1);
 	}
 	
 	public int stringCount(){
@@ -186,10 +185,9 @@ public abstract class TGTrack {
 		getChannel().copy(track.getChannel());
 		getColor().copy(track.getColor());
 		getLyrics().copy(track.getLyrics());
-		for (int i = 0; i < getStrings().size(); i++) {
-			TGString string = (TGString) getStrings().get(i);
-			track.getStrings().add(string.clone(factory));
-		}
+        for (TGString string : getStrings()) {
+            track.getStrings().add(string.clone(factory));
+        }
 		for (int i = 0; i < countMeasures(); i++) {
 			TGMeasure measure = getMeasure(i);
 			track.addMeasure(measure.clone(factory,song.getMeasureHeader(i)));

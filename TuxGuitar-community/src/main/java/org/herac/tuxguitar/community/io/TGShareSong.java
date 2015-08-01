@@ -2,7 +2,6 @@ package org.herac.tuxguitar.community.io;
 
 import java.io.ByteArrayOutputStream;
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 
 import org.eclipse.swt.SWT;
@@ -91,13 +90,12 @@ public class TGShareSong {
 				processAuthDialog( file );
 			}
 			else if( status != null && status.equals(TGShareSongConnection.HTTP_STATUS_INVALID) ){
-				String message = new String();
-				List messages = new ArrayList();
+				String message = "";
+				List<String> messages = new ArrayList<String>();
 				response.loadMessages( messages );
-				Iterator it = messages.iterator();
-				while( it.hasNext() ){
-					message += ( (String) it.next() + "\r\n" );
-				}
+                for (String message1 : messages) {
+                    message += (message1 + "\r\n");
+                }
 				processDialog( file , message );
 			}
 			else{

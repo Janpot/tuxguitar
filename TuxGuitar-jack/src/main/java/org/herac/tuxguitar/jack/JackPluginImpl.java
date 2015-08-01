@@ -22,7 +22,7 @@ public class JackPluginImpl extends TGPluginList implements TGPluginSetup {
 		this.jackSettings = new JackSettings();
 	}
 	
-	protected List getPlugins() throws TGPluginException {
+	protected List loadPlugins() throws TGPluginException {
 		List plugins = new ArrayList();
 		plugins.add( new JackOutputPortProviderPlugin(this.jackClient , this.jackSettings) );
 		plugins.add( new JackSequencerProviderPlugin(this.jackClient) );

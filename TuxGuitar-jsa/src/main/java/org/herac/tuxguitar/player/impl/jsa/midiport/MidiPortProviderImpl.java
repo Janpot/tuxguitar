@@ -1,7 +1,6 @@
 package org.herac.tuxguitar.player.impl.jsa.midiport;
 
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 
 import javax.sound.midi.MidiDevice;
@@ -21,36 +20,34 @@ public class MidiPortProviderImpl implements MidiOutputPortProvider{
 		super();
 	}
 	
-	public List listPorts() throws MidiPlayerException{
+	public List<MidiOutputPort> listPorts() throws MidiPlayerException{
 		try {
-			List ports = new ArrayList();
+			List<MidiOutputPort> ports = new ArrayList<MidiOutputPort>();
 			MidiDevice.Info[] infos = MidiSystem.getMidiDeviceInfo();
-			for(int i = 0; i < infos.length; i++){
-				try {
-					Iterator it = ports.iterator();
-					boolean exists = false;
-					while(it.hasNext()){
-						if( ((MidiOutputPort)it.next()).getKey().equals(infos[i].getName()) ){
-							exists = true;
-							break;
-						}
-					}
-					if(!exists){
-						MidiDevice device = MidiSystem.getMidiDevice(infos[i]);
-						if(device.getMaxReceivers() == 0 || device instanceof Sequencer){
-							continue;
-						}
-						if(device instanceof Synthesizer){
-							ports.add(new MidiPortSynthesizer((Synthesizer)device));
-						}
-						else{
-							ports.add(new MidiPortOut(device));
-						}
-					}
-				} catch (MidiUnavailableException e) {
-					throw new MidiPlayerException(TuxGuitar.getProperty("jsa.error.midi.unavailable"),e);
-				}
-			}
+            for (MidiDevice.Info info : infos) {
+                try {
+                    boolean exists = false;
+                    for (MidiOutputPort port : ports) {
+                        if (port.getKey().equals(info.getName())) {
+                            exists = true;
+                            break;
+                        }
+                    }
+                    if (!exists) {
+                        MidiDevice device = MidiSystem.getMidiDevice(info);
+                        if (device.getMaxReceivers() == 0 || device instanceof Sequencer) {
+                            continue;
+                        }
+                        if (device instanceof Synthesizer) {
+                            ports.add(new MidiPortSynthesizer((Synthesizer) device));
+                        } else {
+                            ports.add(new MidiPortOut(device));
+                        }
+                    }
+                } catch (MidiUnavailableException e) {
+                    throw new MidiPlayerException(TuxGuitar.getProperty("jsa.error.midi.unavailable"), e);
+                }
+            }
 			return ports;
 		}catch (Throwable t) {
 			throw new MidiPlayerException(TuxGuitar.getProperty("jsa.error.unknown"),t);

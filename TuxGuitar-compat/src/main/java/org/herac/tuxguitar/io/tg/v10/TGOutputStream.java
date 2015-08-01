@@ -9,7 +9,6 @@ package org.herac.tuxguitar.io.tg.v10;
 import java.io.DataOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
-import java.util.Iterator;
 
 import org.herac.tuxguitar.io.base.TGFileFormat;
 import org.herac.tuxguitar.io.base.TGFileFormatException;
@@ -102,12 +101,10 @@ public class TGOutputStream extends TGStream implements TGLocalFileExporter{
 		
 		//escribo las pistas
 		TGMeasureHeader lastHeader = null;
-		Iterator headers = song.getMeasureHeaders();
-		while(headers.hasNext()){
-			TGMeasureHeader header = (TGMeasureHeader)headers.next();
-			writeMeasureHeader(header,lastHeader);
-			lastHeader = header;
-		}
+        for (TGMeasureHeader header : song.getMeasureHeaders()) {
+            writeMeasureHeader(header, lastHeader);
+            lastHeader = header;
+        }
 		
 		//escribo la cantidad de pistas
 		writeByte(song.countTracks());
@@ -135,22 +132,18 @@ public class TGOutputStream extends TGStream implements TGLocalFileExporter{
 		
 		//escribo los compases
 		TGMeasure lastMeasure = null;
-		Iterator measures  = track.getMeasures();
-		while(measures.hasNext()){
-			TGMeasure measure = (TGMeasure)measures.next();
-			writeMeasure(measure,lastMeasure);
-			lastMeasure = measure;
-		}
+        for (TGMeasure measure : track.getMeasures()) {
+            writeMeasure(measure, lastMeasure);
+            lastMeasure = measure;
+        }
 		
 		//escribo la cantidad de cuerdas 
 		writeByte(track.getStrings().size());
 		
 		//escribo las cuerdas
-		Iterator stringIt  = track.getStrings().iterator();
-		while(stringIt.hasNext()){
-			TGString string = (TGString)stringIt.next();
-			writeInstrumentString(string);
-		}
+        for (TGString string : track.getStrings()) {
+            writeInstrumentString(string);
+        }
 		
 		//escribo el offset
 		writeByte(track.getOffset() - TGTrack.MIN_OFFSET);
@@ -513,33 +506,27 @@ public class TGOutputStream extends TGStream implements TGLocalFileExporter{
 	private void writeBendEffect(TGEffectBend effect){
 		//escribo la cantidad de puntos
 		writeByte(effect.getPoints().size());
-		
-		Iterator it = effect.getPoints().iterator();
-		while(it.hasNext()){
-			TGEffectBend.BendPoint point = (TGEffectBend.BendPoint)it.next();
-			
-			//escribo la posicion
-			writeByte(point.getPosition());
-			
-			//escribo el valor
-			writeByte(point.getValue());
-		}
+
+        for (TGEffectBend.BendPoint point : effect.getPoints()) {
+            //escribo la posicion
+            writeByte(point.getPosition());
+
+            //escribo el valor
+            writeByte(point.getValue());
+        }
 	}
 	
 	private void writeTremoloBarEffect(TGEffectTremoloBar effect){
 		//escribo la cantidad de puntos
 		writeByte(effect.getPoints().size());
-		
-		Iterator it = effect.getPoints().iterator();
-		while(it.hasNext()){
-			TGEffectTremoloBar.TremoloBarPoint point = (TGEffectTremoloBar.TremoloBarPoint)it.next();
-			
-			//escribo la posicion
-			writeByte(point.getPosition());
-			
-			//escribo el valor
-			writeByte( (point.getValue() + TGEffectTremoloBar.MAX_VALUE_LENGTH) );
-		}
+
+        for (TGEffectTremoloBar.TremoloBarPoint point : effect.getPoints()) {
+            //escribo la posicion
+            writeByte(point.getPosition());
+
+            //escribo el valor
+            writeByte((point.getValue() + TGEffectTremoloBar.MAX_VALUE_LENGTH));
+        }
 	}
 	
 	private void writeHarmonicEffect(TGEffectHarmonic effect){

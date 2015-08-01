@@ -2,7 +2,6 @@ package org.herac.tuxguitar.io.midi;
 
 import java.io.InputStream;
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 
 import org.herac.tuxguitar.io.base.TGFileFormat;
@@ -33,11 +32,11 @@ public class MidiSongImporter implements TGLocalFileImporter{
 	private static final int MIN_DURATION_VALUE = TGDuration.SIXTY_FOURTH;
 	
 	private int resolution;
-	private List headers;
-	private List tracks;
-	private List tempNotes;
-	private List tempChannels;
-	private List trackTuningHelpers;
+	private List<TGMeasureHeader> headers;
+	private List<TGTrack> tracks;
+	private List<TempNote> tempNotes;
+	private List<TempChannel> tempChannels;
+	private List<TrackTuningHelper> trackTuningHelpers;
 	private MidiSettings settings;
 	protected TGFactory factory;
 	protected InputStream stream;
@@ -83,15 +82,13 @@ public class MidiSongImporter implements TGLocalFileImporter{
 			checkAll();
 			
 			TGSong song = this.factory.newSong();
-			
-			Iterator headers = this.headers.iterator();
-			while(headers.hasNext()){
-				song.addMeasureHeader((TGMeasureHeader)headers.next());
-			}
-			Iterator tracks = this.tracks.iterator();
-			while(tracks.hasNext()){
-				song.addTrack((TGTrack)tracks.next());
-			}
+
+            for (TGMeasureHeader header : this.headers) {
+                song.addMeasureHeader(header);
+            }
+            for (TGTrack track : this.tracks) {
+                song.addTrack(track);
+            }
 			return new SongAdjuster(this.factory,song).adjustSong();
 		} catch (Throwable throwable) {
 			throw new TGFileFormatException(throwable);
@@ -100,11 +97,11 @@ public class MidiSongImporter implements TGLocalFileImporter{
 	
 	private void initFields(MidiSequence sequence){
 		this.resolution = sequence.getResolution();
-		this.headers = new ArrayList();
-		this.tracks = new ArrayList();
-		this.tempNotes = new ArrayList();
-		this.tempChannels = new ArrayList();
-		this.trackTuningHelpers = new ArrayList();
+		this.headers = new ArrayList<TGMeasureHeader>();
+		this.tracks = new ArrayList<TGTrack>();
+		this.tempNotes = new ArrayList<TempNote>();
+		this.tempChannels = new ArrayList<TempChannel>();
+		this.trackTuningHelpers = new ArrayList<TrackTuningHelper>();
 	}
 	
 	private int getNextTrackNumber(){
@@ -222,13 +219,11 @@ public class MidiSongImporter implements TGLocalFileImporter{
 	}
 	
 	private TGTrack getTrack(int number){
-		Iterator it = this.tracks.iterator();
-		while(it.hasNext()){
-			TGTrack track = (TGTrack)it.next();
-			if(track.getNumber() == number){
-				return track;
-			}
-		}
+        for (TGTrack track : this.tracks) {
+            if (track.getNumber() == number) {
+                return track;
+            }
+        }
 		TGChannel channel = this.factory.newChannel();
 		channel.setChannel((short)-1);
 		channel.setEffectChannel((short)-1);
@@ -245,14 +240,12 @@ public class MidiSongImporter implements TGLocalFileImporter{
 	
 	private TGMeasureHeader getHeader(long tick){
 		long realTick = (tick >= TGDuration.QUARTER_TIME)?tick:TGDuration.QUARTER_TIME;
-		
-		Iterator it = this.headers.iterator();
-		while(it.hasNext()){
-			TGMeasureHeader header = (TGMeasureHeader)it.next();
-			if(realTick >= header.getStart() && realTick < header.getStart() + header.getLength()){
-				return header;
-			}
-		}
+
+        for (TGMeasureHeader header : this.headers) {
+            if (realTick >= header.getStart() && realTick < header.getStart() + header.getLength()) {
+                return header;
+            }
+        }
 		TGMeasureHeader last = getLastHeader();
 		TGMeasureHeader header = this.factory.newHeader();
 		header.setNumber((last != null)?last.getNumber() + 1:1);
@@ -274,36 +267,33 @@ public class MidiSongImporter implements TGLocalFileImporter{
 	
 	private TGMeasureHeader getLastHeader(){
 		if(!this.headers.isEmpty()){
-			return (TGMeasureHeader)this.headers.get(this.headers.size() - 1);
+			return this.headers.get(this.headers.size() - 1);
 		}
 		return null;
 	}
 	
 	private TGMeasure getMeasure(TGTrack track,long tick){
 		long realTick = (tick >= TGDuration.QUARTER_TIME)?tick:TGDuration.QUARTER_TIME;
-		Iterator it = track.getMeasures();
-		while(it.hasNext()){
-			TGMeasure measure = (TGMeasure)it.next();
-			if(realTick >= measure.getStart() && realTick < measure.getStart() + measure.getLength()){
-				return measure;
-			}
-		}
+        for (TGMeasure measure : track.getMeasures()) {
+            if (realTick >= measure.getStart() && realTick < measure.getStart() + measure.getLength()) {
+                return measure;
+            }
+        }
 		getHeader(realTick);
-		for(int i = 0;i < this.headers.size();i++){
-			boolean exist = false;
-			TGMeasureHeader header = (TGMeasureHeader)this.headers.get(i);
-			int measureCount = track.countMeasures();
-			for(int j = 0;j < measureCount;j++){
-				TGMeasure measure = track.getMeasure(j);
-				if(measure.getHeader().equals(header)){
-					exist = true;
-				}
-			}
-			if(!exist){
-				TGMeasure measure = this.factory.newMeasure(header);
-				track.addMeasure(measure);
-			}
-		}
+        for (TGMeasureHeader header : this.headers) {
+            boolean exist = false;
+            int measureCount = track.countMeasures();
+            for (int j = 0; j < measureCount; j++) {
+                TGMeasure measure = track.getMeasure(j);
+                if (measure.getHeader().equals(header)) {
+                    exist = true;
+                }
+            }
+            if (!exist) {
+                TGMeasure measure = this.factory.newMeasure(header);
+                track.addMeasure(measure);
+            }
+        }
 		return getMeasure(track,realTick);
 	}
 	
@@ -324,7 +314,7 @@ public class MidiSongImporter implements TGLocalFileImporter{
 	
 	private TempNote getTempNote(int track,int channel,int value,boolean purge){
 		for(int i = 0;i < this.tempNotes.size();i ++){
-			TempNote note = (TempNote)this.tempNotes.get(i);
+			TempNote note = this.tempNotes.get(i);
 			if(note.getTrack() == track && note.getChannel() == channel && note.getValue() == value){
 				if(purge){
 					this.tempNotes.remove(i);
@@ -336,13 +326,11 @@ public class MidiSongImporter implements TGLocalFileImporter{
 	}
 	
 	protected TrackTuningHelper getTrackTuningHelper(int track){
-		Iterator it = this.trackTuningHelpers.iterator();
-		while(it.hasNext()){
-			TrackTuningHelper helper = (TrackTuningHelper)it.next();
-			if(helper.getTrack() == track){
-				return helper;
-			}
-		}
+        for (TrackTuningHelper helper : this.trackTuningHelpers) {
+            if (helper.getTrack() == track) {
+                return helper;
+            }
+        }
 		TrackTuningHelper helper = new TrackTuningHelper(track);
 		this.trackTuningHelpers.add(helper);
 		
@@ -354,15 +342,14 @@ public class MidiSongImporter implements TGLocalFileImporter{
 		boolean check = true;
 		while(check){
 			check = false;
-			for(int i = 0;i < this.tempNotes.size();i ++){
-				TempNote note = (TempNote)this.tempNotes.get(i);
-				if(note.getTick() < nextTick && note.getTrack() == track){
-					nextTick = note.getTick() + (TGDuration.QUARTER_TIME * 5); //First beat + 4/4 measure;
-					makeNote(nextTick,track,note.getChannel(),note.getValue());
-					check = true;
-					break;
-				}
-			}
+            for (TempNote note : this.tempNotes) {
+                if (note.getTick() < nextTick && note.getTrack() == track) {
+                    nextTick = note.getTick() + (TGDuration.QUARTER_TIME * 5); //First beat + 4/4 measure;
+                    makeNote(nextTick, track, note.getChannel(), note.getValue());
+                    check = true;
+                    break;
+                }
+            }
 		}
 	}
 	
@@ -390,13 +377,11 @@ public class MidiSongImporter implements TGLocalFileImporter{
 	}
 	
 	public TempChannel getTempChannel(int channel){
-		Iterator it = this.tempChannels.iterator();
-		while(it.hasNext()){
-			TempChannel tempChannel = (TempChannel)it.next();
-			if(tempChannel.getChannel() == channel){
-				return tempChannel;
-			}
-		}
+        for (TempChannel tempChannel : this.tempChannels) {
+            if (tempChannel.getChannel() == channel) {
+                return tempChannel;
+            }
+        }
 		TempChannel tempChannel = new TempChannel(channel);
 		this.tempChannels.add(tempChannel);
 		
@@ -407,19 +392,17 @@ public class MidiSongImporter implements TGLocalFileImporter{
 		checkTracks();
 		
 		int headerCount = this.headers.size();
-		for(int i = 0;i < this.tracks.size();i ++){
-			TGTrack track = (TGTrack)this.tracks.get(i);
-			
-			while(track.countMeasures() < headerCount){
-				long start = TGDuration.QUARTER_TIME;
-				TGMeasure lastMeasure = ((track.countMeasures() > 0)?track.getMeasure(track.countMeasures() - 1) :null);
-				if(lastMeasure != null){
-					start = (lastMeasure.getStart() + lastMeasure.getLength());
-				}
-				
-				track.addMeasure(this.factory.newMeasure(getHeader(start)));
-			}
-		}
+        for (TGTrack track : this.tracks) {
+            while (track.countMeasures() < headerCount) {
+                long start = TGDuration.QUARTER_TIME;
+                TGMeasure lastMeasure = ((track.countMeasures() > 0) ? track.getMeasure(track.countMeasures() - 1) : null);
+                if (lastMeasure != null) {
+                    start = (lastMeasure.getStart() + lastMeasure.getLength());
+                }
+
+                track.addMeasure(this.factory.newMeasure(getHeader(start)));
+            }
+        }
 		
 		if(this.headers.isEmpty() || this.tracks.isEmpty()){
 			throw new Exception("Empty Song");
@@ -427,39 +410,35 @@ public class MidiSongImporter implements TGLocalFileImporter{
 	}
 	
 	private void checkTracks(){
-		Iterator it = this.tracks.iterator();
-		while(it.hasNext()){
-			TGTrack track = (TGTrack)it.next();
-			Iterator tcIt = this.tempChannels.iterator();
-			while(tcIt.hasNext()){
-				TempChannel tempChannel = (TempChannel)tcIt.next();
-				if(tempChannel.getTrack() == track.getNumber()){
-					if(track.getChannel().getChannel() < 0){
-						track.getChannel().setChannel((short)tempChannel.getChannel());
-						track.getChannel().setInstrument((short)tempChannel.getInstrument());
-						track.getChannel().setVolume((short)tempChannel.getVolume());
-						track.getChannel().setBalance((short)tempChannel.getBalance());
-					}else if(track.getChannel().getEffectChannel() < 0){
-						track.getChannel().setEffectChannel((short)tempChannel.getChannel());
-					}
-				}
-			}
-			if(track.getChannel().getChannel() < 0){
-				track.getChannel().setChannel((short)(TGSongManager.MAX_CHANNELS - 1));
-				track.getChannel().setInstrument((short)0);
-				track.getChannel().setVolume((short)127);
-				track.getChannel().setBalance((short)64);
-			}
-			if(track.getChannel().getEffectChannel() < 0){
-				track.getChannel().setEffectChannel(track.getChannel().getChannel());
-			}
-			
-			if(!track.isPercussionTrack()){
-				track.setStrings(getTrackTuningHelper(track.getNumber()).getStrings());
-			}else{
-				track.setStrings(TGSongManager.createPercussionStrings(this.factory,6));
-			}
-		}
+        for (TGTrack track : this.tracks) {
+            for (TempChannel tempChannel : this.tempChannels) {
+                if (tempChannel.getTrack() == track.getNumber()) {
+                    if (track.getChannel().getChannel() < 0) {
+                        track.getChannel().setChannel((short) tempChannel.getChannel());
+                        track.getChannel().setInstrument((short) tempChannel.getInstrument());
+                        track.getChannel().setVolume((short) tempChannel.getVolume());
+                        track.getChannel().setBalance((short) tempChannel.getBalance());
+                    } else if (track.getChannel().getEffectChannel() < 0) {
+                        track.getChannel().setEffectChannel((short) tempChannel.getChannel());
+                    }
+                }
+            }
+            if (track.getChannel().getChannel() < 0) {
+                track.getChannel().setChannel((short) (TGSongManager.MAX_CHANNELS - 1));
+                track.getChannel().setInstrument((short) 0);
+                track.getChannel().setVolume((short) 127);
+                track.getChannel().setBalance((short) 64);
+            }
+            if (track.getChannel().getEffectChannel() < 0) {
+                track.getChannel().setEffectChannel(track.getChannel().getChannel());
+            }
+
+            if (!track.isPercussionTrack()) {
+                track.setStrings(getTrackTuningHelper(track.getNumber()).getStrings());
+            } else {
+                track.setStrings(TGSongManager.createPercussionStrings(this.factory, 6));
+            }
+        }
 	}
 	
 	protected TGDuration newDuration(int value){
@@ -592,8 +571,8 @@ public class MidiSongImporter implements TGLocalFileImporter{
 			}
 		}
 		
-		public List getStrings() {
-			List strings = new ArrayList();
+		public List<TGString> getStrings() {
+			List<TGString> strings = new ArrayList<TGString>();
 			
 			int maxFret = 24;
 			
@@ -679,21 +658,17 @@ class SongAdjuster{
 	}
 	
 	public TGSong adjustSong(){
-		Iterator it = this.song.getTracks();
-		
-		while(it.hasNext()){
-			TGTrack track = (TGTrack)it.next();
-			adjustTrack(track);
-		}
+
+        for (TGTrack track : this.song.getTracks()) {
+            adjustTrack(track);
+        }
 		return this.song;
 	}
 	
 	private void adjustTrack(TGTrack track){
-		Iterator it = track.getMeasures();
-		while(it.hasNext()){
-			TGMeasure measure = (TGMeasure)it.next();
-			process(measure);
-		}
+        for (TGMeasure measure : track.getMeasures()) {
+            process(measure);
+        }
 	}
 	
 	public void process(TGMeasure measure){
@@ -793,49 +768,45 @@ class SongAdjuster{
 	
 	private void adjustStrings(TGBeat beat){
 		TGTrack track = beat.getMeasure().getTrack();
-		List freeStrings = new ArrayList( track.getStrings() );
-		List notesToRemove = new ArrayList();
+		List<TGString> freeStrings = new ArrayList<TGString>( track.getStrings() );
+		List<TGNote> notesToRemove = new ArrayList<TGNote>();
 		
 		//ajusto las cuerdas
-		Iterator it = beat.getVoice(0).getNotes().iterator();
-		while(it.hasNext()){
-			TGNote note = (TGNote)it.next();
-			
-			int string = getStringForValue(freeStrings,note.getValue());
-			for(int j = 0;j < freeStrings.size();j ++){
-				TGString tempString = (TGString)freeStrings.get(j);
-				if(tempString.getNumber() == string){
-					note.setValue(note.getValue() - tempString.getValue());
-					note.setString(tempString.getNumber());
-					freeStrings.remove(j);
-					break;
-				}
-			}
-			
-			//Cannot have more notes on same string 
-			if(note.getString() < 1){
-				notesToRemove.add( note );
-			}
-		}
+        for (TGNote note : beat.getVoice(0).getNotes()) {
+            int string = getStringForValue(freeStrings, note.getValue());
+            for (int j = 0; j < freeStrings.size(); j++) {
+                TGString tempString = (TGString) freeStrings.get(j);
+                if (tempString.getNumber() == string) {
+                    note.setValue(note.getValue() - tempString.getValue());
+                    note.setString(tempString.getNumber());
+                    freeStrings.remove(j);
+                    break;
+                }
+            }
+
+            //Cannot have more notes on same string
+            if (note.getString() < 1) {
+                notesToRemove.add(note);
+            }
+        }
 		
 		// Remove notes
 		while( notesToRemove.size() > 0 ){
-			beat.getVoice(0).removeNote( (TGNote)notesToRemove.get( 0 ) );
+			beat.getVoice(0).removeNote(notesToRemove.get( 0 ));
 			notesToRemove.remove( 0 );
 		}
 	}
 	
-	private int getStringForValue(List strings,int value){
+	private int getStringForValue(List<TGString> strings,int value){
 		int minFret = -1;
 		int stringForValue = 0;
-		for(int i = 0;i < strings.size();i++){
-			TGString string = (TGString)strings.get(i);
-			int fret = value - string.getValue();
-			if(minFret < 0 || (fret >= 0 && fret < minFret)){
-				stringForValue = string.getNumber();
-				minFret = fret;
-			}
-		}
+        for (TGString string : strings) {
+            int fret = value - string.getValue();
+            if (minFret < 0 || (fret >= 0 && fret < minFret)) {
+                stringForValue = string.getNumber();
+                minFret = fret;
+            }
+        }
 		return stringForValue;
 	}
 }

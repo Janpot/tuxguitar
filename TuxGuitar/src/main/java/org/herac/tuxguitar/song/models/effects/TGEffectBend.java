@@ -7,7 +7,6 @@
 package org.herac.tuxguitar.song.models.effects;
 
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 
 import org.herac.tuxguitar.song.factory.TGFactory;
@@ -23,27 +22,25 @@ public abstract class TGEffectBend {
 	public static final int MAX_POSITION_LENGTH = 12;
 	public static final int MAX_VALUE_LENGTH = (SEMITONE_LENGTH * 12);
 	
-	private List points;
+	private List<BendPoint> points;
 	
 	public TGEffectBend(){
-		this.points = new ArrayList();
+		this.points = new ArrayList<BendPoint>( );
 	}
 	
 	public void addPoint(int position,int value){
 		this.points.add(new BendPoint(position,value));
 	}
 	
-	public List getPoints(){
+	public List<BendPoint> getPoints(){
 		return this.points;
 	}
 	
 	public TGEffectBend clone(TGFactory factory){
 		TGEffectBend effect = factory.newEffectBend();
-		Iterator it = getPoints().iterator();
-		while(it.hasNext()){
-			BendPoint point = (BendPoint)it.next();
-			effect.addPoint(point.getPosition(),point.getValue());
-		}
+        for (BendPoint point : getPoints()) {
+            effect.addPoint(point.getPosition(), point.getValue());
+        }
 		return effect;
 	}
 	

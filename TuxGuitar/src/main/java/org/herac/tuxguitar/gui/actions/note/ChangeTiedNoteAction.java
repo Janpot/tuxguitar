@@ -6,8 +6,6 @@
  */
 package org.herac.tuxguitar.gui.actions.note;
 
-import java.util.Iterator;
-
 import org.eclipse.swt.events.TypedEvent;
 import org.herac.tuxguitar.gui.TuxGuitar;
 import org.herac.tuxguitar.gui.actions.Action;
@@ -76,14 +74,12 @@ public class ChangeTiedNoteAction extends Action{
 					return;
 				}
 				// Check if is there any note at same string.
-				Iterator it = voice.getNotes().iterator();
-				while( it.hasNext() ){
-					TGNote current = (TGNote) it.next();
-					if(current.getString() == note.getString()){
-						note.setValue( current.getValue() );
-						return;
-					}
-				}
+                for (TGNote current : voice.getNotes()) {
+                    if (current.getString() == note.getString()) {
+                        note.setValue(current.getValue());
+                        return;
+                    }
+                }
 				voice = getSongManager().getMeasureManager().getPreviousVoice( measure.getBeats(), voice.getBeat(), caret.getVoice());
 			}
 			measure = getSongManager().getTrackManager().getPrevMeasure(measure);

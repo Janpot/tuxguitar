@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.eclipse.swt.graphics.Image;
+import org.eclipse.swt.graphics.ImageData;
 import org.eclipse.swt.graphics.Rectangle;
 import org.herac.tuxguitar.gui.TuxGuitar;
 import org.herac.tuxguitar.gui.editors.TGPainter;
@@ -64,9 +65,8 @@ public class PDFSongExporter implements TGLocalFileExporter{
 			if( this.stream != null ){
 				this.export(this.stream,song, (this.styles != null ? this.styles : getDefaultStyles(song)) );
 			}
-		}catch(Throwable throwable){
-			return;
-		}
+		}catch(Throwable ignored){
+        }
 	}
 	
 	public void export(final OutputStream stream,final TGSong song,final PrintStyles data){
@@ -127,14 +127,14 @@ public class PDFSongExporter implements TGLocalFileExporter{
 		private Rectangle bounds;
 		private OutputStream stream;
 		private Image buffer;
-		private List pages;
+		private List<ImageData> pages;
 		
 		public PrintDocumentImpl(PrinterViewLayout layout, Rectangle bounds, OutputStream stream){
 			this.layout = layout;
 			this.bounds = bounds;
 			this.stream = stream;
 			this.painter = new TGPainter();
-			this.pages = new ArrayList();
+			this.pages = new ArrayList<ImageData>();
 		}
 		
 		public TGPainter getPainter() {

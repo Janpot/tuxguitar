@@ -6,8 +6,6 @@
  */
 package org.herac.tuxguitar.gui.actions.insert;
 
-import java.util.Iterator;
-
 import org.eclipse.swt.events.TypedEvent;
 import org.eclipse.swt.widgets.Shell;
 import org.herac.tuxguitar.gui.TuxGuitar;
@@ -75,24 +73,21 @@ public class InsertChordAction extends Action {
 			// Only if this is a "rest" beat
 			TGVoice voice = beat.getVoice(voiceIndex);
 			if( restBeat ){
-				
-				Iterator it = track.getStrings().iterator();
-				while (it.hasNext()) {
-					TGString string = (TGString) it.next();
-					
-					int value = chord.getFretValue(string.getNumber() - 1);
-					if (value >= 0) {
-						TGNote note = getSongManager().getFactory().newNote();
-						note.setValue(value);
-						note.setVelocity(getEditor().getTablature().getCaret().getVelocity());
-						note.setString(string.getNumber());
-						
-						TGDuration duration = getSongManager().getFactory().newDuration();
-						voice.getDuration().copy(duration);
-						
-						getSongManager().getMeasureManager().addNote(beat,note,duration,voice.getIndex());
-					}
-				}
+
+                for (TGString string : track.getStrings()) {
+                    int value = chord.getFretValue(string.getNumber() - 1);
+                    if (value >= 0) {
+                        TGNote note = getSongManager().getFactory().newNote();
+                        note.setValue(value);
+                        note.setVelocity(getEditor().getTablature().getCaret().getVelocity());
+                        note.setString(string.getNumber());
+
+                        TGDuration duration = getSongManager().getFactory().newDuration();
+                        voice.getDuration().copy(duration);
+
+                        getSongManager().getMeasureManager().addNote(beat, note, duration, voice.getIndex());
+                    }
+                }
 			}
 			
 			getSongManager().getMeasureManager().addChord(beat, chord);

@@ -1,11 +1,9 @@
 package org.herac.tuxguitar.gui.system.icons;
 
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 
 import org.eclipse.swt.graphics.Image;
-import org.eclipse.swt.graphics.Resource;
 import org.herac.tuxguitar.gui.TuxGuitar;
 import org.herac.tuxguitar.gui.system.config.TGConfigKeys;
 import org.herac.tuxguitar.gui.util.TGFileUtils;
@@ -13,8 +11,8 @@ import org.herac.tuxguitar.song.models.TGDuration;
 
 public class IconManager {
 	private String theme;
-	private List loaders;
-	private List disposableIcons;
+	private List<IconLoader> loaders;
+	private List<Image> disposableIcons;
 	
 	private Image[] durations;
 	private Image editUndo;
@@ -137,8 +135,8 @@ public class IconManager {
 	private Image settings;
 	
 	public IconManager(){
-		this.loaders = new ArrayList();
-		this.disposableIcons = new ArrayList();
+		this.loaders = new ArrayList<IconLoader>();
+		this.disposableIcons = new ArrayList<Image>();
 		this.loadIcons();
 	}
 	
@@ -155,15 +153,13 @@ public class IconManager {
 	}
 	
 	private void fireChanges(){
-		Iterator it = this.loaders.iterator();
-		while(it.hasNext()){
-			IconLoader loader = (IconLoader)it.next();
-			loader.loadIcons();
-		}
+        for (IconLoader loader : this.loaders) {
+            loader.loadIcons();
+        }
 	}
 	
 	public void reloadIcons(){
-		List disposableIcons = purgeDisposableIcons();
+		List<Image> disposableIcons = purgeDisposableIcons();
 		this.loadIcons();
 		this.fireChanges();
 		this.disposeIcons(disposableIcons);
@@ -306,23 +302,19 @@ public class IconManager {
 		return image;
 	}
 	
-	private List purgeDisposableIcons(){
-		List disposableIcons = new ArrayList();
-		Iterator it = this.disposableIcons.iterator();
-		while( it.hasNext() ){
-			Resource resource = (Resource)it.next();
-			disposableIcons.add( resource );
-		}
+	private List<Image> purgeDisposableIcons(){
+		List<Image> disposableIcons = new ArrayList<Image>();
+        for (Image resource : this.disposableIcons) {
+            disposableIcons.add(resource);
+        }
 		this.disposableIcons.clear();
 		return disposableIcons;
 	}
 	
-	public void disposeIcons(List resources){
-		Iterator it = resources.iterator();
-		while( it.hasNext() ){
-			Image image = (Image)it.next();
-			image.dispose();
-		}
+	public void disposeIcons(List<Image> resources){
+        for (Image image : resources) {
+            image.dispose();
+        }
 	}
 	
 	public void disposeIcons(){

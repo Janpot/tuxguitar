@@ -8,7 +8,6 @@ package org.herac.tuxguitar.io.base;
 
 import java.io.BufferedInputStream;
 import java.io.InputStream;
-import java.util.Iterator;
 
 import org.herac.tuxguitar.song.factory.TGFactory;
 import org.herac.tuxguitar.song.models.TGSong;
@@ -33,15 +32,13 @@ public class TGSongLoader {
 		try{
 			BufferedInputStream stream = new BufferedInputStream(is);
 			stream.mark(1);
-			Iterator it = TGFileFormatManager.instance().getInputStreams();
-			while(it.hasNext()){
-				TGInputStreamBase reader = (TGInputStreamBase)it.next();
-				reader.init(factory,stream);
-				if(reader.isSupportedVersion()){
-					return reader.readSong();
-				}
-				stream.reset();
-			}
+            for (TGInputStreamBase reader : TGFileFormatManager.instance().getInputStreams()) {
+                reader.init(factory, stream);
+                if (reader.isSupportedVersion()) {
+                    return reader.readSong();
+                }
+                stream.reset();
+            }
 			stream.close();
 		}catch(Throwable t){
 			throw new TGFileFormatException(t);

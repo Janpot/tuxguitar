@@ -1,7 +1,6 @@
 package org.herac.tuxguitar.gui.tools.browser.dialog;
 
 import java.io.InputStream;
-import java.util.Iterator;
 import java.util.List;
 
 import org.eclipse.swt.SWT;
@@ -54,7 +53,7 @@ public class TGBrowserDialog implements TGBrowserFactoryHandler,TGBrowserConnect
 	private Shell dialog;
 	protected Table table;
 	protected TableColumn column;
-	protected List elements;
+	protected List<TGBrowserElement> elements;
 	protected TGBrowserMenuBar menu;
 	protected TGBrowserToolBar toolBar;
 	
@@ -145,13 +144,11 @@ public class TGBrowserDialog implements TGBrowserFactoryHandler,TGBrowserConnect
 					if(!isDisposed()){
 						TGBrowserDialog.this.table.removeAll();
 						if(TGBrowserDialog.this.elements != null){
-							Iterator it = TGBrowserDialog.this.elements.iterator();
-							while(it.hasNext()){
-								TGBrowserElement element = (TGBrowserElement)it.next();
-								TableItem item = new TableItem(TGBrowserDialog.this.table, SWT.NONE);
-								item.setImage(element.isFolder()?TuxGuitar.instance().getIconManager().getBrowserFolder():TuxGuitar.instance().getIconManager().getBrowserFile());
-								item.setText(element.getName());
-							}
+                            for (TGBrowserElement element : TGBrowserDialog.this.elements) {
+                                TableItem item = new TableItem(TGBrowserDialog.this.table, SWT.NONE);
+                                item.setImage(element.isFolder() ? TuxGuitar.instance().getIconManager().getBrowserFolder() : TuxGuitar.instance().getIconManager().getBrowserFile());
+                                item.setText(element.getName());
+                            }
 						}
 						updateColumn();
 					}
@@ -189,7 +186,7 @@ public class TGBrowserDialog implements TGBrowserFactoryHandler,TGBrowserConnect
 	public TGBrowserElement getSelection(int index){
 		if(!isDisposed() && getConnection().isOpen()){
 			if(this.elements != null && index >= 0 && index < this.elements.size()){
-				return (TGBrowserElement)this.elements.get(index);
+				return this.elements.get(index);
 			}
 		}
 		return null;
@@ -199,7 +196,7 @@ public class TGBrowserDialog implements TGBrowserFactoryHandler,TGBrowserConnect
 		this.elements = null;
 	}
 	
-	protected void addElements(List elements){
+	protected void addElements(List<TGBrowserElement> elements){
 		this.elements = elements;
 	}
 	
@@ -282,7 +279,7 @@ public class TGBrowserDialog implements TGBrowserFactoryHandler,TGBrowserConnect
 		}
 	}
 	
-	public void notifyElements(int callId,List elements) {
+	public void notifyElements(int callId,List<TGBrowserElement> elements) {
 		if(!isDisposed()){
 			this.addElements(elements);
 			this.updateTable();

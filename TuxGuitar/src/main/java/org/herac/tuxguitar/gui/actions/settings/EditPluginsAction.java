@@ -6,8 +6,6 @@
  */
 package org.herac.tuxguitar.gui.actions.settings;
 
-import java.util.Iterator;
-
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.DisposeEvent;
 import org.eclipse.swt.events.DisposeListener;
@@ -72,15 +70,13 @@ public class EditPluginsAction extends Action{
 		columnPlugin.setText(TuxGuitar.getProperty("plugin.column.name"));
 		columnEnabled.setWidth( (TABLE_WIDTH / 4) );
 		columnPlugin.setWidth( (TABLE_WIDTH - (TABLE_WIDTH / 4)) );
-		
-		Iterator it = TuxGuitar.instance().getPluginManager().getPlugins().iterator();
-		while(it.hasNext()){
-			TGPlugin plugin = (TGPlugin)it.next();
-			TableItem item = new TableItem(table, SWT.NONE);
-			item.setData(plugin);
-			item.setText(1,((plugin.getName() != null)?plugin.getName():"Undefined Plugin"));
-			item.setChecked(TuxGuitar.instance().getPluginManager().isEnabled(plugin));
-		}
+
+        for (TGPlugin plugin : TuxGuitar.instance().getPluginManager().getPlugins()) {
+            TableItem item = new TableItem(table, SWT.NONE);
+            item.setData(plugin);
+            item.setText(1, ((plugin.getName() != null) ? plugin.getName() : "Undefined Plugin"));
+            item.setChecked(TuxGuitar.instance().getPluginManager().isEnabled(plugin));
+        }
 		
 		//------------------BUTTONS--------------------------
 		Composite buttons = new Composite(dialog, SWT.NONE);

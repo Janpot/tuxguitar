@@ -1,7 +1,5 @@
 package org.herac.tuxguitar.gui.tools.browser.dialog;
 
-import java.util.Iterator;
-
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
@@ -47,18 +45,16 @@ public class TGBrowserToolBar extends TGBrowserBar{
 		
 		//---New Book----------------------------------------------------------
 		this.newBrowserMenu = new Menu(this.composite);
-		Iterator bookTypes = TGBrowserManager.instance().getFactories();
-		while(bookTypes.hasNext()) {
-			final TGBrowserFactory bookType = (TGBrowserFactory)bookTypes.next();
-			MenuItem item = new MenuItem(this.newBrowserMenu, SWT.PUSH);
-			item.setText(bookType.getName());
-			item.setData(bookType);
-			item.addSelectionListener(new SelectionAdapter() {
-				public void widgetSelected(SelectionEvent e) {
-					newCollection( bookType.getType());
-				}
-			});
-		}
+        for (final TGBrowserFactory bookType : TGBrowserManager.instance().getFactories()) {
+            MenuItem item = new MenuItem(this.newBrowserMenu, SWT.PUSH);
+            item.setText(bookType.getName());
+            item.setData(bookType);
+            item.addSelectionListener(new SelectionAdapter() {
+                public void widgetSelected(SelectionEvent e) {
+                    newCollection(bookType.getType());
+                }
+            });
+        }
 		this.newBrowser = new ToolItem(this.toolBar,SWT.DROP_DOWN);
 		this.newBrowser.setImage(TuxGuitar.instance().getIconManager().getBrowserNew());
 		this.newBrowser.addSelectionListener(new SelectionAdapter() {
@@ -125,18 +121,16 @@ public class TGBrowserToolBar extends TGBrowserBar{
 	public void updateCollections(TGBrowserCollection selection){
 		int index = 0;
 		this.collections.removeAll();
-		
-		Iterator it = TGBrowserManager.instance().getCollections();
-		while(it.hasNext()){
-			TGBrowserCollection collection = (TGBrowserCollection)it.next();
-			if(collection.getData() != null){
-				this.collections.add(collection);
-				if(selection != null && selection.equals(collection)){
-					this.collections.select(index);
-				}
-				index ++;
-			}
-		}
+
+        for (TGBrowserCollection collection : TGBrowserManager.instance().getCollections()) {
+            if (collection.getData() != null) {
+                this.collections.add(collection);
+                if (selection != null && selection.equals(collection)) {
+                    this.collections.select(index);
+                }
+                index++;
+            }
+        }
 	}
 	
 	public void reload(){

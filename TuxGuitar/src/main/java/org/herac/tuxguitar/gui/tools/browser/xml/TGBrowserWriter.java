@@ -3,7 +3,6 @@ package org.herac.tuxguitar.gui.tools.browser.xml;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
-import java.util.Iterator;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -45,26 +44,23 @@ public class TGBrowserWriter {
 	private static void saveCollections(TGBrowserManager manager,Document document){
 		//chords tag
 		Node listNode = document.createElement(ITEM_LIST_TAG);
-		
-		Iterator collections = manager.getCollections();
-		while(collections.hasNext()){
-			TGBrowserCollection collection = (TGBrowserCollection)collections.next();
-			
-			//chord tag
-			Node node = document.createElement(ITEM_TAG);
-			listNode.appendChild(node);
-			
-			//name attribute
-			Attr typeAttr = document.createAttribute(ATTRIBUTE_TYPE);
-			typeAttr.setNodeValue(collection.getType());
-			
-			//name attribute
-			Attr dataAttr = document.createAttribute(ATTRIBUTE_DATA);
-			dataAttr.setNodeValue(collection.getData().toString());
-			
-			node.getAttributes().setNamedItem(typeAttr);
-			node.getAttributes().setNamedItem(dataAttr);
-		}
+
+        for (TGBrowserCollection collection : manager.getCollections()) {
+            //chord tag
+            Node node = document.createElement(ITEM_TAG);
+            listNode.appendChild(node);
+
+            //name attribute
+            Attr typeAttr = document.createAttribute(ATTRIBUTE_TYPE);
+            typeAttr.setNodeValue(collection.getType());
+
+            //name attribute
+            Attr dataAttr = document.createAttribute(ATTRIBUTE_DATA);
+            dataAttr.setNodeValue(collection.getData().toString());
+
+            node.getAttributes().setNamedItem(typeAttr);
+            node.getAttributes().setNamedItem(dataAttr);
+        }
 		
 		document.appendChild(listNode);
 	}

@@ -7,7 +7,6 @@
 package org.herac.tuxguitar.gui.editors.chord;
 
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 
 import org.eclipse.swt.SWT;
@@ -43,7 +42,7 @@ public class ChordEditor extends Composite {
 	private ChordDialog dialog;
 	private Composite composite;
 	private Text chordName;
-	private List points;
+	private List<Point> points;
 	private boolean[] firstFrets;
 	private int[] strings;
 	private int[] frets;
@@ -73,7 +72,7 @@ public class ChordEditor extends Composite {
 		this.frets = new int[TGChordImpl.MAX_FRETS];
 		this.width = ((STRING_SPACING * this.maxStrings) - STRING_SPACING);
 		this.height = ((FRET_SPACING * TGChordImpl.MAX_FRETS) - FRET_SPACING);
-		this.points = new ArrayList();
+		this.points = new ArrayList<Point>();
 		
 		for (int i = 0; i < this.firstFrets.length; i++) {
 			this.firstFrets[i] = false;
@@ -161,30 +160,28 @@ public class ChordEditor extends Composite {
 		// dibujo las cuerdas
 		painter.initPath();
 		painter.setAntialias(false);
-		for (int i = 0; i < this.strings.length; i++) {
-			painter.moveTo(this.strings[i], FRET_SPACING);
-			painter.lineTo(this.strings[i], FRET_SPACING + this.height);
-		}
+        for (int string : this.strings) {
+            painter.moveTo(string, FRET_SPACING);
+            painter.lineTo(string, FRET_SPACING + this.height);
+        }
 		painter.closePath();
 		
 		// dibujo las cegillas
 		painter.initPath();
 		painter.setAntialias(false);
-		for (int i = 0; i < this.frets.length; i++) {
-			painter.moveTo(STRING_SPACING, this.frets[i]);
-			painter.lineTo(STRING_SPACING + this.width, this.frets[i]);
-		}
+        for (int fret1 : this.frets) {
+            painter.moveTo(STRING_SPACING, fret1);
+            painter.lineTo(STRING_SPACING + this.width, fret1);
+        }
 		painter.closePath();
 		
 		// dibujo las notas
 		painter.setBackground(this.getDisplay().getSystemColor(SWT.COLOR_BLACK));
-		Iterator it = this.points.iterator();
-		while (it.hasNext()) {
-			Point point = (Point) it.next();
-			painter.initPath(TGPainter.PATH_FILL);
-			painter.addOval(point.x - (noteSize / 2), point.y + (noteSize / 2),noteSize, noteSize);
-			painter.closePath();
-		}
+        for (Point point : this.points) {
+            painter.initPath(TGPainter.PATH_FILL);
+            painter.addOval(point.x - (noteSize / 2), point.y + (noteSize / 2), noteSize, noteSize);
+            painter.closePath();
+        }
 		
 		// dibujo las notas al aire
 		for (int i = 0; i < this.firstFrets.length; i++) {
@@ -232,14 +229,12 @@ public class ChordEditor extends Composite {
 	}
 	
 	private boolean removePoint(Point point) {
-		Iterator it = this.points.iterator();
-		while (it.hasNext()) {
-			Point currPoint = (Point) it.next();
-			if (currPoint.x == point.x && currPoint.y == point.y) {
-				this.points.remove(point);
-				return true;
-			}
-		}
+        for (Point currPoint : this.points) {
+            if (currPoint.x == point.x && currPoint.y == point.y) {
+                this.points.remove(point);
+                return true;
+            }
+        }
 		return false;
 	}
 	
@@ -247,7 +242,7 @@ public class ChordEditor extends Composite {
 		for (int i = 0; i < this.points.size(); i++) {
 			Point minPoint = null;
 			for (int noteIdx = i; noteIdx < this.points.size(); noteIdx++) {
-				Point point = (Point) this.points.get(noteIdx);
+				Point point = this.points.get(noteIdx);
 				if (minPoint == null || point.x < minPoint.x) {
 					minPoint = point;
 				}
@@ -258,14 +253,12 @@ public class ChordEditor extends Composite {
 	}
 	
 	private void removePointsAtStringLine(int x) {
-		Iterator it = this.points.iterator();
-		while (it.hasNext()) {
-			Point point = (Point) it.next();
-			if (point.x == x) {
-				this.points.remove(point);
-				break;
-			}
-		}
+        for (Point point : this.points) {
+            if (point.x == x) {
+                this.points.remove(point);
+                break;
+            }
+        }
 	}
 	
 	private void addPoint(Point point) {
@@ -306,13 +299,11 @@ public class ChordEditor extends Composite {
 	}
 	
 	private boolean hasPoints(int stringIndex) {
-		Iterator it = this.points.iterator();
-		while (it.hasNext()) {
-			Point point = (Point) it.next();
-			if (point.x == this.strings[stringIndex]) {
-				return true;
-			}
-		}
+        for (Point point : this.points) {
+            if (point.x == this.strings[stringIndex]) {
+                return true;
+            }
+        }
 		return false;
 	}
 	
@@ -327,14 +318,12 @@ public class ChordEditor extends Composite {
 		}
 		
 		if (value < 0) {
-			Iterator it = this.points.iterator();
-			while (it.hasNext()) {
-				Point point = (Point) it.next();
-				if (string == (this.maxStrings - getStringIndex(point.x))) {
-					value = (getFretIndex(point.y + (FRET_SPACING / 2)) + 1);
-					value += (getFret() - 1);
-				}
-			}
+            for (Point point : this.points) {
+                if (string == (this.maxStrings - getStringIndex(point.x))) {
+                    value = (getFretIndex(point.y + (FRET_SPACING / 2)) + 1);
+                    value += (getFret() - 1);
+                }
+            }
 		}
 		return value;
 	}

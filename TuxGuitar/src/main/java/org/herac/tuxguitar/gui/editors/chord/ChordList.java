@@ -18,7 +18,6 @@
 package org.herac.tuxguitar.gui.editors.chord;
 
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 
 import org.eclipse.swt.SWT;
@@ -43,6 +42,7 @@ import org.herac.tuxguitar.gui.editors.TGPainter;
 import org.herac.tuxguitar.gui.editors.tab.TGChordImpl;
 import org.herac.tuxguitar.gui.editors.tab.layout.ViewLayout;
 import org.herac.tuxguitar.song.models.TGBeat;
+import org.herac.tuxguitar.song.models.TGChord;
 import org.herac.tuxguitar.song.models.TGString;
 /**
  * @author julian
@@ -60,7 +60,7 @@ public class ChordList extends Composite {
 	
 	private ChordDialog dialog;
 	private TGBeat beat;
-	private List graphicChords;
+	private List<TGChord> graphicChords;
 	private int height;
 	private TGChordImpl selectedChord;
 	private Composite composite;
@@ -70,7 +70,7 @@ public class ChordList extends Composite {
 		super(parent, SWT.NONE);
 		this.setLayout(dialog.gridLayout(1,false,0,0));
 		this.setLayoutData(new GridData(SWT.FILL,SWT.FILL,true,true));
-		this.graphicChords = new ArrayList();
+		this.graphicChords = new ArrayList<TGChord>();
 		this.dialog = dialog;
 		this.beat = beat;
 		this.init();
@@ -128,34 +128,33 @@ public class ChordList extends Composite {
 		int fromX = 15;
 		int fromY = 10;
 		int vScroll = this.composite.getVerticalBar().getSelection();
-		Iterator it = this.graphicChords.iterator();
-		while (it.hasNext()) {
-			TGChordImpl chord = (TGChordImpl) it.next();
-			
-			Color color = getChordColor(chord);
-			chord.setBackgroundColor(this.composite.getBackground());
-			chord.setColor(color);
-			chord.setNoteColor(color);
-			chord.setTonicColor(getDisplay().getSystemColor(SWT.COLOR_DARK_RED));
-			chord.setFirstFretSpacing(CHORD_FIRST_FRET_SPACING);
-			chord.setStringSpacing(CHORD_STRING_SPACING);
-			chord.setFretSpacing(CHORD_FRET_SPACING);
-			chord.setNoteSize(CHORD_NOTE_SIZE);
-			chord.setFirstFretFont(getFont(painter.getGC()));
-			chord.setStyle(ViewLayout.DISPLAY_CHORD_DIAGRAM);
-			chord.update(painter, true);
-			if(fromX + chord.getWidth() >= ((getBounds().x + getBounds().width) - 20)){
-				fromX = 15;
-				fromY += chord.getHeight() + 10;
-			}
-			chord.setEditing(true);
-			chord.setPosX( fromX );
-			chord.setPosY( fromY - vScroll);
-			chord.paint(painter,(chord.getWidth() / 2),0);
-			
-			fromX += chord.getWidth() + 10;
-			maxHeight = Math.max(maxHeight,chord.getHeight());
-		}
+        for (TGChord graphicChord : this.graphicChords) {
+            TGChordImpl chord = (TGChordImpl) graphicChord;
+
+            Color color = getChordColor(chord);
+            chord.setBackgroundColor(this.composite.getBackground());
+            chord.setColor(color);
+            chord.setNoteColor(color);
+            chord.setTonicColor(getDisplay().getSystemColor(SWT.COLOR_DARK_RED));
+            chord.setFirstFretSpacing(CHORD_FIRST_FRET_SPACING);
+            chord.setStringSpacing(CHORD_STRING_SPACING);
+            chord.setFretSpacing(CHORD_FRET_SPACING);
+            chord.setNoteSize(CHORD_NOTE_SIZE);
+            chord.setFirstFretFont(getFont(painter.getGC()));
+            chord.setStyle(ViewLayout.DISPLAY_CHORD_DIAGRAM);
+            chord.update(painter, true);
+            if (fromX + chord.getWidth() >= ((getBounds().x + getBounds().width) - 20)) {
+                fromX = 15;
+                fromY += chord.getHeight() + 10;
+            }
+            chord.setEditing(true);
+            chord.setPosX(fromX);
+            chord.setPosY(fromY - vScroll);
+            chord.paint(painter, (chord.getWidth() / 2), 0);
+
+            fromX += chord.getWidth() + 10;
+            maxHeight = Math.max(maxHeight, chord.getHeight());
+        }
 		this.height = (fromY + maxHeight + 10);
 		this.updateScroll();
 	}
@@ -195,38 +194,36 @@ public class ChordList extends Composite {
 	}
 	
 	protected TGChordImpl getChord(int x, int y,boolean setAsSelected) {
-		Iterator it = this.graphicChords.iterator();
-		while (it.hasNext()) {
-			TGChordImpl chord = (TGChordImpl) it.next();
-			int x1 = chord.getPosX();
-			int x2 = x1 + chord.getWidth();
-			int y1 = chord.getPosY();
-			int y2 = y1 + chord.getHeight();
-			if (x > x1 && x < x2 && y > y1 && y < y2) {
-				if(setAsSelected){
-					if(this.selectedChord != null){
-						this.selectedChord.dispose();
-					}
-					this.selectedChord = chord;
-					chord.dispose();
-				}
-				return chord;
-			}
-		}
+        for (TGChord graphicChord : this.graphicChords) {
+            TGChordImpl chord = (TGChordImpl) graphicChord;
+            int x1 = chord.getPosX();
+            int x2 = x1 + chord.getWidth();
+            int y1 = chord.getPosY();
+            int y2 = y1 + chord.getHeight();
+            if (x > x1 && x < x2 && y > y1 && y < y2) {
+                if (setAsSelected) {
+                    if (this.selectedChord != null) {
+                        this.selectedChord.dispose();
+                    }
+                    this.selectedChord = chord;
+                    chord.dispose();
+                }
+                return chord;
+            }
+        }
 		return null;
 	}
 	
-	public void setChords(List chords) {
+	public void setChords(List<TGChord> chords) {
 		this.disposeChords();
 		this.selectedChord = null;
-		
-		Iterator it = chords.iterator();
-		while (it.hasNext()) {
-			TGChordImpl chord = (TGChordImpl) it.next();
-			chord.setTonic( ChordList.this.dialog.getSelector().getTonicList().getSelectionIndex() );
-			chord.setBeat(ChordList.this.beat);
-			this.graphicChords.add(chord);
-		}
+
+        for (TGChord chord1 : chords) {
+            TGChordImpl chord = (TGChordImpl) chord1;
+            chord.setTonic(ChordList.this.dialog.getSelector().getTonicList().getSelectionIndex());
+            chord.setBeat(ChordList.this.beat);
+            this.graphicChords.add(chord);
+        }
 		this.redraw();
 	}
 	
@@ -237,10 +234,9 @@ public class ChordList extends Composite {
 	}
 	
 	public void disposeChords(){
-		Iterator it = this.graphicChords.iterator();
-		while (it.hasNext()) {
-			((TGChordImpl) it.next()).dispose();
-		}
+        for (TGChord graphicChord : this.graphicChords) {
+            ((TGChordImpl) graphicChord).dispose();
+        }
 		this.graphicChords.clear();
 	}
 	

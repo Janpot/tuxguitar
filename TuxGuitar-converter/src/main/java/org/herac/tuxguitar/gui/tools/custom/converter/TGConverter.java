@@ -7,7 +7,6 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.InputStream;
-import java.util.Iterator;
 
 import org.herac.tuxguitar.io.base.TGFileFormatException;
 import org.herac.tuxguitar.io.base.TGFileFormatManager;
@@ -47,7 +46,7 @@ public class TGConverter {
 			this.getListener().notifyFileProcess(convertFileName);
 			
 			TGSongManager manager = new TGSongManager();
-			TGSong song = null;
+			TGSong song;
 			try {
 				song = TGFileFormatManager.instance().getLoader().load(manager.getFactory(),new FileInputStream(fileName));
 			} catch (TGFileFormatException e) {
@@ -143,23 +142,21 @@ public class TGConverter {
 	}
 	
 	private TGSong importSong(TGFactory factory, String filename) {
-		Iterator importers = TGFileFormatManager.instance().getImporters();
-		while (importers.hasNext() ) {
-			try {
-				TGRawImporter rawImporter = (TGRawImporter)importers.next();
-				if( rawImporter instanceof TGLocalFileImporter ){
-					TGLocalFileImporter currentImporter = (TGLocalFileImporter)rawImporter;
-					currentImporter.configure(true);
-					if (isSupportedExtension(filename,currentImporter)) {
-						InputStream input = new BufferedInputStream(new FileInputStream(filename));
-						currentImporter.init(factory, input);
-						return currentImporter.importSong();
-					}
-				}
-			} catch (Throwable throwable) {
-				throwable.printStackTrace();
-			}
-		}
+        for (TGRawImporter rawImporter : TGFileFormatManager.instance().getImporters()) {
+            try {
+                if (rawImporter instanceof TGLocalFileImporter) {
+                    TGLocalFileImporter currentImporter = (TGLocalFileImporter) rawImporter;
+                    currentImporter.configure(true);
+                    if (isSupportedExtension(filename, currentImporter)) {
+                        InputStream input = new BufferedInputStream(new FileInputStream(filename));
+                        currentImporter.init(factory, input);
+                        return currentImporter.importSong();
+                    }
+                }
+            } catch (Throwable throwable) {
+                throwable.printStackTrace();
+            }
+        }
 		return null;
 	}
 	
@@ -168,9 +165,9 @@ public class TGConverter {
 			String extension = filename.substring(filename.lastIndexOf("."),filename.length());
 			extension="*"+extension.toLowerCase();
 			String[] formats = currentImporter.getFileFormat().getSupportedFormats().split(";");
-			for (int i=0; i<formats.length; i++)
-				if (formats[i].toLowerCase().equals(extension))
-					return true;
+            for (String format : formats)
+                if (format.toLowerCase().equals(extension))
+                    return true;
 		} catch (Exception ex) {
 			return false;
 		}

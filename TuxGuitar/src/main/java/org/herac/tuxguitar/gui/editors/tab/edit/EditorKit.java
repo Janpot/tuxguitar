@@ -1,7 +1,5 @@
 package org.herac.tuxguitar.gui.editors.tab.edit;
 
-import java.util.Iterator;
-
 import org.eclipse.swt.events.MenuEvent;
 import org.eclipse.swt.events.MenuListener;
 import org.eclipse.swt.events.MouseEvent;
@@ -18,6 +16,7 @@ import org.herac.tuxguitar.gui.editors.tab.Tablature;
 import org.herac.tuxguitar.gui.editors.tab.layout.ViewLayout;
 import org.herac.tuxguitar.gui.system.config.TGConfigKeys;
 import org.herac.tuxguitar.song.models.TGBeat;
+import org.herac.tuxguitar.song.models.TGMeasure;
 import org.herac.tuxguitar.song.models.TGString;
 
 public class EditorKit implements MouseListener,MouseMoveListener,MouseTrackListener,MenuListener{
@@ -109,22 +108,21 @@ public class EditorKit implements MouseListener,MouseMoveListener,MouseTrackList
 	public TGMeasureImpl findSelectedMeasure(TGTrackImpl track,int x,int y){
 		TGMeasureImpl measure = null;
 		int minorDistance = 0;
-		
-		Iterator it = track.getMeasures();
-		while(it.hasNext()){
-			TGMeasureImpl m = (TGMeasureImpl)it.next();
-			if(!m.isOutOfBounds() && m.getTs() != null){
-				boolean isAtX = (x >= m.getPosX() && x <= m.getPosX() + m.getWidth(getTablature().getViewLayout()) + m.getSpacing());
-				if(isAtX){
-					int measureHeight = m.getTs().getSize();
-					int distanceY = Math.min(Math.abs(y - (m.getPosY())),Math.abs(y - ( m.getPosY() + measureHeight - 10)));
-					if(measure == null || distanceY < minorDistance){
-						measure = m;
-						minorDistance = distanceY;
-					}
-				}
-			}
-		}
+
+        for (TGMeasure tgMeasure : track.getMeasures()) {
+            TGMeasureImpl m = (TGMeasureImpl) tgMeasure;
+            if (!m.isOutOfBounds() && m.getTs() != null) {
+                boolean isAtX = (x >= m.getPosX() && x <= m.getPosX() + m.getWidth(getTablature().getViewLayout()) + m.getSpacing());
+                if (isAtX) {
+                    int measureHeight = m.getTs().getSize();
+                    int distanceY = Math.min(Math.abs(y - (m.getPosY())), Math.abs(y - (m.getPosY() + measureHeight - 10)));
+                    if (measure == null || distanceY < minorDistance) {
+                        measure = m;
+                        minorDistance = distanceY;
+                    }
+                }
+            }
+        }
 		return measure;
 	}
 	
@@ -133,17 +131,16 @@ public class EditorKit implements MouseListener,MouseMoveListener,MouseTrackList
 		int posX = measure.getHeaderImpl().getLeftSpacing(getTablature().getViewLayout()) + measure.getPosX();
 		int bestDiff = -1;
 		TGBeatImpl bestBeat = null;
-		Iterator it = measure.getBeats().iterator();
-		while(it.hasNext()){
-			TGBeatImpl beat = (TGBeatImpl)it.next();
-			if(!beat.getVoice(voice).isEmpty()){
-				int diff = Math.abs(x - (posX + (beat.getPosX() + beat.getSpacing())));
-				if(bestDiff == -1 || diff < bestDiff){
-					bestBeat = beat;
-					bestDiff = diff;
-				}
-			}
-		}
+        for (TGBeat tgBeat : measure.getBeats()) {
+            TGBeatImpl beat = (TGBeatImpl) tgBeat;
+            if (!beat.getVoice(voice).isEmpty()) {
+                int diff = Math.abs(x - (posX + (beat.getPosX() + beat.getSpacing())));
+                if (bestDiff == -1 || diff < bestDiff) {
+                    bestBeat = beat;
+                    bestDiff = diff;
+                }
+            }
+        }
 		if( bestBeat == null ){
 			bestBeat = (TGBeatImpl)getTablature().getViewLayout().getSongManager().getMeasureManager().getFirstBeat(measure.getBeats());
 		}
@@ -155,16 +152,14 @@ public class EditorKit implements MouseListener,MouseMoveListener,MouseTrackList
 		int stringSpacing = getTablature().getViewLayout().getStringSpacing();
 		int minorDistance = 0;
 		int firstStringY = measure.getPosY() + measure.getTs().getPosition(TGTrackSpacing.POSITION_TABLATURE);
-		
-		Iterator it = measure.getTrack().getStrings().iterator();
-		while(it.hasNext()){
-			TGString currString = (TGString)it.next();
-			int distanceX = Math.abs(y - (firstStringY + ((currString.getNumber() * stringSpacing) - stringSpacing)));
-			if(string == null || distanceX < minorDistance){
-				string = currString;
-				minorDistance = distanceX;
-			}
-		}
+
+        for (TGString currString : measure.getTrack().getStrings()) {
+            int distanceX = Math.abs(y - (firstStringY + ((currString.getNumber() * stringSpacing) - stringSpacing)));
+            if (string == null || distanceX < minorDistance) {
+                string = currString;
+                minorDistance = distanceX;
+            }
+        }
 		
 		return string;
 	}

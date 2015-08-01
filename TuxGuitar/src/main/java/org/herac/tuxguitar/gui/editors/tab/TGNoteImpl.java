@@ -6,8 +6,6 @@
  */
 package org.herac.tuxguitar.gui.editors.tab;
 
-import java.util.Iterator;
-
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.graphics.Rectangle;
 import org.herac.tuxguitar.gui.editors.TGPainter;
@@ -369,13 +367,12 @@ public class TGNoteImpl extends TGNote {
 			TGBeat beat = getMeasureImpl().getBeat(i);
 			TGVoice voice = beat.getVoice( getVoice().getIndex() );
 			if (beat.getStart() < getBeatImpl().getStart() && !voice.isRestVoice()) {
-				Iterator it = voice.getNotes().iterator();
-				while(it.hasNext()){
-					TGNoteImpl note = (TGNoteImpl)it.next();
-					if (note.getString() == getString()) {
-						return note;
-					}
-				}
+                for (TGNote tgNote : voice.getNotes()) {
+                    TGNoteImpl note = (TGNoteImpl) tgNote;
+                    if (note.getString() == getString()) {
+                        return note;
+                    }
+                }
 			}
 		}
 		return null;

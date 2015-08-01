@@ -6,8 +6,6 @@
  */
 package org.herac.tuxguitar.gui.actions.insert;
 
-import java.util.Iterator;
-
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
@@ -128,17 +126,15 @@ public class RepeatAlternativeAction extends Action{
 	
 	protected int getExistentEndings(TGMeasure measure){
 		int existentEndings = 0;
-		Iterator it = getSongManager().getSong().getMeasureHeaders();
-		while(it.hasNext()){
-			TGMeasureHeader header = (TGMeasureHeader)it.next();
-			if(header.getNumber() == measure.getNumber()){
-				break;
-			}
-			if(header.isRepeatOpen()){
-				existentEndings = 0;
-			}
-			existentEndings |= header.getRepeatAlternative();
-		}
+        for (TGMeasureHeader header : getSongManager().getSong().getMeasureHeaders()) {
+            if (header.getNumber() == measure.getNumber()) {
+                break;
+            }
+            if (header.isRepeatOpen()) {
+                existentEndings = 0;
+            }
+            existentEndings |= header.getRepeatAlternative();
+        }
 		return existentEndings;
 	}
 	

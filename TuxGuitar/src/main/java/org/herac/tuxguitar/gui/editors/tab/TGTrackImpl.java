@@ -6,10 +6,9 @@
  */
 package org.herac.tuxguitar.gui.editors.tab;
 
-import java.util.Iterator;
-
 import org.herac.tuxguitar.gui.editors.tab.layout.ViewLayout;
 import org.herac.tuxguitar.song.factory.TGFactory;
+import org.herac.tuxguitar.song.models.TGMeasure;
 import org.herac.tuxguitar.song.models.TGTrack;
 
 /**
@@ -61,13 +60,12 @@ public class TGTrackImpl extends TGTrack{
 	}
 	
 	public void clear(){
-		Iterator measures = getMeasures();
-		while(measures.hasNext()){
-			TGMeasureImpl measure = (TGMeasureImpl)measures.next();
-			if(!measure.isDisposed()){
-				measure.dispose();
-			}
-		}
+        for (TGMeasure tgMeasure : getMeasures()) {
+            TGMeasureImpl measure = (TGMeasureImpl) tgMeasure;
+            if (!measure.isDisposed()) {
+                measure.dispose();
+            }
+        }
 		super.clear();
 	}
 	

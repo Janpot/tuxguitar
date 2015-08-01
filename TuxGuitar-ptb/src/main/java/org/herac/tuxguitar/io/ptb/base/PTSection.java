@@ -1,18 +1,17 @@
 package org.herac.tuxguitar.io.ptb.base;
 
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 
 public class PTSection {
 	
 	private int number;
 	private int staffs;
-	private List positions;
+	private List<PTPosition> positions;
 	
 	public PTSection(int number){
 		this.number = number;
-		this.positions = new ArrayList();
+		this.positions = new ArrayList<PTPosition>();
 	}
 	
 	public int getNumber(){
@@ -27,18 +26,16 @@ public class PTSection {
 		this.staffs = staffs;
 	}
 	
-	public List getPositions(){
+	public List<PTPosition> getPositions(){
 		return this.positions;
 	}
 	
 	public PTPosition getPosition(int position){
-		Iterator it = getPositions().iterator();
-		while(it.hasNext()){
-			PTPosition p = (PTPosition)it.next();
-			if(p.getPosition() == position){
-				return p;
-			}
-		}
+        for (PTPosition p : getPositions()) {
+            if (p.getPosition() == position) {
+                return p;
+            }
+        }
 		PTPosition p = new PTPosition(position);
 		getPositions().add(p);
 		return p;
@@ -46,11 +43,9 @@ public class PTSection {
 	
 	public int getNextPositionNumber(){
 		int next = 0;
-		Iterator it = getPositions().iterator();
-		while(it.hasNext()){
-			PTPosition p = (PTPosition)it.next();
-			next = Math.max(next, (p.getPosition() + 1) );
-		}
+        for (PTPosition p : getPositions()) {
+            next = Math.max(next, (p.getPosition() + 1));
+        }
 		return next;
 	}
 	
@@ -59,7 +54,7 @@ public class PTSection {
 		for(int i = 0;i < count;i++){
 			PTPosition minimum = null;
 			for(int j = i;j < count;j++){
-				PTPosition position = (PTPosition)getPositions().get(j);
+				PTPosition position = getPositions().get(j);
 				if(minimum == null || position.getPosition() < minimum.getPosition()){
 					minimum = position;
 				}

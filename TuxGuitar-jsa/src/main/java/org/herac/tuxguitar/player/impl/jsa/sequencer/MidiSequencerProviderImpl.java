@@ -1,7 +1,6 @@
 package org.herac.tuxguitar.player.impl.jsa.sequencer;
 
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 
 import javax.sound.midi.MidiDevice;
@@ -20,30 +19,29 @@ public class MidiSequencerProviderImpl implements MidiSequencerProvider{
 		super();
 	}
 	
-	public List listSequencers() throws MidiPlayerException {
+	public List<MidiSequencer> listSequencers() throws MidiPlayerException {
 		try {
-			List sequencers = new ArrayList();
+			List<MidiSequencer> sequencers = new ArrayList<MidiSequencer>();
 			MidiDevice.Info[] infos = MidiSystem.getMidiDeviceInfo();
-			for(int i = 0; i < infos.length; i++){
-				try {
-					Iterator it = sequencers.iterator();
-					boolean exists = false;
-					while(it.hasNext()){
-						if( ((MidiSequencer)it.next()).getKey().equals(infos[i].getName()) ){
-							exists = true;
-							break;
-						}
-					}
-					if(!exists){
-						MidiDevice device = MidiSystem.getMidiDevice(infos[i]);
-						if(device instanceof Sequencer){
-							sequencers.add(new MidiSequencerImpl((Sequencer)device));
-						}
-					}
-				} catch (MidiUnavailableException e) {
-					throw new MidiPlayerException(TuxGuitar.getProperty("jsa.error.midi.unavailable"),e);
-				}
-			}
+            for (MidiDevice.Info info : infos) {
+                try {
+                    boolean exists = false;
+                    for (MidiSequencer sequencer : sequencers) {
+                        if ((sequencer).getKey().equals(info.getName())) {
+                            exists = true;
+                            break;
+                        }
+                    }
+                    if (!exists) {
+                        MidiDevice device = MidiSystem.getMidiDevice(info);
+                        if (device instanceof Sequencer) {
+                            sequencers.add(new MidiSequencerImpl((Sequencer) device));
+                        }
+                    }
+                } catch (MidiUnavailableException e) {
+                    throw new MidiPlayerException(TuxGuitar.getProperty("jsa.error.midi.unavailable"), e);
+                }
+            }
 			return sequencers;
 		}catch (Throwable t) {
 			throw new MidiPlayerException(TuxGuitar.getProperty("jsa.error.unknown"),t);

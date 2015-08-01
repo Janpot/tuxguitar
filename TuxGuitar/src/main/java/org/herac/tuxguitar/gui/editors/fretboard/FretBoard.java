@@ -6,8 +6,6 @@
  */
 package org.herac.tuxguitar.gui.editors.fretboard;
 
-import java.util.Iterator;
-
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.MouseEvent;
 import org.eclipse.swt.events.MouseListener;
@@ -408,27 +406,24 @@ public class FretBoard extends Composite {
 			
 			for(int v = 0; v < this.beat.countVoices(); v ++){
 				TGVoice voice = this.beat.getVoice( v );
-				Iterator it = voice.getNotes().iterator();
-				while (it.hasNext()) {
-					TGNote note = (TGNote) it.next();
-					int fretIndex = note.getValue();
-					int stringIndex = note.getString() - 1;
-					if (fretIndex >= 0 && fretIndex < this.frets.length && stringIndex >= 0 && stringIndex < this.strings.length) {
-						int x = this.frets[fretIndex];
-						if (fretIndex > 0) {
-							x -= ((this.frets[fretIndex] - this.frets[fretIndex - 1]) / 2);
-						}
-						int y = this.strings[stringIndex];
-						
-						if( (this.config.getStyle() & FretBoardConfig.DISPLAY_TEXT_NOTE) != 0 ){
-							int realValue = track.getString(note.getString()).getValue() + note.getValue();
-							paintKeyText(painter,this.config.getColorNote(), x, y, NOTE_NAMES[ (realValue % 12) ]);
-						}
-						else{
-							paintKeyOval(painter,this.config.getColorNote(), x, y);
-						}
-					}
-				}
+                for (TGNote note : voice.getNotes()) {
+                    int fretIndex = note.getValue();
+                    int stringIndex = note.getString() - 1;
+                    if (fretIndex >= 0 && fretIndex < this.frets.length && stringIndex >= 0 && stringIndex < this.strings.length) {
+                        int x = this.frets[fretIndex];
+                        if (fretIndex > 0) {
+                            x -= ((this.frets[fretIndex] - this.frets[fretIndex - 1]) / 2);
+                        }
+                        int y = this.strings[stringIndex];
+
+                        if ((this.config.getStyle() & FretBoardConfig.DISPLAY_TEXT_NOTE) != 0) {
+                            int realValue = track.getString(note.getString()).getValue() + note.getValue();
+                            paintKeyText(painter, this.config.getColorNote(), x, y, NOTE_NAMES[(realValue % 12)]);
+                        } else {
+                            paintKeyOval(painter, this.config.getColorNote(), x, y);
+                        }
+                    }
+                }
 			}
 			painter.setLineWidth(1);
 		}
@@ -515,23 +510,21 @@ public class FretBoard extends Composite {
 		if(this.beat != null){
 			for(int v = 0; v < this.beat.countVoices(); v ++){
 				TGVoice voice = this.beat.getVoice( v );
-				Iterator it = voice.getNotes().iterator();
-				while (it.hasNext()) {
-					TGNote note = (TGNote) it.next();
-					if (note.getValue() == fret && note.getString() == string) {
-						//comienza el undoable
-						UndoableMeasureGeneric undoable = UndoableMeasureGeneric.startUndo();
-						
-						TGSongManager manager = TuxGuitar.instance().getSongManager();
-						manager.getMeasureManager().removeNote(note);
-						
-						//termia el undoable
-						TuxGuitar.instance().getUndoableManager().addEdit(undoable.endUndo());
-						TuxGuitar.instance().getFileHistory().setUnsavedFile();
-						
-						return true;
-					}
-				}
+                for (TGNote note : voice.getNotes()) {
+                    if (note.getValue() == fret && note.getString() == string) {
+                        //comienza el undoable
+                        UndoableMeasureGeneric undoable = UndoableMeasureGeneric.startUndo();
+
+                        TGSongManager manager = TuxGuitar.instance().getSongManager();
+                        manager.getMeasureManager().removeNote(note);
+
+                        //termia el undoable
+                        TuxGuitar.instance().getUndoableManager().addEdit(undoable.endUndo());
+                        TuxGuitar.instance().getFileHistory().setUnsavedFile();
+
+                        return true;
+                    }
+                }
 			}
 		}
 		return false;

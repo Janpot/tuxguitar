@@ -3,7 +3,6 @@ package org.herac.tuxguitar.io.tef;
 import java.io.InputStream;
 import java.util.Collections;
 import java.util.Comparator;
-import java.util.Iterator;
 
 import org.herac.tuxguitar.io.base.TGFileFormat;
 import org.herac.tuxguitar.io.base.TGFileFormatException;
@@ -133,30 +132,26 @@ public class TESongImporter implements TGLocalFileImporter{
 	}
 	
 	private void addComponents(TESong song){
-		Iterator it = song.getComponents().iterator();
-		while(it.hasNext()){
-			TEComponent component = (TEComponent)it.next();
-			
-			if(component.getMeasure() >= 0 && component.getMeasure() < this.manager.getSong().countMeasureHeaders()){
-				int offset = 0;
-				TETrack[] tracks = song.getTracks();
-				for(int i = 0; i < tracks.length; i ++){
-					int strings = tracks[i].getStrings().length;
-					int string = (component.getString() - offset);
-					if( string >= 0 && string <  strings && string < 7){
-						TGTrack tgTrack = this.manager.getSong().getTrack(i);
-						TGMeasure tgMeasure = tgTrack.getMeasure(component.getMeasure());
-						if(component instanceof TEComponentNote){
-							addNote(tracks[i], (TEComponentNote)component,string,strings,tgMeasure);
-						}
-						else if(component instanceof TEComponentChord){
-							addChord(song.getChords(),(TEComponentChord)component,tgTrack,tgMeasure);
-						}
-					}
-					offset += strings;
-				}
-			}
-		}
+        for (TEComponent component : song.getComponents()) {
+            if (component.getMeasure() >= 0 && component.getMeasure() < this.manager.getSong().countMeasureHeaders()) {
+                int offset = 0;
+                TETrack[] tracks = song.getTracks();
+                for (int i = 0; i < tracks.length; i++) {
+                    int strings = tracks[i].getStrings().length;
+                    int string = (component.getString() - offset);
+                    if (string >= 0 && string < strings && string < 7) {
+                        TGTrack tgTrack = this.manager.getSong().getTrack(i);
+                        TGMeasure tgMeasure = tgTrack.getMeasure(component.getMeasure());
+                        if (component instanceof TEComponentNote) {
+                            addNote(tracks[i], (TEComponentNote) component, string, strings, tgMeasure);
+                        } else if (component instanceof TEComponentChord) {
+                            addChord(song.getChords(), (TEComponentChord) component, tgTrack, tgMeasure);
+                        }
+                    }
+                    offset += strings;
+                }
+            }
+        }
 	}
 	
 	private TGBeat getBeat(TGMeasure measure, long start){
@@ -175,7 +170,7 @@ public class TESongImporter implements TGLocalFileImporter{
 			fixedPosition = (( fixedPosition - (fixedPosition % 64)) + ((((fixedPosition % 64) * 2) * 2) / 3) );
 		}
 		long start = ((long) (measure.getStart() + ( (fixedPosition * TGDuration.QUARTER_TIME)  / 64)) );
-		
+
 		return start;
 	}
 	
@@ -237,12 +232,9 @@ public class TESongImporter implements TGLocalFileImporter{
 	}
 	
 	public void sortComponents(TESong song){
-		Collections.sort(song.getComponents(),new Comparator() {
-			public int compare(Object o1, Object o2) {
-				if(o1 instanceof TEComponent && o2 instanceof TEComponent){
-					TEComponent c1 = (TEComponent)o1;
-					TEComponent c2 = (TEComponent)o2;
-					
+		Collections.sort(song.getComponents(),new Comparator<TEComponent>() {
+			public int compare(TEComponent c1, TEComponent c2) {
+				if(c1 != null && c2 != null){
 					if ( c1.getMeasure() < c2.getMeasure() ){
 						return -1;
 					}
@@ -277,15 +269,11 @@ class TGSongAdjuster{
 	}
 	
 	public TGSong process(){
-		Iterator tracks = this.manager.getSong().getTracks();
-		while(tracks.hasNext()){
-			TGTrack track = (TGTrack)tracks.next();
-			Iterator measures = track.getMeasures();
-			while(measures.hasNext()){
-				TGMeasure measure = (TGMeasure)measures.next();
-				this.process(measure);
-			}
-		}
+        for (TGTrack track : this.manager.getSong().getTracks()) {
+            for (TGMeasure measure : track.getMeasures()) {
+                this.process(measure);
+            }
+        }
 		return this.manager.getSong();
 	}
 	

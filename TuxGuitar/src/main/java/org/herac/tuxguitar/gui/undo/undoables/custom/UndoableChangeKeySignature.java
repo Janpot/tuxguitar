@@ -1,7 +1,6 @@
 package org.herac.tuxguitar.gui.undo.undoables.custom;
 
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 
 import org.herac.tuxguitar.gui.TuxGuitar;
@@ -11,6 +10,7 @@ import org.herac.tuxguitar.gui.undo.CannotRedoException;
 import org.herac.tuxguitar.gui.undo.CannotUndoException;
 import org.herac.tuxguitar.gui.undo.UndoableEdit;
 import org.herac.tuxguitar.gui.undo.undoables.UndoableCaretHelper;
+import org.herac.tuxguitar.song.models.TGMeasure;
 import org.herac.tuxguitar.song.models.TGTrack;
 
 public class UndoableChangeKeySignature implements UndoableEdit{
@@ -20,7 +20,7 @@ public class UndoableChangeKeySignature implements UndoableEdit{
 	private long position;
 	private int redoableKeySignature;
 	private int undoableKeySignature;
-	private List nextKeySignaturePositions;
+	private List<KeySignaturePosition> nextKeySignaturePositions;
 	private boolean toEnd;
 	private TGTrack track;
 	
@@ -45,11 +45,9 @@ public class UndoableChangeKeySignature implements UndoableEdit{
 		}
 		TuxGuitar.instance().getSongManager().getTrackManager().changeKeySignature(this.track,this.position,this.undoableKeySignature,this.toEnd);
 		if(this.toEnd){
-			Iterator it = this.nextKeySignaturePositions.iterator();
-			while(it.hasNext()){
-				KeySignaturePosition ksp = (KeySignaturePosition)it.next();
-				TuxGuitar.instance().getSongManager().getTrackManager().changeKeySignature(this.track,ksp.getPosition(),ksp.getKeySignature(),true);
-			}
+            for (KeySignaturePosition ksp : this.nextKeySignaturePositions) {
+                TuxGuitar.instance().getSongManager().getTrackManager().changeKeySignature(this.track, ksp.getPosition(), ksp.getKeySignature(), true);
+            }
 		}
 		TuxGuitar.instance().fireUpdate();
 		this.undoCaret.update();
@@ -73,21 +71,20 @@ public class UndoableChangeKeySignature implements UndoableEdit{
 		undoable.position = caret.getPosition();
 		undoable.undoableKeySignature = caret.getMeasure().getKeySignature();
 		undoable.track = caret.getTrack();
-		undoable.nextKeySignaturePositions = new ArrayList();
+		undoable.nextKeySignaturePositions = new ArrayList<KeySignaturePosition>();
 		
 		int prevKeySignature = undoable.undoableKeySignature;
-		Iterator it = caret.getTrack().getMeasures();
-		while(it.hasNext()){
-			TGMeasureImpl measure = (TGMeasureImpl)it.next();
-			if(measure.getStart() > undoable.position){
-				int currKeySignature = measure.getKeySignature();
-				if(prevKeySignature != currKeySignature){
-					KeySignaturePosition tsp = undoable.new KeySignaturePosition(measure.getStart(),currKeySignature);
-					undoable.nextKeySignaturePositions.add(tsp);
-				}
-				prevKeySignature = currKeySignature;
-			}
-		}
+        for (TGMeasure tgMeasure : caret.getTrack().getMeasures()) {
+            TGMeasureImpl measure = (TGMeasureImpl) tgMeasure;
+            if (measure.getStart() > undoable.position) {
+                int currKeySignature = measure.getKeySignature();
+                if (prevKeySignature != currKeySignature) {
+                    KeySignaturePosition tsp = undoable.new KeySignaturePosition(measure.getStart(), currKeySignature);
+                    undoable.nextKeySignaturePositions.add(tsp);
+                }
+                prevKeySignature = currKeySignature;
+            }
+        }
 		
 		return undoable;
 	}

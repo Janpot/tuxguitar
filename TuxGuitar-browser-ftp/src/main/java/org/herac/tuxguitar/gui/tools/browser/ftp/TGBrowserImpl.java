@@ -88,33 +88,33 @@ public class TGBrowserImpl extends TGBrowser{
 		}
 	}
 	
-	public List listElements() throws TGBrowserException {
-		List elements = new ArrayList();
+	public List<TGBrowserElement> listElements() throws TGBrowserException {
+		List<TGBrowserElement> elements = new ArrayList<TGBrowserElement>();
 		try {
 			this.client.binary();
 			String[] names = this.client.listNames();
 			String[] infos = this.client.listDetails();
 			
 			if(names.length > 0 && infos.length > 0){
-				for(int i = 0;i < names.length;i++){
-					String name = names[i].trim();
-					
-					if(name.indexOf(this.path) == 0 && name.length() > this.path.length()){
-						name = name.substring(this.path.length());
-					}
-					while(name.indexOf("/") == 0){
-						name = name.substring(1);
-					}
-					if( name.length() > 0 ){
-						for(int j = 0;j < infos.length;j++){
-							String info = infos[j].trim();
-							if(info.indexOf(name) > 0){
-								elements.add(new TGBrowserElementImpl(this,name,info,this.path));
-								break;
-							}
-						}
-					}
-				}
+                for (String name : names) {
+                    name = name.trim();
+
+                    if (name.indexOf(this.path) == 0 && name.length() > this.path.length()) {
+                        name = name.substring(this.path.length());
+                    }
+                    while (name.indexOf("/") == 0) {
+                        name = name.substring(1);
+                    }
+                    if (name.length() > 0) {
+                        for (String info : infos) {
+                            info = info.trim();
+                            if (info.indexOf(name) > 0) {
+                                elements.add(new TGBrowserElementImpl(this, name, info, this.path));
+                                break;
+                            }
+                        }
+                    }
+                }
 			}
 			if( !elements.isEmpty() ){
 				Collections.sort(elements,new TGBrowserElementComparator());

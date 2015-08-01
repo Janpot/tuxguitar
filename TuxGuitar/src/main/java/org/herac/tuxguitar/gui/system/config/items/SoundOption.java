@@ -20,12 +20,12 @@ public class SoundOption extends Option{
 	
 	//**MidiSequencer module**//
 	protected String msCurrentKey;
-	protected List msList;
+	protected List<MidiSequencer> msList;
 	protected Combo msCombo;
 	
 	//**MidiPort module**//
 	protected String mpCurrentKey;
-	protected List mpList;
+	protected List<MidiOutputPort> mpList;
 	protected Combo mpCombo;
 	
 	public SoundOption(TGConfigEditor configEditor,ToolBar toolBar,final Composite parent){
@@ -82,7 +82,7 @@ public class SoundOption extends Option{
 							//---Midi Sequencer---//
 							String loadedSequencer = msLoaded;
 							for (int i = 0; i < SoundOption.this.msList.size(); i++) {
-								MidiSequencer sequencer = (MidiSequencer)SoundOption.this.msList.get(i);
+								MidiSequencer sequencer = SoundOption.this.msList.get(i);
 								SoundOption.this.msCombo.add(sequencer.getName());
 								if(SoundOption.this.msCurrentKey != null && SoundOption.this.msCurrentKey.equals(sequencer.getKey())){
 									SoundOption.this.msCombo.select(i);
@@ -98,7 +98,7 @@ public class SoundOption extends Option{
 							//---Midi Port---//
 							String loadedPort = mpLoaded;
 							for (int i = 0; i < SoundOption.this.mpList.size(); i++) {
-								MidiOutputPort port = (MidiOutputPort)SoundOption.this.mpList.get(i);
+								MidiOutputPort port = SoundOption.this.mpList.get(i);
 								SoundOption.this.mpCombo.add(port.getName());
 								if(SoundOption.this.mpCurrentKey != null && SoundOption.this.mpCurrentKey.equals(port.getKey())){
 									SoundOption.this.mpCombo.select(i);
@@ -124,11 +124,11 @@ public class SoundOption extends Option{
 		if(this.initialized){
 			int msIndex = this.msCombo.getSelectionIndex();
 			if(msIndex >= 0 && msIndex < this.msList.size()){
-				getConfig().setProperty(TGConfigKeys.MIDI_SEQUENCER, ((MidiSequencer)this.msList.get(msIndex)).getKey());
+				getConfig().setProperty(TGConfigKeys.MIDI_SEQUENCER, this.msList.get(msIndex).getKey());
 			}
 			int mpIndex = this.mpCombo.getSelectionIndex();
 			if(mpIndex >= 0 && mpIndex < this.mpList.size()){
-				MidiOutputPort midiPort = (MidiOutputPort)this.mpList.get(mpIndex);
+				MidiOutputPort midiPort = this.mpList.get(mpIndex);
 				getConfig().setProperty(TGConfigKeys.MIDI_PORT, midiPort.getKey());
 			}
 		}

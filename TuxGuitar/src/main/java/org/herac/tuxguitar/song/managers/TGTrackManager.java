@@ -1,14 +1,9 @@
 package org.herac.tuxguitar.song.managers;
 
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 
-import org.herac.tuxguitar.song.models.TGChannel;
-import org.herac.tuxguitar.song.models.TGColor;
-import org.herac.tuxguitar.song.models.TGMeasure;
-import org.herac.tuxguitar.song.models.TGMeasureHeader;
-import org.herac.tuxguitar.song.models.TGTrack;
+import org.herac.tuxguitar.song.models.*;
 
 public class TGTrackManager {
 	private TGSongManager songManager;
@@ -23,13 +18,11 @@ public class TGTrackManager {
 	
 	public TGMeasure getFirstMeasure(TGTrack track){
 		TGMeasure firstMeasure = null;
-		Iterator measures = track.getMeasures();
-		while(measures.hasNext()){
-			TGMeasure currMeasure = (TGMeasure)measures.next();
-			if(firstMeasure == null || (currMeasure.getStart() < firstMeasure.getStart())){
-				firstMeasure = currMeasure;
-			}
-		}
+        for (TGMeasure currMeasure : track.getMeasures()) {
+            if (firstMeasure == null || (currMeasure.getStart() < firstMeasure.getStart())) {
+                firstMeasure = currMeasure;
+            }
+        }
 		return firstMeasure;
 	}
 	
@@ -46,56 +39,48 @@ public class TGTrackManager {
 	}
 	
 	public TGMeasure getMeasureAt(TGTrack track,long start){
-		Iterator it = track.getMeasures();
-		while(it.hasNext()){
-			TGMeasure measure = (TGMeasure)it.next();
-			long measureStart = measure.getStart();
-			long measureLength = measure.getLength();
-			if(start >= measureStart && start < measureStart + measureLength){
-				return measure;
-			}
-		}
+        for (TGMeasure measure : track.getMeasures()) {
+            long measureStart = measure.getStart();
+            long measureLength = measure.getLength();
+            if (start >= measureStart && start < measureStart + measureLength) {
+                return measure;
+            }
+        }
 		return null;
 	}
 	
 	public TGMeasure getMeasure(TGTrack track,int number){
-		Iterator it = track.getMeasures();
-		while(it.hasNext()){
-			TGMeasure measure = (TGMeasure)it.next();
-			if(measure.getNumber() == number){
-				return measure;
-			}
-		}
+        for (TGMeasure measure : track.getMeasures()) {
+            if (measure.getNumber() == number) {
+                return measure;
+            }
+        }
 		return null;
 	}
 	
 	/**
 	 * Retorna Todos los desde Start hasta el final del compas
 	 */
-	public List getMeasuresBeforeEnd(TGTrack track,long fromStart) {
-		List measures = new ArrayList();
-		Iterator it = track.getMeasures();
-		while(it.hasNext()){
-			TGMeasure currMeasure = (TGMeasure)it.next();
-			if (currMeasure.getStart() >= fromStart) {
-				measures.add(currMeasure);
-			}
-		}
+	public List<TGMeasure> getMeasuresBeforeEnd(TGTrack track,long fromStart) {
+		List<TGMeasure> measures = new ArrayList<TGMeasure>();
+        for (TGMeasure currMeasure : track.getMeasures()) {
+            if (currMeasure.getStart() >= fromStart) {
+                measures.add(currMeasure);
+            }
+        }
 		return measures;
 	}
 	
 	/**
 	 * Retorna Todos los desde Start hasta el final del compas
 	 */
-	public List getMeasuresBetween(TGTrack track,long p1,long p2) {
-		List measures = new ArrayList();
-		Iterator it = track.getMeasures();
-		while(it.hasNext()){
-			TGMeasure measure = (TGMeasure)it.next();
-			if ((measure.getStart() + measure.getLength()) > p1  &&  measure.getStart() < p2) {
-				measures.add(measure);
-			}
-		}
+	public List<TGMeasure> getMeasuresBetween(TGTrack track,long p1,long p2) {
+		List<TGMeasure> measures = new ArrayList<TGMeasure>();
+        for (TGMeasure measure : track.getMeasures()) {
+            if ((measure.getStart() + measure.getLength()) > p1 && measure.getStart() < p2) {
+                measures.add(measure);
+            }
+        }
 		return measures;
 	}
 	
@@ -186,26 +171,22 @@ public class TGTrackManager {
 	}
 	
 	public void moveOutOfBoundsBeatsToNewMeasure(TGTrack track, long start){
-		Iterator it = getMeasuresBeforeEnd(track,start).iterator();
-		while( it.hasNext() ){
-			TGMeasure measure = (TGMeasure)it.next();
-			getSongManager().getMeasureManager().moveOutOfBoundsBeatsToNewMeasure(measure);
-		}
+        for (TGMeasure measure : getMeasuresBeforeEnd(track, start)) {
+            getSongManager().getMeasureManager().moveOutOfBoundsBeatsToNewMeasure(measure);
+        }
 	}
 	
 	public void moveTrackBeats(TGTrack track, long measureStart, long moveStart, long theMove ){
-		List measures = getMeasuresBeforeEnd(track,measureStart);
-		for( int i = 0 ; i < measures.size() ; i ++ ){
-			TGMeasure measure = (TGMeasure)measures.get(i);
-			if( moveStart + theMove < moveStart ){
-				getSongManager().getMeasureManager().removeBeatsBeetween(measure, moveStart, (moveStart + Math.abs(theMove)));
-			}
-			getSongManager().getMeasureManager().moveBeats(measure, moveStart, theMove);
-		}
-		for( int i = 0 ; i < measures.size() ; i ++ ){
-			TGMeasure measure = (TGMeasure)measures.get(i);
-			getSongManager().getMeasureManager().moveOutOfBoundsBeatsToNewMeasure(measure,false);
-		}
+		List<TGMeasure> measures = getMeasuresBeforeEnd(track,measureStart);
+        for (TGMeasure measure : measures) {
+            if (moveStart + theMove < moveStart) {
+                getSongManager().getMeasureManager().removeBeatsBeetween(measure, moveStart, (moveStart + Math.abs(theMove)));
+            }
+            getSongManager().getMeasureManager().moveBeats(measure, moveStart, theMove);
+        }
+        for (TGMeasure measure : measures) {
+            getSongManager().getMeasureManager().moveOutOfBoundsBeatsToNewMeasure(measure, false);
+        }
 	}
 	
 	public void changeKeySignature(TGTrack track,long start,int keySignature,boolean toEnd){
@@ -220,12 +201,10 @@ public class TGTrackManager {
 		measure.setKeySignature(keySignature);
 		
 		if(toEnd){
-			List measures = getMeasuresBeforeEnd(track,measure.getStart() + 1);
-			Iterator it = measures.iterator();
-			while(it.hasNext()){
-				TGMeasure nextMeasure = (TGMeasure)it.next();
-				nextMeasure.setKeySignature(keySignature);
-			}
+			List<TGMeasure> measures = getMeasuresBeforeEnd(track,measure.getStart() + 1);
+            for (TGMeasure nextMeasure : measures) {
+                nextMeasure.setKeySignature(keySignature);
+            }
 		}
 	}
 	
@@ -241,12 +220,10 @@ public class TGTrackManager {
 		measure.setClef(clef);
 		
 		if(toEnd){
-			List measures = getMeasuresBeforeEnd(track,measure.getStart() + 1);
-			Iterator it = measures.iterator();
-			while(it.hasNext()){
-				TGMeasure nextMeasure = (TGMeasure)it.next();
-				nextMeasure.setClef(clef);
-			}
+			List<TGMeasure> measures = getMeasuresBeforeEnd(track,measure.getStart() + 1);
+            for (TGMeasure nextMeasure : measures) {
+                nextMeasure.setClef(clef);
+            }
 		}
 	}
 	
@@ -268,7 +245,7 @@ public class TGTrackManager {
 		track.getColor().setB(color.getB());
 	}
 	
-	public void changeInstrumentStrings(TGTrack track,List strings){
+	public void changeInstrumentStrings(TGTrack track,List<TGString> strings){
 		if(strings.size() < track.getStrings().size()){
 			removeNotesAfterString(track,strings.size());
 		}
@@ -276,11 +253,9 @@ public class TGTrackManager {
 	}
 	
 	public void removeNotesAfterString(TGTrack track,int string){
-		Iterator it = track.getMeasures();
-		while(it.hasNext()){
-			TGMeasure measure = (TGMeasure)it.next();
-			getSongManager().getMeasureManager().removeNotesAfterString(measure,string);
-		}
+        for (TGMeasure measure : track.getMeasures()) {
+            getSongManager().getMeasureManager().removeNotesAfterString(measure, string);
+        }
 	}
 	
 	public void changeInstrument(TGTrack track,int instrument,boolean percussion){
@@ -299,35 +274,27 @@ public class TGTrackManager {
 	}
 	
 	public void autoCompleteSilences(TGTrack track){
-		Iterator it = track.getMeasures();
-		while(it.hasNext()){
-			TGMeasure measure = (TGMeasure)it.next();
-			this.songManager.getMeasureManager().autoCompleteSilences(measure);
-		}
+        for (TGMeasure measure : track.getMeasures()) {
+            this.songManager.getMeasureManager().autoCompleteSilences(measure);
+        }
 	}
 	
 	public void orderBeats(TGTrack track){
-		Iterator it = track.getMeasures();
-		while(it.hasNext()){
-			TGMeasure measure = (TGMeasure)it.next();
-			this.songManager.getMeasureManager().orderBeats(measure);
-		}
+        for (TGMeasure measure : track.getMeasures()) {
+            this.songManager.getMeasureManager().orderBeats(measure);
+        }
 	}
 	
 	public void transposeNotes(TGTrack track, int transposition , boolean tryKeepString, boolean applyToChords, int applyToString){
-		Iterator it = track.getMeasures();
-		while(it.hasNext()){
-			TGMeasure measure = (TGMeasure)it.next();
-			this.songManager.getMeasureManager().transposeNotes(measure, transposition, tryKeepString, applyToChords, applyToString );
-		}
+        for (TGMeasure measure : track.getMeasures()) {
+            this.songManager.getMeasureManager().transposeNotes(measure, transposition, tryKeepString, applyToChords, applyToString);
+        }
 	}
 	
 	public void transposeNotes(TGTrack track, int[] transpositionStrings , boolean tryKeepString , boolean applyToChords ){
-		Iterator it = track.getMeasures();
-		while(it.hasNext()){
-			TGMeasure measure = (TGMeasure)it.next();
-			this.songManager.getMeasureManager().transposeNotes(measure, transpositionStrings, tryKeepString , applyToChords);
-		}
+        for (TGMeasure measure : track.getMeasures()) {
+            this.songManager.getMeasureManager().transposeNotes(measure, transpositionStrings, tryKeepString, applyToChords);
+        }
 	}
 	
 	/**

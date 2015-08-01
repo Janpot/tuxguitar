@@ -1,7 +1,5 @@
 package org.herac.tuxguitar.io.ptb;
 
-import java.util.Iterator;
-
 import org.herac.tuxguitar.io.ptb.base.PTBar;
 import org.herac.tuxguitar.io.ptb.base.PTBeat;
 import org.herac.tuxguitar.io.ptb.base.PTComponent;
@@ -154,23 +152,21 @@ public class PTSongParser {
 			}
 			
 			// If track was already created, but it's not in use
-			Iterator it = this.manager.getSong().getTracks();
-			while( it.hasNext() ){
-				TGTrack tgTrack = (TGTrack )it.next();
-				if( hasSameInfo( tgTrack , info)){
-					boolean exists = false;
-					for( int i = 0 ; i < this.helper.getInfoHelper().countStaffTracks() ; i ++ ){
-						TGTrack existent = this.helper.getInfoHelper().getStaffTrack(i);
-						if(existent != null && existent.getNumber() == tgTrack.getNumber() ){
-							exists = true;
-						}
-					}
-					if(!exists){
-						this.helper.getInfoHelper().addStaffTrack( tgTrack );
-						return;
-					}
-				}
-			}
+            for (TGTrack tgTrack : this.manager.getSong().getTracks()) {
+                if (hasSameInfo(tgTrack, info)) {
+                    boolean exists = false;
+                    for (int i = 0; i < this.helper.getInfoHelper().countStaffTracks(); i++) {
+                        TGTrack existent = this.helper.getInfoHelper().getStaffTrack(i);
+                        if (existent != null && existent.getNumber() == tgTrack.getNumber()) {
+                            exists = true;
+                        }
+                    }
+                    if (!exists) {
+                        this.helper.getInfoHelper().addStaffTrack(tgTrack);
+                        return;
+                    }
+                }
+            }
 			
 			// Create track if not exists.
 			this.createTrack(info);
@@ -210,23 +206,21 @@ public class PTSongParser {
 		tgVoice.getDuration().setDoubleDotted(beat.isDoubleDotted());
 		tgVoice.getDuration().getDivision().setTimes(beat.getTimes());
 		tgVoice.getDuration().getDivision().setEnters(beat.getEnters());
-		
-		Iterator it = beat.getNotes().iterator();
-		while(it.hasNext()){
-			PTNote ptNote = (PTNote)it.next();
-			if( ptNote.getString() <= measure.getTrack().stringCount() && ptNote.getValue() >= 0 ){
-				TGNote note = this.manager.getFactory().newNote();
-				note.setString(ptNote.getString());
-				note.setValue(ptNote.getValue());
-				note.setTiedNote( ptNote.isTied() );
-				note.getEffect().setVibrato( beat.isVibrato() );
-				note.getEffect().setDeadNote( ptNote.isDead() );
-				note.getEffect().setHammer( ptNote.isHammer() );
-				note.getEffect().setSlide( ptNote.isSlide() );
-				note.getEffect().setBend( makeBend(ptNote.getBend()));
-				tgVoice.addNote(note);
-			}
-		}
+
+        for (PTNote ptNote : beat.getNotes()) {
+            if (ptNote.getString() <= measure.getTrack().stringCount() && ptNote.getValue() >= 0) {
+                TGNote note = this.manager.getFactory().newNote();
+                note.setString(ptNote.getString());
+                note.setValue(ptNote.getValue());
+                note.setTiedNote(ptNote.isTied());
+                note.getEffect().setVibrato(beat.isVibrato());
+                note.getEffect().setDeadNote(ptNote.isDead());
+                note.getEffect().setHammer(ptNote.isHammer());
+                note.getEffect().setSlide(ptNote.isSlide());
+                note.getEffect().setBend(makeBend(ptNote.getBend()));
+                tgVoice.addNote(note);
+            }
+        }
 		
 		if( beat.isArpeggioUp() ){
 			tgBeat.getStroke().setDirection( TGStroke.STROKE_DOWN );

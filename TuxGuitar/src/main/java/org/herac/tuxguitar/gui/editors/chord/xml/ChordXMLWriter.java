@@ -3,7 +3,6 @@ package org.herac.tuxguitar.gui.editors.chord.xml;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
-import java.util.Iterator;
 import java.util.List;
 
 import javax.xml.parsers.DocumentBuilder;
@@ -27,7 +26,7 @@ import org.w3c.dom.Node;
 
 public class ChordXMLWriter {
 	
-	public static void setChords(List chords,String fileName) {
+	public static void setChords(List<TGChord> chords,String fileName) {
 		File file = new File(fileName);
 		
 		Document doc = createDocument();
@@ -72,49 +71,46 @@ public class ChordXMLWriter {
 	/**
 	 * Write chords to xml file
 	 */
-	private static void setChords(List chords,Document document){
+	private static void setChords(List<TGChord> chords,Document document){
 		//chords tag
 		Node chordsNode = document.createElement(ChordXML.CHORD_LIST_TAG);
-		
-		Iterator it = chords.iterator();
-		while(it.hasNext()){
-			TGChord chord = (TGChord)it.next();
-			
-			//chord tag
-			Node chordNode = document.createElement(ChordXML.CHORD_TAG);
-			chordsNode.appendChild(chordNode);
-			
-			//name attribute
-			Attr nameAttr = document.createAttribute(ChordXML.CHORD_NAME_ATTRIBUTE);
-			nameAttr.setNodeValue( chord.getName());
-			chordNode.getAttributes().setNamedItem(nameAttr);
-			
-			//strings attribute
-			Attr stringsAttr = document.createAttribute(ChordXML.CHORD_STRINGS_ATTRIBUTE);
-			stringsAttr.setNodeValue(Integer.toString(chord.getStrings().length));
-			chordNode.getAttributes().setNamedItem(stringsAttr);
-			
-			//first fret attribute
-			Attr firstFretAttr = document.createAttribute(ChordXML.CHORD_FIRST_FRET_ATTRIBUTE);
-			firstFretAttr.setNodeValue(Integer.toString(chord.getFirstFret()));
-			chordNode.getAttributes().setNamedItem(firstFretAttr);
-			
-			for(int i = 0;i < chord.getStrings().length; i++){
-				//string tag
-				Node stringNode = document.createElement(ChordXML.STRING_TAG);
-				chordNode.appendChild(stringNode);
-				
-				//number attribute
-				Attr numberAttr = document.createAttribute(ChordXML.STRING_NUMBER_ATTRIBUTE);
-				numberAttr.setNodeValue(Integer.toString(i));
-				stringNode.getAttributes().setNamedItem(numberAttr);
-				
-				//fret attribute
-				Attr fretAttr = document.createAttribute(ChordXML.STRING_FRET_ATTRIBUTE);
-				fretAttr.setNodeValue(Integer.toString(chord.getFretValue(i)));
-				stringNode.getAttributes().setNamedItem(fretAttr);
-			}
-		}
+
+        for (TGChord chord : chords) {
+            //chord tag
+            Node chordNode = document.createElement(ChordXML.CHORD_TAG);
+            chordsNode.appendChild(chordNode);
+
+            //name attribute
+            Attr nameAttr = document.createAttribute(ChordXML.CHORD_NAME_ATTRIBUTE);
+            nameAttr.setNodeValue(chord.getName());
+            chordNode.getAttributes().setNamedItem(nameAttr);
+
+            //strings attribute
+            Attr stringsAttr = document.createAttribute(ChordXML.CHORD_STRINGS_ATTRIBUTE);
+            stringsAttr.setNodeValue(Integer.toString(chord.getStrings().length));
+            chordNode.getAttributes().setNamedItem(stringsAttr);
+
+            //first fret attribute
+            Attr firstFretAttr = document.createAttribute(ChordXML.CHORD_FIRST_FRET_ATTRIBUTE);
+            firstFretAttr.setNodeValue(Integer.toString(chord.getFirstFret()));
+            chordNode.getAttributes().setNamedItem(firstFretAttr);
+
+            for (int i = 0; i < chord.getStrings().length; i++) {
+                //string tag
+                Node stringNode = document.createElement(ChordXML.STRING_TAG);
+                chordNode.appendChild(stringNode);
+
+                //number attribute
+                Attr numberAttr = document.createAttribute(ChordXML.STRING_NUMBER_ATTRIBUTE);
+                numberAttr.setNodeValue(Integer.toString(i));
+                stringNode.getAttributes().setNamedItem(numberAttr);
+
+                //fret attribute
+                Attr fretAttr = document.createAttribute(ChordXML.STRING_FRET_ATTRIBUTE);
+                fretAttr.setNodeValue(Integer.toString(chord.getFretValue(i)));
+                stringNode.getAttributes().setNamedItem(fretAttr);
+            }
+        }
 		
 		document.appendChild(chordsNode);
 	}

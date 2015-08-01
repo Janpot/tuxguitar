@@ -3,6 +3,7 @@ package org.herac.tuxguitar.io.tg;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.herac.tuxguitar.gui.system.plugins.TGPlugin;
 import org.herac.tuxguitar.gui.system.plugins.base.TGExporterPlugin;
 import org.herac.tuxguitar.gui.system.plugins.base.TGInputStreamPlugin;
 import org.herac.tuxguitar.gui.system.plugins.base.TGPluginList;
@@ -11,8 +12,8 @@ import org.herac.tuxguitar.io.base.TGRawExporter;
 
 public class TGPluginListImpl extends TGPluginList{
 	
-	protected List getPlugins() {
-		List plugins = new ArrayList();
+	protected List<TGPlugin> loadPlugins() {
+		List<TGPlugin> plugins = new ArrayList<TGPlugin>();
 		plugins.add(new TGInputStreamPlugin() {
 			protected TGInputStreamBase getInputStream() {
 				return new org.herac.tuxguitar.io.tg.v11.TGInputStream();
