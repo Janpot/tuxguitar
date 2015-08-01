@@ -1,0 +1,4 @@
+dependencies {
+    compile project(':TuxGuitar')
+    compile 'com.lowagie:itext:2.0.8'
+}

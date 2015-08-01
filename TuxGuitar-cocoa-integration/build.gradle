@@ -1,0 +1,4 @@
+dependencies {
+    compile project(':TuxGuitar')
+    compile 'org.eclipse.swt:org.eclipse.swt.cocoa.macosx:4.3'
+}
