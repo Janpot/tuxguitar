@@ -1,10 +1,12 @@
 package org.herac.tuxguitar.player.impl.midiport.oss;
 
 import org.eclipse.swt.widgets.Shell;
+import org.herac.tuxguitar.gui.system.Service;
 import org.herac.tuxguitar.gui.system.plugins.TGPluginSetup;
 import org.herac.tuxguitar.gui.system.plugins.base.TGMidiOutputPortProviderPlugin;
 import org.herac.tuxguitar.player.base.MidiOutputPortProvider;
 
+@Service
 public class MidiOutputPortProviderPlugin extends TGMidiOutputPortProviderPlugin implements TGPluginSetup{
 	
 	private MidiOutputPortProviderImpl portReader;

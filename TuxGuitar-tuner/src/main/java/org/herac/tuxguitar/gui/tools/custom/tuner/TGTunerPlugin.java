@@ -4,12 +4,14 @@ import java.util.Iterator;
 import java.util.List;
 
 import org.herac.tuxguitar.gui.TuxGuitar;
+import org.herac.tuxguitar.gui.system.Service;
 import org.herac.tuxguitar.song.models.TGString;
 
 /**
  * @author Nikola Kolarovic <nikola.kolarovic at gmail.com>
  *
  */
+@Service
 public class TGTunerPlugin extends org.herac.tuxguitar.gui.system.plugins.base.TGToolItemPlugin {
 
 	

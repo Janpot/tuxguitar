@@ -1,8 +1,10 @@
 package org.herac.tuxguitar.player.impl.midiport.winmm;
 
+import org.herac.tuxguitar.gui.system.Service;
 import org.herac.tuxguitar.gui.system.plugins.base.TGMidiOutputPortProviderPlugin;
 import org.herac.tuxguitar.player.base.MidiOutputPortProvider;
 
+@Service
 public class MidiOutputPortProviderPlugin extends TGMidiOutputPortProviderPlugin{
 	
 	private MidiOutputPortProviderImpl portReader;

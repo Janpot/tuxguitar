@@ -6,9 +6,11 @@ import java.util.List;
 import org.herac.tuxguitar.community.browser.TGBrowserPluginImpl;
 import org.herac.tuxguitar.community.io.TGShareSongPlugin;
 import org.herac.tuxguitar.community.startup.TGCommunityStartupPlugin;
+import org.herac.tuxguitar.gui.system.Service;
 import org.herac.tuxguitar.gui.system.plugins.TGPluginException;
 import org.herac.tuxguitar.gui.system.plugins.base.TGPluginList;
 
+@Service
 public class TGCommunityPluginImpl extends TGPluginList {
 
 	protected List loadPlugins() throws TGPluginException {

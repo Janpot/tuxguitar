@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.eclipse.swt.widgets.Shell;
+import org.herac.tuxguitar.gui.system.Service;
 import org.herac.tuxguitar.gui.system.plugins.TGPluginException;
 import org.herac.tuxguitar.gui.system.plugins.TGPluginSetup;
 import org.herac.tuxguitar.gui.system.plugins.base.TGPluginList;
@@ -12,6 +13,7 @@ import org.herac.tuxguitar.jack.settings.JackSettings;
 import org.herac.tuxguitar.jack.settings.JackSettingsDialog;
 import org.herac.tuxguitar.jack.synthesizer.JackOutputPortProviderPlugin;
 
+@Service
 public class JackPluginImpl extends TGPluginList implements TGPluginSetup {
 	
 	private JackClient jackClient;

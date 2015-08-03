@@ -28,6 +28,7 @@ import org.eclipse.swt.widgets.TableItem;
 import org.herac.tuxguitar.gui.TuxGuitar;
 import org.herac.tuxguitar.gui.actions.Action;
 import org.herac.tuxguitar.gui.system.plugins.TGPlugin;
+import org.herac.tuxguitar.gui.system.plugins.TGPluginManager;
 import org.herac.tuxguitar.gui.system.plugins.TGPluginSetup;
 import org.herac.tuxguitar.gui.util.DialogUtils;
 import org.herac.tuxguitar.gui.util.MessageDialog;
@@ -71,11 +72,18 @@ public class EditPluginsAction extends Action{
 		columnEnabled.setWidth( (TABLE_WIDTH / 4) );
 		columnPlugin.setWidth( (TABLE_WIDTH - (TABLE_WIDTH / 4)) );
 
-        for (TGPlugin plugin : TuxGuitar.instance().getPluginManager().getPlugins()) {
+        final TGPluginManager pluginManager = TuxGuitar.instance().getPluginManager();
+        for (TGPlugin plugin: pluginManager.getPlugins()) {
             TableItem item = new TableItem(table, SWT.NONE);
             item.setData(plugin);
-            item.setText(1, ((plugin.getName() != null) ? plugin.getName() : "Undefined Plugin"));
-            item.setChecked(TuxGuitar.instance().getPluginManager().isEnabled(plugin));
+            item.setText(1, ((plugin.getName() != null) ? plugin.getName() : ("Unnamed Plugin (" + plugin.getClass().getSimpleName() + ")")));
+            item.setChecked(pluginManager.isEnabled(plugin));
+            TGPluginManager.Status status = pluginManager.getStatus(plugin);
+            if (status != TGPluginManager.Status.OK) {
+                item.setGrayed(true);
+                item.setForeground(table.getDisplay().getSystemColor(SWT.COLOR_DARK_RED));
+                item.setText(1, item.getText(1) + " [" + status + "]");
+            }
         }
 		
 		//------------------BUTTONS--------------------------
@@ -134,7 +142,7 @@ public class EditPluginsAction extends Action{
 					final TableItem item = (TableItem)event.item;
 					if(event.detail == SWT.CHECK){
 						TuxGuitar.instance().loadCursor(dialog,SWT.CURSOR_WAIT);
-						TuxGuitar.instance().getPluginManager().setEnabled((TGPlugin)item.getData(),item.getChecked());
+						pluginManager.setEnabled((TGPlugin) item.getData(), item.getChecked());
 						TuxGuitar.instance().loadCursor(dialog,SWT.CURSOR_ARROW);
 						table.setSelection(item);
 					}
@@ -162,6 +170,11 @@ public class EditPluginsAction extends Action{
 		showInfoString(info,TuxGuitar.getProperty("version") + ":",plugin.getVersion());
 		showInfoString(info,TuxGuitar.getProperty("author") + ":",plugin.getAuthor());
 		showInfoString(info,TuxGuitar.getProperty("description") + ":",plugin.getDescription());
+        TGPluginManager pluginManager = TuxGuitar.instance().getPluginManager();
+        String error = pluginManager.getError(plugin);
+        if (error != null) {
+            showInfoString(info, "Error:", error).setForeground(parent.getDisplay().getSystemColor(SWT.COLOR_DARK_RED));
+        }
 		
 		//------------------BUTTONS--------------------------
 		Composite buttons = new Composite(dialog, SWT.NONE);
@@ -182,7 +195,7 @@ public class EditPluginsAction extends Action{
 		DialogUtils.openDialog(dialog, DialogUtils.OPEN_STYLE_CENTER | DialogUtils.OPEN_STYLE_PACK);
 	}
 	
-	private void showInfoString(Composite parent,String key,String value){
+	private Label showInfoString(Composite parent,String key,String value){
 		Label labelKey = new Label(parent,SWT.LEFT);
 		Label labelValue = new Label(parent,SWT.LEFT | SWT.WRAP);
 		labelKey.setLayoutData(new GridData(SWT.LEFT,SWT.TOP,false,true));
@@ -190,6 +203,7 @@ public class EditPluginsAction extends Action{
 		setBold(labelKey);
 		labelKey.setText(key);
 		labelValue.setText( (value != null && value.length() > 0)?value:TuxGuitar.getProperty("plugin.unknown-value"));
+        return labelValue;
 	}
 	
 	private void setBold(Label label){

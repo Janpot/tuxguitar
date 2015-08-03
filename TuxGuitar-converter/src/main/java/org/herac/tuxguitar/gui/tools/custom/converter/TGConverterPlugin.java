@@ -1,5 +1,8 @@
 package org.herac.tuxguitar.gui.tools.custom.converter;
 
+import org.herac.tuxguitar.gui.system.Service;
+
+@Service
 public class TGConverterPlugin extends org.herac.tuxguitar.gui.system.plugins.base.TGToolItemPlugin {
 	
 	protected void doAction() {

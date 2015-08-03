@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.eclipse.swt.widgets.Shell;
+import org.herac.tuxguitar.gui.system.Service;
 import org.herac.tuxguitar.gui.system.plugins.TGPlugin;
 import org.herac.tuxguitar.gui.system.plugins.TGPluginSetup;
 import org.herac.tuxguitar.gui.system.plugins.base.TGInputStreamPlugin;
@@ -12,6 +13,7 @@ import org.herac.tuxguitar.gui.system.plugins.base.TGPluginList;
 import org.herac.tuxguitar.io.base.TGInputStreamBase;
 import org.herac.tuxguitar.io.base.TGOutputStreamBase;
 
+@Service
 public class GTPPluginList extends TGPluginList implements TGPluginSetup{
 	
 	protected List<TGPlugin> loadPlugins() {

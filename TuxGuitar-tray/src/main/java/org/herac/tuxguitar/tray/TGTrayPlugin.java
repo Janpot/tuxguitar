@@ -1,7 +1,9 @@
 package org.herac.tuxguitar.tray;
 
+import org.herac.tuxguitar.gui.system.Service;
 import org.herac.tuxguitar.gui.system.plugins.base.TGPluginAdapter;
 
+@Service
 public class TGTrayPlugin extends TGPluginAdapter {
 	
 	private boolean loaded;

@@ -1,8 +1,10 @@
 package org.herac.tuxguitar.io.lilypond;
 
+import org.herac.tuxguitar.gui.system.Service;
 import org.herac.tuxguitar.gui.system.plugins.base.TGExporterPlugin;
 import org.herac.tuxguitar.io.base.TGRawExporter;
 
+@Service
 public class LilypondPluginExporter extends TGExporterPlugin{
 	
 	protected TGRawExporter getExporter() {

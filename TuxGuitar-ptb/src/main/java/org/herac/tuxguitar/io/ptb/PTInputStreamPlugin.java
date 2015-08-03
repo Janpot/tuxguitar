@@ -1,8 +1,10 @@
 package org.herac.tuxguitar.io.ptb;
 
+import org.herac.tuxguitar.gui.system.Service;
 import org.herac.tuxguitar.gui.system.plugins.base.TGInputStreamPlugin;
 import org.herac.tuxguitar.io.base.TGInputStreamBase;
 
+@Service
 public class PTInputStreamPlugin extends TGInputStreamPlugin{
 	
 	protected TGInputStreamBase getInputStream() {

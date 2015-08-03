@@ -1,8 +1,10 @@
 package org.herac.tuxguitar.io.tef;
 
+import org.herac.tuxguitar.gui.system.Service;
 import org.herac.tuxguitar.gui.system.plugins.base.TGImporterPlugin;
 import org.herac.tuxguitar.io.base.TGRawImporter;
 
+@Service
 public class TEPluginImporter extends TGImporterPlugin{
 	
 	protected TGRawImporter getImporter() {

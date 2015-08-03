@@ -3,9 +3,11 @@ package org.herac.tuxguitar.io.midi;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.herac.tuxguitar.gui.system.Service;
 import org.herac.tuxguitar.gui.system.plugins.TGPlugin;
 import org.herac.tuxguitar.gui.system.plugins.base.TGPluginList;
 
+@Service
 public class MidiPluginList extends TGPluginList{
 	
 	protected List<TGPlugin> loadPlugins() {

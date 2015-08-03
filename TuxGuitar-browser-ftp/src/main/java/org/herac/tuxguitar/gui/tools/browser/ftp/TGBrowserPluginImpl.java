@@ -1,8 +1,10 @@
 package org.herac.tuxguitar.gui.tools.browser.ftp;
 
+import org.herac.tuxguitar.gui.system.Service;
 import org.herac.tuxguitar.gui.system.plugins.base.TGBrowserPlugin;
 import org.herac.tuxguitar.gui.tools.browser.base.TGBrowserFactory;
 
+@Service
 public class TGBrowserPluginImpl extends TGBrowserPlugin {
 	
 	protected TGBrowserFactory getFactory() {

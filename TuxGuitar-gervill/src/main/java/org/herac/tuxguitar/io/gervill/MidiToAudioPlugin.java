@@ -1,9 +1,11 @@
 package org.herac.tuxguitar.io.gervill;
 
+import org.herac.tuxguitar.gui.system.Service;
 import org.herac.tuxguitar.gui.system.plugins.TGPluginException;
 import org.herac.tuxguitar.gui.system.plugins.base.TGExporterPlugin;
 import org.herac.tuxguitar.io.base.TGRawExporter;
 
+@Service
 public class MidiToAudioPlugin extends TGExporterPlugin{
 	
 	private boolean available;

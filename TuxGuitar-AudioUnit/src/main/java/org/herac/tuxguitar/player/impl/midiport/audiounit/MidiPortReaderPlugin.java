@@ -1,8 +1,10 @@
 package org.herac.tuxguitar.player.impl.midiport.audiounit;
 
+import org.herac.tuxguitar.gui.system.Service;
 import org.herac.tuxguitar.gui.system.plugins.base.TGMidiOutputPortProviderPlugin;
 import org.herac.tuxguitar.player.base.MidiOutputPortProvider;
 
+@Service
 public class MidiPortReaderPlugin extends TGMidiOutputPortProviderPlugin{
 
 	protected MidiOutputPortProvider getProvider() {
@@ -14,11 +16,11 @@ public class MidiPortReaderPlugin extends TGMidiOutputPortProviderPlugin{
 	}
 
 	public String getDescription() {		
-		return "Core Audio output plugin";
+		return "Audio Unit output plugin";
 	}
 
 	public String getName() {
-		return "Core Audio output plugin";
+		return "Audio Unit output plugin";
 	}
 
 	public String getVersion() {
