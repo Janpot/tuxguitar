@@ -24,4 +24,6 @@ include 'TuxGuitar',
         'TuxGuitar-tef',
         'TuxGuitar-tray',
         'TuxGuitar-tuner',
-        'TuxGuitar-winmm'
+        'TuxGuitar-winmm',
+        'TuxGuitar-distribution'
+

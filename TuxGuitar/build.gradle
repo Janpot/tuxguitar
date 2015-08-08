@@ -1,14 +1,4 @@
-apply plugin: 'application'
-
 dependencies {
     compile 'org.eclipse.swt.gtk.linux:x86_64:3.3.0-v3346'
     compile 'org.reflections:reflections:0.9.10'
 }
-
-jar {
-    manifest {
-        attributes 'Main-Class': 'org.herac.tuxguitar.gui.TGMain'
-    }
-}
-
-mainClassName = 'org.herac.tuxguitar.gui.TGMain'

@@ -1,0 +1,33 @@
+apply plugin: 'application'
+
+dependencies {
+    compile project(':TuxGuitar')
+    compile project(':TuxGuitar-alsa')
+    compile project(':TuxGuitar-ascii')
+    compile project(':TuxGuitar-AudioUnit')
+    compile project(':TuxGuitar-browser-ftp')
+    compile project(':TuxGuitar-carbon-integration')
+    compile project(':TuxGuitar-cocoa-integration')
+    compile project(':TuxGuitar-community')
+    compile project(':TuxGuitar-compat')
+    compile project(':TuxGuitar-converter')
+    compile project(':TuxGuitar-CoreAudio')
+    compile project(':TuxGuitar-fluidsynth')
+    compile project(':TuxGuitar-gervill')
+    compile project(':TuxGuitar-gtp')
+    compile project(':TuxGuitar-jack')
+    compile project(':TuxGuitar-jsa')
+    compile project(':TuxGuitar-jws')
+    compile project(':TuxGuitar-lilypond')
+    compile project(':TuxGuitar-midi')
+    compile project(':TuxGuitar-musicxml')
+    compile project(':TuxGuitar-oss')
+    compile project(':TuxGuitar-pdf')
+    compile project(':TuxGuitar-ptb')
+    compile project(':TuxGuitar-tef')
+    compile project(':TuxGuitar-tray')
+    compile project(':TuxGuitar-tuner')
+    compile project(':TuxGuitar-winmm')
+}
+
+mainClassName = 'org.herac.tuxguitar.gui.TGMain'
