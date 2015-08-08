@@ -92,19 +92,19 @@ public class TGFileUtils {
         return null;
     }
 
-    private static String getResourcePath(String resource) {
+    private static File getResourcePath(String resource) {
         try {
             if (TG_STATIC_SHARED_PATHS != null) {
                 for (String tgStaticSharedPath : TG_STATIC_SHARED_PATHS) {
                     File file = new File(tgStaticSharedPath + File.separator + resource);
                     if (file.exists()) {
-                        return file.getAbsolutePath() + File.separator;
+                        return file;
                     }
                 }
             }
             URL url = TGClassLoader.instance().getClassLoader().getResource(resource);
             if (url != null) {
-                return new File(URLDecoder.decode(url.getPath(), "UTF-8")).getAbsolutePath() + File.separator;
+                return new File(URLDecoder.decode(url.getPath(), "UTF-8"));
             }
         } catch (Throwable throwable) {
             throwable.printStackTrace();
@@ -113,9 +113,9 @@ public class TGFileUtils {
     }
 
     public static void loadClasspath() {
-        String plugins = getResourcePath("plugins");
+        File plugins = getResourcePath("plugins");
         if (plugins != null) {
-            TGClassLoader.instance().addPaths(new File(plugins));
+            TGClassLoader.instance().addPaths(plugins);
         }
 
         String custompath = System.getProperty(TG_CLASS_PATH);
@@ -141,11 +141,10 @@ public class TGFileUtils {
 
     public static String[] getFileNames(String resource) {
         try {
-            String path = getResourcePath(resource);
+            File path = getResourcePath(resource);
             if (path != null) {
-                File file = new File(path);
-                if (file.exists() && file.isDirectory()) {
-                    return file.list();
+                if (path.exists() && path.isDirectory()) {
+                    return path.list();
                 }
             }
             InputStream stream = getResourceAsStream(resource + "/list.properties");
@@ -230,6 +229,6 @@ public class TGFileUtils {
         if (staticSharedPaths != null) {
             return staticSharedPaths.split(File.pathSeparator);
         }
-        return null;
+        return new String[] {"."};
     }
 }
