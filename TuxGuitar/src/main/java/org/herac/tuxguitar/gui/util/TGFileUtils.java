@@ -1,17 +1,16 @@
 package org.herac.tuxguitar.gui.util;
 
-import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.net.URL;
 import java.net.URLDecoder;
-import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.List;
 import java.util.Vector;
 
+import com.google.common.base.Charsets;
+import com.google.common.io.Resources;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.graphics.ImageData;
 import org.herac.tuxguitar.gui.TuxGuitar;
@@ -147,19 +146,10 @@ public class TGFileUtils {
                     return path.list();
                 }
             }
-            InputStream stream = getResourceAsStream(resource + "/list.properties");
-            if (stream != null) {
-                BufferedReader reader = new BufferedReader(new InputStreamReader(stream));
-                List<String> fileNameList = new ArrayList<String>();
-                String fileName;
-                while ((fileName = reader.readLine()) != null) {
-                    fileNameList.add(fileName);
-                }
-                String[] fileNames = new String[fileNameList.size()];
-                for (int i = 0; i < fileNames.length; i++) {
-                    fileNames[i] = fileNameList.get(i);
-                }
-                return fileNames;
+            URL list = getResourceUrl(resource + "/list.properties");
+            if (list != null) {
+                List<String> fileNames = Resources.readLines(list, Charsets.UTF_8);
+                return fileNames.toArray(new String[fileNames.size()]);
             }
         } catch (Throwable throwable) {
             throwable.printStackTrace();
