@@ -12,11 +12,11 @@ public class LilypondPluginExporter extends TGExporterPlugin{
 	}
 	
 	public String getAuthor() {
-		return "Julian Casadesus <julian@casadesus.com.ar>";
+		return "Julian Casadesus <julian@casadesus.com.ar>, updates by b4dc0d3r";
 	}
 	
 	public String getDescription() {
-		return "Lilypond 2.10.5 exporter plugin";
+		return "Lilypond exporter plugin";
 	}
 	
 	public String getName() {
@@ -24,6 +24,6 @@ public class LilypondPluginExporter extends TGExporterPlugin{
 	}
 	
 	public String getVersion() {
-		return "1.0";
+		return "1.1";
 	}
 }

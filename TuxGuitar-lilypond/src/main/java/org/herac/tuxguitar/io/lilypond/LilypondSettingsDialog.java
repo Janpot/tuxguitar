@@ -12,6 +12,7 @@ import org.eclipse.swt.widgets.Group;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Spinner;
+import org.eclipse.swt.widgets.Text;
 import org.herac.tuxguitar.gui.TuxGuitar;
 import org.herac.tuxguitar.gui.util.DialogUtils;
 
@@ -122,6 +123,15 @@ public class LilypondSettingsDialog {
 		});
 		
 		//------------------LAYOUT OPTIONS------------------
+		Group versionGroup = new Group(columnRight,SWT.SHADOW_ETCHED_IN);
+		versionGroup.setLayout(new GridLayout());
+		versionGroup.setLayoutData(new GridData(SWT.FILL,SWT.FILL,true,true));
+		versionGroup.setText("Version");
+		
+		final Text lilyVersion = new Text(versionGroup, SWT.SINGLE);
+		lilyVersion.setText(settings.getLilypondVersion());
+
+		//------------------LAYOUT OPTIONS------------------
 		Group layoutGroup = new Group(columnRight,SWT.SHADOW_ETCHED_IN);
 		layoutGroup.setLayout(new GridLayout());
 		layoutGroup.setLayoutData(new GridData(SWT.FILL,SWT.FILL,true,true));
@@ -207,6 +217,7 @@ public class LilypondSettingsDialog {
 				settings.setChordDiagramEnabled(chordDiagramsCheck.getSelection());
 				settings.setLyricsEnabled(lyricsCheck.getSelection());
 				settings.setTextEnabled(textsCheck.getSelection());
+				settings.setLilypondVersion(lilyVersion.getText());
 				settings.check();
 				
 				dialog.dispose();

@@ -7,7 +7,9 @@ public class LilypondSettings {
 	public static final int FIRST_MEASURE = -1;
 	
 	public static final int LAST_MEASURE = -1;
-	
+
+	private String LilypondVersion;
+		
 	private int track;
 	private int measureFrom;	
 	private int measureTo;
@@ -22,6 +24,14 @@ public class LilypondSettings {
 	
 	public LilypondSettings(){
 		super();
+	}
+
+	public String getLilypondVersion() {
+		return this.LilypondVersion;
+	}
+
+	public void setLilypondVersion(String LilypondVersion) {
+		this.LilypondVersion = LilypondVersion;
 	}
 	
 	public int getMeasureFrom() {
@@ -123,6 +133,7 @@ public class LilypondSettings {
 		settings.setChordDiagramEnabled(true);
 		settings.setTrackNameEnabled(true);
 		settings.setTrackGroupEnabled(false);
+		settings.LilypondVersion = "2.14.0";
 		return settings;
 	}
 }
