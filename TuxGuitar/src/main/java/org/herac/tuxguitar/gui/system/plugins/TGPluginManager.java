@@ -1,14 +1,19 @@
 package org.herac.tuxguitar.gui.system.plugins;
 
-import java.util.ArrayList;
-import java.util.IdentityHashMap;
-import java.util.List;
+import java.util.*;
 
 import com.google.common.base.Throwables;
 import org.herac.tuxguitar.gui.util.MessageDialog;
 import org.herac.tuxguitar.util.TGServiceReader;
 
 public class TGPluginManager {
+    public static final Comparator<TGPlugin> PLUGIN_BY_NAME_COMPARATOR = new Comparator<TGPlugin>() {
+        @Override
+        public int compare(TGPlugin p1, TGPlugin p2) {
+            return getNameSafe(p1).compareTo(getNameSafe(p2));
+        }
+    };
+
     private List<TGPlugin> plugins;
     /**
      * This map holds a status of each plugin. If a plugin failed to initialize we will keep track of it.
@@ -33,6 +38,7 @@ public class TGPluginManager {
     public void initPlugins() {
         try {
             this.plugins.addAll(TGServiceReader.getServices(TGPlugin.class));
+            Collections.sort(this.plugins, PLUGIN_BY_NAME_COMPARATOR);
         } catch (Throwable throwable) {
             MessageDialog.errorMessage(new TGPluginException("An error ocurred when trying to init plugin", throwable));
         }
@@ -45,7 +51,8 @@ public class TGPluginManager {
 
     private static String getNameSafe(TGPlugin plugin) {
         try {
-            return plugin.getName();
+            String name = plugin.getName();
+            return name == null ? plugin.getClass().getSimpleName() : name;
         } catch (Throwable e) {
             return plugin.getClass().getSimpleName();
         }
