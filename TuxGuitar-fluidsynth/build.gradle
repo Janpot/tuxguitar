@@ -1,3 +1,4 @@
 dependencies {
     compile project(':TuxGuitar')
+    compile 'net.java.dev.jna:jna:3.2.7'
 }

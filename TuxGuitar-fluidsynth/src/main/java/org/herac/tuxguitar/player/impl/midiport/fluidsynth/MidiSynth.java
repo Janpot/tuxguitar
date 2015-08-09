@@ -3,250 +3,263 @@ package org.herac.tuxguitar.player.impl.midiport.fluidsynth;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.herac.tuxguitar.player.impl.midiport.fluidsynth.type.BooleanRef;
-import org.herac.tuxguitar.player.impl.midiport.fluidsynth.type.DoubleRef;
-import org.herac.tuxguitar.player.impl.midiport.fluidsynth.type.IntegerRef;
-import org.herac.tuxguitar.player.impl.midiport.fluidsynth.type.StringRef;
+import com.sun.jna.Native;
+import com.sun.jna.Pointer;
+import com.sun.jna.ptr.DoubleByReference;
+import com.sun.jna.ptr.IntByReference;
+import com.sun.jna.ptr.PointerByReference;
 
 public class MidiSynth {
-	
-	private static final String JNI_LIBRARY_NAME = "tuxguitar-fluidsynth-jni";
-	
-	static{
-		System.loadLibrary(JNI_LIBRARY_NAME);
-	}
-	
-	private long instance;
-	private MidiOutputPortImpl loadedPort;
-	
-	public MidiSynth(){
-		this.instance = malloc();
-		this.loadedPort = null;
-	}
-	
-	public boolean isInitialized(){
-		return (this.instance != 0);
-	}
-	
-	public void finalize(){
-		if(isInitialized()){
-			this.free(this.instance);
-			this.instance = 0;
-		}
-	}
-	
-	public boolean isConnected(MidiOutputPortImpl port){
-		return (port != null && this.loadedPort != null && this.loadedPort.equals( port ) );
-	}
-	
-	public void connect(MidiOutputPortImpl port){
-		if(isInitialized()){
-			this.disconnect( this.loadedPort );
-			this.open(this.instance);
-			this.loadFont(this.instance, port.getSoundFont());
-			this.loadedPort = port;
-		}
-	}
-	
-	public void disconnect(MidiOutputPortImpl port){
-		if(isInitialized() && isConnected(port)){
-			this.unloadFont(this.instance);
-			this.close(this.instance);
-			this.loadedPort = null;
-		}
-	}
-	
-	public void reconnect(){
-		MidiOutputPortImpl connection = this.loadedPort;
-		if( isConnected( connection ) ){
-			this.disconnect( connection );
-			this.connect( connection );
-		}
-	}
-	
-	public void sendSystemReset() {
-		if(isInitialized()){
-			this.systemReset(this.instance);
-		}
-	}
-	
-	public void sendNoteOn(int channel, int key, int velocity) {
-		if(isInitialized()){
-			this.noteOn(this.instance,channel, key, velocity);
-		}
-	}
-	
-	public void sendNoteOff(int channel, int key, int velocity) {
-		if(isInitialized()){
-			this.noteOff(this.instance,channel, key, velocity);
-		}
-	}
-	
-	public void sendControlChange(int channel, int controller, int value) {
-		if(isInitialized()){
-			this.controlChange(this.instance,channel, controller, value);
-		}
-	}
-	
-	public void sendProgramChange(int channel, int value) {
-		if(isInitialized()){
-			this.programChange(this.instance,channel, value);
-		}
-	}
-	
-	public void sendPitchBend(int channel, int value) {
-		if(isInitialized()){
-			this.pitchBend(this.instance,channel, value);
-		}
-	}
-	
-	public void setDoubleProperty( String key , double value ){
-		if(isInitialized()){
-			this.setDoubleProperty(this.instance, key, value);
-		}
-	}
-	
-	public void setIntegerProperty( String key , int value ){
-		if(isInitialized()){
-			this.setIntegerProperty(this.instance, key, value);
-		}
-	}
-	
-	public void setStringProperty( String key , String value ){
-		if(isInitialized()){
-			this.setStringProperty(this.instance, key, value);
-		}
-	}
-	
-	public double getDoubleProperty( String key ){
-		DoubleRef value = new DoubleRef();
-		if(isInitialized()){
-			this.getDoubleProperty(this.instance, key, value);
-		}
-		return value.getValue();
-	}
-	
-	public int getIntegerProperty( String key ){
-		IntegerRef value = new IntegerRef();
-		if(isInitialized()){
-			this.getIntegerProperty(this.instance, key, value);
-		}
-		return value.getValue();
-	}
-	
-	public String getStringProperty( String key ){
-		StringRef value = new StringRef();
-		if(isInitialized()){
-			this.getStringProperty(this.instance, key, value);
-		}
-		return value.getValue();
-	}
-	
-	public double getDoublePropertyDefault( String key ){
-		DoubleRef value = new DoubleRef();
-		if(isInitialized()){
-			this.getDoublePropertyDefault(this.instance, key, value);
-		}
-		return value.getValue();
-	}
-	
-	public int getIntegerPropertyDefault( String key ){
-		IntegerRef value = new IntegerRef();
-		if(isInitialized()){
-			this.getIntegerPropertyDefault(this.instance, key, value);
-		}
-		return value.getValue();
-	}
-	
-	public String getStringPropertyDefault( String key ){
-		StringRef value = new StringRef();
-		if(isInitialized()){
-			this.getStringPropertyDefault(this.instance, key, value);
-		}
-		return value.getValue();
-	}
-	
-	public List getPropertyOptions( String key ){
-		List options = new ArrayList();
-		if(isInitialized()){
-			this.getPropertyOptions(instance, key, options);
-		}
-		return options;
-	}
-	
-	public int[] getIntegerPropertyRange( String key ){
-		IntegerRef minimum = new IntegerRef();
-		IntegerRef maximum = new IntegerRef();
-		if(isInitialized()){
-			this.getIntegerPropertyRange(this.instance, key, minimum , maximum );
-		}
-		return new int[]{ minimum.getValue() , maximum.getValue() };
-	}
-	
-	public double[] getDoublePropertyRange( String key ){
-		DoubleRef minimum = new DoubleRef();
-		DoubleRef maximum = new DoubleRef();
-		if(isInitialized()){
-			this.getDoublePropertyRange(this.instance, key, minimum , maximum );
-		}
-		return new double[]{ minimum.getValue() , maximum.getValue() };
-	}
-	
-	public boolean isRealtimeProperty( String key ){
-		BooleanRef value = new BooleanRef();
-		if(isInitialized()){
-			this.isRealtimeProperty(this.instance, key, value);
-		}
-		return value.getValue();
-	}
-	
-	private native long malloc();
-	
-	private native void free(long instance);
-	
-	private native void open(long instance);
-	
-	private native void close(long instance);
-	
-	private native void loadFont(long instance, String path);
-	
-	private native void unloadFont(long instance);
-	
-	private native void systemReset(long instance);
-	
-	private native void noteOn(long instance,int channel,int note,int velocity);
-	
-	private native void noteOff(long instance,int channel,int note,int velocity);
-	
-	private native void controlChange(long instance,int channel,int control,int value);
-	
-	private native void programChange(long instance,int channel,int program);
-	
-	private native void pitchBend(long instance,int channel,int value);
-	
-	private native void setDoubleProperty(long instance, String key , double value );
-	
-	private native void setIntegerProperty(long instance, String key , int value );
-	
-	private native void setStringProperty(long instance, String key , String value );
-	
-	private native void getDoubleProperty(long instance, String key , DoubleRef ref );
-	
-	private native void getIntegerProperty(long instance, String key , IntegerRef ref );
-	
-	private native void getStringProperty(long instance, String key , StringRef ref );
-	
-	private native void getDoublePropertyDefault(long instance, String key , DoubleRef ref );
-	
-	private native void getIntegerPropertyDefault(long instance, String key , IntegerRef ref );
-	
-	private native void getStringPropertyDefault(long instance, String key , StringRef ref );
-	
-	private native void getDoublePropertyRange(long instance, String key , DoubleRef minimum , DoubleRef maximum );
-	
-	private native void getIntegerPropertyRange(long instance, String key , IntegerRef minimum , IntegerRef maximum );
-	
-	private native void getPropertyOptions(long instance, String key , List options );
-	
-	private native void isRealtimeProperty(long instance, String key , BooleanRef ref );
+    private static final FluidSynth fluidSynth = (FluidSynth) Native.loadLibrary("libfluidsynth.so.1", FluidSynth.class);
+
+    private MidiOutputPortImpl loadedPort;
+
+    private Pointer synth;
+    private Pointer settings;
+    private Pointer driver;
+    private int soundfont_id;
+
+    public MidiSynth() {
+        this.settings = fluidSynth.new_fluid_settings();
+        this.loadedPort = null;
+    }
+
+    public boolean isInitialized() {
+        return this.settings != null;
+    }
+
+    public void finalize() {
+        if (driver != null) {
+            fluidSynth.delete_fluid_audio_driver(driver);
+            driver = null;
+        }
+        if (synth != null) {
+            fluidSynth.delete_fluid_synth(synth);
+            synth = null;
+        }
+        if (settings != null) {
+            fluidSynth.delete_fluid_settings(settings);
+            settings = null;
+        }
+    }
+
+    public boolean isConnected(MidiOutputPortImpl port) {
+        return (port != null && this.loadedPort != null && this.loadedPort.equals(port));
+    }
+
+    public void connect(MidiOutputPortImpl port) {
+        if (isInitialized()) {
+            this.disconnect(this.loadedPort);
+            this.open();
+            this.loadFont(port.getSoundFont());
+            this.loadedPort = port;
+        }
+    }
+
+    public void disconnect(MidiOutputPortImpl port) {
+        if (isInitialized() && isConnected(port)) {
+            this.unloadFont();
+            this.close();
+            this.loadedPort = null;
+        }
+    }
+
+    public void reconnect() {
+        MidiOutputPortImpl connection = this.loadedPort;
+        if (isConnected(connection)) {
+            this.disconnect(connection);
+            this.connect(connection);
+        }
+    }
+
+    public void sendSystemReset() {
+        if (synth != null) {
+            checkSynth("fluid_synth_system_reset", fluidSynth.fluid_synth_system_reset(synth));
+        }
+    }
+
+    public void sendNoteOn(int channel, int key, int velocity) {
+        if (synth != null) {
+            checkSynth("fluid_synth_noteon", fluidSynth.fluid_synth_noteon(synth, channel, key, velocity));
+        }
+    }
+
+    public void sendNoteOff(int channel, int key, int velocity) {
+        if (synth != null) {
+            checkSynth("fluid_synth_noteoff", fluidSynth.fluid_synth_noteoff(synth, channel, key));
+        }
+    }
+
+    public void sendControlChange(int channel, int controller, int value) {
+        if (synth != null) {
+            checkSynth("fluid_synth_cc", fluidSynth.fluid_synth_cc(synth, channel, controller, value));
+        }
+    }
+
+    public void sendProgramChange(int channel, int value) {
+        if (synth != null) {
+            checkSynth("fluid_synth_program_change", fluidSynth.fluid_synth_program_change(synth, channel, value));
+        }
+    }
+
+    public void sendPitchBend(int channel, int value) {
+        if (synth != null) {
+            checkSynth("fluid_synth_pitch_bend", fluidSynth.fluid_synth_pitch_bend(synth, channel, ((value * 128))));
+        }
+    }
+
+    public void setDoubleProperty(String key, double value) {
+        if (settings != null && key != null) {
+            fluidSynth.fluid_settings_setnum(settings, key, (float) value);
+        }
+    }
+
+    public void setIntegerProperty(String key, int value) {
+        if (settings != null && key != null) {
+            fluidSynth.fluid_settings_setint(settings, key, value);
+        }
+    }
+
+    public void setStringProperty(String key, String value) {
+        if (settings != null && key != null) {
+            fluidSynth.fluid_settings_setstr(settings, key, value);
+        }
+    }
+
+    public double getDoubleProperty(String key) {
+        if (settings != null && key != null) {
+            DoubleByReference value = new DoubleByReference();
+            fluidSynth.fluid_settings_getnum(settings, key, value);
+            return value.getValue();
+        }
+        return 0;
+    }
+
+    public int getIntegerProperty(String key) {
+        if (settings != null && key != null) {
+            IntByReference value = new IntByReference();
+            fluidSynth.fluid_settings_getint(settings, key, value);
+            return value.getValue();
+        }
+        return 0;
+    }
+
+    public String getStringProperty(String key) {
+        if (settings != null && key != null) {
+            PointerByReference p = new PointerByReference();
+
+            fluidSynth.fluid_settings_getstr(settings, key, p);
+
+            return p.getValue().getString(0);
+        }
+        return "";
+    }
+
+    public double getDoublePropertyDefault(String key) {
+        if (settings != null && key != null) {
+            return fluidSynth.fluid_settings_getnum_default(settings, key);
+        }
+        return 0;
+    }
+
+    public int getIntegerPropertyDefault(String key) {
+        if (settings != null && key != null) {
+            return fluidSynth.fluid_settings_getint_default(settings, key);
+        }
+        return 0;
+    }
+
+    public String getStringPropertyDefault(String key) {
+        if (settings != null && key != null) {
+            return fluidSynth.fluid_settings_getstr_default(settings, key);
+        }
+        return "";
+    }
+
+    public List<String> getPropertyOptions(String key) {
+        List<String> options = new ArrayList<String>();
+        if (settings != null) {
+            fluidSynth.fluid_settings_foreach_option(settings, key, null, new FluidSynth.SettingsCallback(options));
+        }
+        return options;
+    }
+
+    public int[] getIntegerPropertyRange(String key) {
+        if (settings != null && key != null) {
+            IntByReference minimum = new IntByReference();
+            IntByReference maximum = new IntByReference();
+
+            fluidSynth.fluid_settings_getint_range(settings, key, minimum, maximum);
+
+            return new int[]{minimum.getValue(), maximum.getValue()};
+        }
+        return new int[]{0, 0};
+    }
+
+    public double[] getDoublePropertyRange(String key) {
+        if (settings != null && key != null) {
+            DoubleByReference minimum = new DoubleByReference();
+            DoubleByReference maximum = new DoubleByReference();
+
+            fluidSynth.fluid_settings_getnum_range(settings, key, minimum, maximum);
+
+            return new double[]{minimum.getValue(), maximum.getValue()};
+        }
+        return new double[]{0, 0};
+    }
+
+    public boolean isRealtimeProperty(String key) {
+        if (settings != null && key != null) {
+            return fluidSynth.fluid_settings_is_realtime(settings, key) != 0;
+        }
+        return false;
+    }
+
+    private void open() {
+        if (settings != null) {
+            if (driver != null) {
+                fluidSynth.delete_fluid_audio_driver(driver);
+            }
+            if (synth != null) {
+                fluidSynth.delete_fluid_synth(synth);
+            }
+            synth = fluidSynth.new_fluid_synth(settings);
+            driver = fluidSynth.new_fluid_audio_driver(settings, synth);
+
+            checkSynth("fluid_synth_set_interp_method", fluidSynth.fluid_synth_set_interp_method(synth, -1, FluidSynth.FLUID_INTERP_NONE));
+        }
+    }
+
+    private void close() {
+        if (driver != null) {
+            fluidSynth.delete_fluid_audio_driver(driver);
+            driver = null;
+        }
+        if (synth != null) {
+            fluidSynth.delete_fluid_synth(synth);
+            synth = null;
+        }
+    }
+
+    private void loadFont(String path) {
+        if (synth != null && soundfont_id <= 0) {
+            soundfont_id = fluidSynth.fluid_synth_sfload(synth, path, 1);
+            if (soundfont_id < 0) {
+                checkSynth("fluid_synth_sfload", soundfont_id);
+            }
+        }
+    }
+
+    private void unloadFont() {
+        if (synth != null && soundfont_id > 0) {
+            checkSynth("fluid_synth_sfunload", fluidSynth.fluid_synth_sfunload(synth, soundfont_id, 1));
+            soundfont_id = 0;
+        }
+    }
+
+    private void checkSynth(String operation, int exitCode) {
+        if (exitCode != FluidSynth.FLUID_OK && synth != null) {
+            System.err.println("FluidSynth error on " + operation + ": " + fluidSynth.fluid_synth_error(synth));
+        }
+    }
 }
