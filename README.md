@@ -1,15 +1,40 @@
-DESCRIPTION:
+TuxGuitar
+=========
+
+![Travis CI build status](https://travis-ci.org/akochurov/tuxguitar.svg?branch=master)
+
+>From fork author
+>----------------
+
+>Initially I was intended to create a small Android tab-viewer based on tuxguitar codebase.
+>However when I get more familiar with the codebase I realised that it's rather outdate and requires some refactoring
+>before I can actually extract a viewer.
+
+>So what was done in this fork:
+
+>- ANT replaced with Gradle (not all things working yet, especially native integrations).
+>- PluginManager reworked, now it's annotation based.
+>- FluidSynth integration rewritten with JNA instead of native JNI components.
+>- Java version updated to 6. Generics are added.
+
+DESCRIPTION
+-----------
+
 TuxGuitar is a multitrack tablature editor and player written in Java-SWT.
 
-LICENSE:
+LICENSE
+-------
 TuxGuitar is released under the GNU Lesser General Public License.
 
-REQUIREMENTS:
-Java Runtime Environment 1.4.X or later installed in your system.
+REQUIREMENTS
+------------
 
-PROBLEMS:
+Java Runtime Environment 1.6.X or later installed in your system.
 
-    * SWT:
+PROBLEMS
+--------
+
+* SWT
 
 If you see an error like "java.lang.UnsatisfiedLinkError", you will need to replace your swt shared library files and jar 
 packages compiled for your system. TuxGuitar comes with SWT for linux-x86, linux-x86_64, mac and win32-x86. make sure download 
@@ -18,25 +43,31 @@ If you don't have SWT installed in one of this locations: /lib, /usr/lib, /usr/l
 add its path to the LD_LIBRARY_PATH and CLASSPATH environment vars.
 
 Export LD_LIBRARY_PATH and CLASSPATH:
+```
 $export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/your_swt_library_folder/
 $export CLASSPATH=$CLASSPATH:/your_swt_library_folder/swt.jar
 $/home/user/TuxGuitar-*/TuxGuitar
+```
 
-    * UNSUPPORTED CLASS VERSION:
+* UNSUPPORTED CLASS VERSION
 
 java.lang.UnsupportedClassVersionError. This means that your JVM is not compatible with the JVM used to create the binaries.  
 If you see a message like this, you will need to rebuild TuxGuitar from sources.
 
-    * FAILDED TO LOAD PLUGINS:
+* FAILDED TO LOAD PLUGINS
 
 TuxGuitar 1.0 has better JVM compatibility than older releases. But some plugins (e.g: Java Sound Api plugin) still depends 
 on Sun Java(TM) Development Kit (JDK) 5.0. if you have installed more than one JVM in your system, you can use one of these 
-environment vars:  JAVA or JAVA_HOME to run TuxGuitar with a specified JVM.
+environment vars: `JAVA` or `JAVA_HOME` to run TuxGuitar with a specified JVM.
 
 Export JAVA:
+```
 $export JAVA=/usr/lib/jvm/java-1.5.0-sun/bin/java
 $/home/user/TuxGuitar-*/tuxguitar
+```
 
 Export JAVA_HOME:
+```
 $export JAVA_HOME=/usr/lib/jvm/java-1.5.0-sun
-$/home/user/TuxGuitar-*/tuxguitar           
+$/home/user/TuxGuitar-*/tuxguitar
+```
