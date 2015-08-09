@@ -15,6 +15,7 @@ dependencies {
     compile project(':TuxGuitar-fluidsynth')
     compile project(':TuxGuitar-gervill')
     compile project(':TuxGuitar-gtp')
+    compile project(':TuxGuitar-gpx')
     compile project(':TuxGuitar-jack')
     compile project(':TuxGuitar-jsa')
     compile project(':TuxGuitar-jws')
